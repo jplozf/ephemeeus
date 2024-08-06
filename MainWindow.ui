@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>899</width>
+    <height>770</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form1</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="1">
+     <widget class="QSplitter" name="splitter">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <widget class="QWidget" name="verticalLayoutWidget_2">
+       <layout class="QVBoxLayout" name="verticalLayout_2">
+        <item>
+         <widget class="QTabWidget" name="tabWidget">
+          <property name="currentIndex">
+           <number>4</number>
+          </property>
+          <widget class="QWidget" name="tabConsoleOut">
+           <property name="cursor">
+            <cursorShape>CrossCursor</cursorShape>
+           </property>
+           <attribute name="icon">
+            <iconset>
+             <normaloff>:/16x16/Computer.png</normaloff>:/16x16/Computer.png</iconset>
+           </attribute>
+           <attribute name="title">
+            <string>Console Out</string>
+           </attribute>
+           <layout class="QGridLayout" name="gridLayout_5"/>
+          </widget>
+          <widget class="QWidget" name="tabEnvironment">
+           <attribute name="icon">
+            <iconset>
+             <normaloff>:/16x16/Bubble4.png</normaloff>:/16x16/Bubble4.png</iconset>
+           </attribute>
+           <attribute name="title">
+            <string>Environment</string>
+           </attribute>
+           <layout class="QGridLayout" name="gridLayout_3"/>
+          </widget>
+          <widget class="QWidget" name="tabSettings">
+           <attribute name="icon">
+            <iconset>
+             <normaloff>:/16x16/Gear.png</normaloff>:/16x16/Gear.png</iconset>
+           </attribute>
+           <attribute name="title">
+            <string>Settings</string>
+           </attribute>
+           <layout class="QGridLayout" name="gridLayout_7">
+            <item row="0" column="1">
+             <widget class="QScrollArea" name="scrollArea_2">
+              <property name="widgetResizable">
+               <bool>true</bool>
+              </property>
+              <widget class="QWidget" name="boxSettings">
+               <property name="geometry">
+                <rect>
+                 <x>0</x>
+                 <y>0</y>
+                 <width>855</width>
+                 <height>657</height>
+                </rect>
+               </property>
+              </widget>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="tabXMLFile">
+           <attribute name="icon">
+            <iconset>
+             <normaloff>:/16x16/Document Text.png</normaloff>:/16x16/Document Text.png</iconset>
+           </attribute>
+           <attribute name="title">
+            <string>Commands</string>
+           </attribute>
+           <layout class="QGridLayout" name="gridLayout_8"/>
+          </widget>
+          <widget class="QWidget" name="tabAbout">
+           <attribute name="icon">
+            <iconset>
+             <normaloff>:/16x16/Copyright.png</normaloff>:/16x16/Copyright.png</iconset>
+           </attribute>
+           <attribute name="title">
+            <string>About</string>
+           </attribute>
+           <layout class="QGridLayout" name="gridLayout_2">
+            <item row="0" column="0">
+             <widget class="QTextBrowser" name="txtAbout"/>
+            </item>
+           </layout>
+          </widget>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>899</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menu_File">
+    <property name="title">
+     <string>&amp;File</string>
+    </property>
+    <addaction name="actionOpen"/>
+    <addaction name="actionQuit"/>
+   </widget>
+   <addaction name="menu_File"/>
+  </widget>
+  <widget class="QStatusBar" name="statusBar"/>
+  <action name="actionQuit">
+   <property name="icon">
+    <iconset>
+     <normaloff>:/16x16/Close.png</normaloff>:/16x16/Close.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Quit F10</string>
+   </property>
+   <property name="iconText">
+    <string>Quit</string>
+   </property>
+   <property name="shortcut">
+    <string>F10</string>
+   </property>
+  </action>
+  <action name="actionOpen">
+   <property name="icon">
+    <iconset>
+     <normaloff>:/16x16/Document Text.png</normaloff>:/16x16/Document Text.png</iconset>
+   </property>
+   <property name="text">
+    <string>Open</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
