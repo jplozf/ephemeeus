@@ -7,6 +7,7 @@ MainWindow::MainWindow(QApplication *a, QWidget *parent) : QMainWindow(parent) ,
     this->a = a;
     ui->setupUi(this);
     app = new App();
+    connect(ui->actionQuit, SIGNAL(triggered()), this, SLOT(slotDoExit()));
 
     readSettings();
     initUI();
@@ -20,9 +21,7 @@ MainWindow::MainWindow(QApplication *a, QWidget *parent) : QMainWindow(parent) ,
 //******************************************************************************
 MainWindow::~MainWindow() {
     delete ui;
-    // delete xp;
 }
-
 
 //******************************************************************************
 // initUI()
@@ -94,7 +93,6 @@ void MainWindow::setTheme() {
     }
 }
 
-
 //******************************************************************************
 // showMessage()
 //******************************************************************************
@@ -111,7 +109,6 @@ void MainWindow::showMessage(const QString &message, int timeout) {
 void MainWindow::slotDoExit() {
     this->close();
 }
-
 
 //******************************************************************************
 // closeEvent()
