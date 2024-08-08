@@ -15,7 +15,7 @@
 #include <QProcessEnvironment>
 
 #include "qobjectdefs.h"
-#include "ui_mainwindow.h"
+#include "ui_MainWindow.h"
 #include "app.h"
 
 
