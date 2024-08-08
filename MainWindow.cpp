@@ -1,9 +1,12 @@
- #include "MainWindow.h"
+#include "MainWindow.h"
 
 //******************************************************************************
 // MainWindow()
 //******************************************************************************
-MainWindow::MainWindow(QApplication *a, QWidget *parent) : QMainWindow(parent) , ui(new Ui::MainWindow) {
+MainWindow::MainWindow(QApplication *a, QWidget *parent)
+    : QMainWindow(parent)
+    , ui(new Ui::MainWindow)
+{
     this->a = a;
     ui->setupUi(this);
     app = new App();
@@ -11,7 +14,8 @@ MainWindow::MainWindow(QApplication *a, QWidget *parent) : QMainWindow(parent) ,
 
     readSettings();
     initUI();
-    QString appTitle = QString("%1 %2").arg(app->appConstants->getQString("APPLICATION_NAME"), app->appConstants->getQString("VERSION"));
+    QString appTitle = QString("%1 %2").arg(app->appConstants->getQString("APPLICATION_NAME"),
+                                            app->appConstants->getQString("VERSION"));
     setWindowTitle(appTitle);
     showMessage("Welcome");
 }
@@ -19,14 +23,16 @@ MainWindow::MainWindow(QApplication *a, QWidget *parent) : QMainWindow(parent) ,
 //******************************************************************************
 // ~MainWindow()
 //******************************************************************************
-MainWindow::~MainWindow() {
+MainWindow::~MainWindow()
+{
     delete ui;
 }
 
 //******************************************************************************
 // initUI()
 //******************************************************************************
-void MainWindow::initUI() {
+void MainWindow::initUI()
+{
     //**************************************************************************
     // Theme
     //**************************************************************************
@@ -51,7 +57,8 @@ void MainWindow::initUI() {
 //******************************************************************************
 // setTheme()
 //******************************************************************************
-void MainWindow::setTheme() {
+void MainWindow::setTheme()
+{
     QString tName = app->appSettings->get("APPLICATION_THEME").toString();
     if (tName != "DARK" && tName != "LIGHT" && tName != "ALTERNATE") {
         tName = "ALTERNATE";
@@ -60,18 +67,26 @@ void MainWindow::setTheme() {
         this->a->setStyle("Fusion");
         QPalette palette = QPalette();
         palette.setColor(QPalette::Window, QColor(app->appSettings->get("THEME_WINDOW").toString()));
-        palette.setColor(QPalette::WindowText, QColor(app->appSettings->get("THEME_WINDOW_TEXT").toString()));
+        palette.setColor(QPalette::WindowText,
+                         QColor(app->appSettings->get("THEME_WINDOW_TEXT").toString()));
         palette.setColor(QPalette::Base, QColor(app->appSettings->get("THEME_BASE").toString()));
-        palette.setColor(QPalette::AlternateBase, QColor(app->appSettings->get("THEME_ALTERNATE_BASE").toString()));
-        palette.setColor(QPalette::ToolTipBase, QColor(app->appSettings->get("THEME_TOOLTIP_BASE").toString()));
-        palette.setColor(QPalette::ToolTipText, QColor(app->appSettings->get("THEME_TOOLTIP_TEXT").toString()));
+        palette.setColor(QPalette::AlternateBase,
+                         QColor(app->appSettings->get("THEME_ALTERNATE_BASE").toString()));
+        palette.setColor(QPalette::ToolTipBase,
+                         QColor(app->appSettings->get("THEME_TOOLTIP_BASE").toString()));
+        palette.setColor(QPalette::ToolTipText,
+                         QColor(app->appSettings->get("THEME_TOOLTIP_TEXT").toString()));
         palette.setColor(QPalette::Text, QColor(app->appSettings->get("THEME_TEXT").toString()));
         palette.setColor(QPalette::Button, QColor(app->appSettings->get("THEME_BUTTON").toString()));
-        palette.setColor(QPalette::ButtonText, QColor(app->appSettings->get("THEME_BUTTON_TEXT").toString()));
-        palette.setColor(QPalette::BrightText, QColor(app->appSettings->get("THEME_BRIGHT_TEXT").toString()));
+        palette.setColor(QPalette::ButtonText,
+                         QColor(app->appSettings->get("THEME_BUTTON_TEXT").toString()));
+        palette.setColor(QPalette::BrightText,
+                         QColor(app->appSettings->get("THEME_BRIGHT_TEXT").toString()));
         palette.setColor(QPalette::Link, QColor(app->appSettings->get("THEME_LINK").toString()));
-        palette.setColor(QPalette::Highlight, QColor(app->appSettings->get("THEME_HIGHLIGHT").toString()));
-        palette.setColor(QPalette::HighlightedText, QColor(app->appSettings->get("THEME_HIGHLIGHTED_TEXT").toString()));
+        palette.setColor(QPalette::Highlight,
+                         QColor(app->appSettings->get("THEME_HIGHLIGHT").toString()));
+        palette.setColor(QPalette::HighlightedText,
+                         QColor(app->appSettings->get("THEME_HIGHLIGHTED_TEXT").toString()));
         a->setPalette(palette);
     } else {
         this->a->setStyle("Fusion");
@@ -96,7 +111,8 @@ void MainWindow::setTheme() {
 //******************************************************************************
 // showMessage()
 //******************************************************************************
-void MainWindow::showMessage(const QString &message, int timeout) {
+void MainWindow::showMessage(const QString &message, int timeout)
+{
     if (timeout == -1) {
         timeout = app->appSettings->get("APPLICATION_STATUSBAR_TIMEOUT").toInt();
     }
@@ -106,17 +122,22 @@ void MainWindow::showMessage(const QString &message, int timeout) {
 //******************************************************************************
 // slotDoExit()
 //******************************************************************************
-void MainWindow::slotDoExit() {
+void MainWindow::slotDoExit()
+{
     this->close();
 }
 
 //******************************************************************************
 // closeEvent()
 //******************************************************************************
-void MainWindow::closeEvent(QCloseEvent *event) {
+void MainWindow::closeEvent(QCloseEvent *event)
+{
     if (app->appSettings->get("APPLICATION_CONFIRM_EXIT").toBool() == true) {
         QMessageBox::StandardButton rc;
-        rc = QMessageBox::question(this, app->appConstants->getQString("APPLICATION_NAME"), QString("Really quit ?\n"), QMessageBox::Yes|QMessageBox::No);
+        rc = QMessageBox::question(this,
+                                   app->appConstants->getQString("APPLICATION_NAME"),
+                                   QString("Really quit ?\n"),
+                                   QMessageBox::Yes | QMessageBox::No);
         if (rc == QMessageBox::Yes) {
             saveSettings();
             event->accept();
@@ -132,11 +153,13 @@ void MainWindow::closeEvent(QCloseEvent *event) {
 //******************************************************************************
 // saveSettings()
 //******************************************************************************
-void MainWindow::saveSettings() {
+void MainWindow::saveSettings()
+{
     //**************************************************************************
     // Application state saving
     //**************************************************************************
-    QSettings registry(app->appConstants->getQString("ORGANIZATION_NAME"), app->appConstants->getQString("APPLICATION_NAME"));
+    QSettings registry(app->appConstants->getQString("ORGANIZATION_NAME"),
+                       app->appConstants->getQString("APPLICATION_NAME"));
     registry.setValue("geometry", saveGeometry());
     registry.setValue("windowState", saveState());
     registry.setValue("splitter", ui->splitter->saveState());
@@ -152,8 +175,10 @@ void MainWindow::saveSettings() {
 //******************************************************************************
 // readSettings()
 //******************************************************************************
-void MainWindow::readSettings() {
-    QSettings registry(app->appConstants->getQString("ORGANIZATION_NAME"), app->appConstants->getQString("APPLICATION_NAME"));
+void MainWindow::readSettings()
+{
+    QSettings registry(app->appConstants->getQString("ORGANIZATION_NAME"),
+                       app->appConstants->getQString("APPLICATION_NAME"));
 
     const QByteArray geometry = registry.value("geometry", QByteArray()).toByteArray();
     if (geometry.isEmpty()) {

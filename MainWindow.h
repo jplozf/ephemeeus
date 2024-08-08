@@ -1,26 +1,27 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <QMainWindow>
-#include <QFile>
-#include <QMessageBox>
+#include <QClipboard>
 #include <QCloseEvent>
 #include <QDesktopWidget>
-#include <QTimer>
-#include <QShortcut>
-#include <QHash>
-#include <QClipboard>
+#include <QFile>
 #include <QGuiApplication>
-#include <QSettings>
+#include <QHash>
+#include <QMainWindow>
+#include <QMessageBox>
 #include <QProcessEnvironment>
+#include <QSettings>
+#include <QShortcut>
+#include <QTimer>
 
+#include "app.h"
 #include "qobjectdefs.h"
 #include "ui_MainWindow.h"
-#include "app.h"
-
 
 QT_BEGIN_NAMESPACE
-namespace Ui { class MainWindow; }
+namespace Ui {
+class MainWindow;
+}
 QT_END_NAMESPACE
 
 class MainWindow : public QMainWindow
@@ -44,6 +45,5 @@ private:
 
 private slots:
     void slotDoExit();
-
 };
 #endif // MAINWINDOW_H

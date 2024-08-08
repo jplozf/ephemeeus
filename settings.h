@@ -1,30 +1,28 @@
 #ifndef SETTINGS_H
 #define SETTINGS_H
 
-#include <QString>
-#include <QVariant>
-#include <QObject>
+#include <QDataStream>
 #include <QDir>
 #include <QFile>
-#include <QIODevice>
-#include <QDataStream>
-#include <QStandardPaths>
-#include <QPair>
-#include <QLabel>
-#include <QLineEdit>
-#include <QHBoxLayout>
-#include <QWidget>
-#include <QPushButton>
 #include <QFormLayout>
+#include <QHBoxLayout>
+#include <QIODevice>
 #include <QLabel>
 #include <QLineEdit>
+#include <QObject>
+#include <QPair>
+#include <QPushButton>
+#include <QStandardPaths>
+#include <QString>
+#include <QVariant>
+#include <QWidget>
 
 #include "constants.h"
 #include "utils.h"
 
 class MainWindow;
 
-class Settings: public QObject
+class Settings : public QObject
 {
     Q_OBJECT
 public:

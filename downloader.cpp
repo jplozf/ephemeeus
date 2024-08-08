@@ -3,7 +3,8 @@
 //******************************************************************************
 // downloadFile()
 //******************************************************************************
-void Downloader::downloadFile(const QString& url, const QString& target) {
+void Downloader::downloadFile(const QString &url, const QString &target)
+{
     QNetworkAccessManager manager;
     QNetworkReply *response = manager.get(QNetworkRequest(QUrl(url)));
     QEventLoop event;
@@ -19,7 +20,8 @@ void Downloader::downloadFile(const QString& url, const QString& target) {
 //******************************************************************************
 // getMD5FromLocalFile()
 //******************************************************************************
-QString Downloader::getMD5FromLocalFile(const QString& file) {
+QString Downloader::getMD5FromLocalFile(const QString &file)
+{
     QFile f(file);
     if (f.open(QFile::ReadOnly)) {
         QCryptographicHash hash(QCryptographicHash::Md5);
@@ -33,21 +35,23 @@ QString Downloader::getMD5FromLocalFile(const QString& file) {
 //******************************************************************************
 // getFilesFromIndex()
 //******************************************************************************
-QList<QStringList> Downloader::getFilesFromIndex(const QString& url) {
+QList<QStringList> Downloader::getFilesFromIndex(const QString &url)
+{
     QList<QStringList> rc;
     QUuid uuid = QUuid::createUuid();
-    QString tmpFileName = QDir::toNativeSeparators(QDir::tempPath() + QDir::separator() +  "OZF-" + uuid.toString(QUuid::WithoutBraces));
+    QString tmpFileName = QDir::toNativeSeparators(QDir::tempPath() + QDir::separator() + "OZF-"
+                                                   + uuid.toString(QUuid::WithoutBraces));
     downloadFile(url, tmpFileName);
     QFile tmpFile(tmpFileName);
     if (tmpFile.open(QIODevice::ReadOnly)) {
-       QTextStream in(&tmpFile);
-       while (!in.atEnd()) {
-          QString line = in.readLine();
-          QString fileName = line.mid(0, line.indexOf(","));
-          QString MD5File = (line.mid(line.indexOf(",") + 1)).trimmed();
-          rc.append({fileName, MD5File});
-       }
-       tmpFile.close();
+        QTextStream in(&tmpFile);
+        while (!in.atEnd()) {
+            QString line = in.readLine();
+            QString fileName = line.mid(0, line.indexOf(","));
+            QString MD5File = (line.mid(line.indexOf(",") + 1)).trimmed();
+            rc.append({fileName, MD5File});
+        }
+        tmpFile.close();
     }
     // tmpFile.remove();
     return rc;

@@ -3,32 +3,35 @@
 //******************************************************************************
 // dirSize()
 //******************************************************************************
-qint64 Utils::dirSize(QString dirPath) {
+qint64 Utils::dirSize(QString dirPath)
+{
     qint64 size = 0;
     QDir dir(dirPath);
     //calculate total size of current directories' files
-    QDir::Filters fileFilters = QDir::Files|QDir::System|QDir::Hidden;
-    for(QString filePath : dir.entryList(fileFilters)) {
+    QDir::Filters fileFilters = QDir::Files | QDir::System | QDir::Hidden;
+    for (QString filePath : dir.entryList(fileFilters)) {
         QFileInfo fi(dir, filePath);
-        size+= fi.size();
+        size += fi.size();
     }
     //add size of child directories recursively
-    QDir::Filters dirFilters = QDir::Dirs|QDir::NoDotAndDotDot|QDir::System|QDir::Hidden;
-    for(QString childDirPath : dir.entryList(dirFilters))
-        size+= dirSize(dirPath + QDir::separator() + childDirPath);
+    QDir::Filters dirFilters = QDir::Dirs | QDir::NoDotAndDotDot | QDir::System | QDir::Hidden;
+    for (QString childDirPath : dir.entryList(dirFilters))
+        size += dirSize(dirPath + QDir::separator() + childDirPath);
     return size;
 }
 
 //******************************************************************************
 // formatSize()
 //******************************************************************************
-QString Utils::formatSize(qint64 size) {
+QString Utils::formatSize(qint64 size)
+{
     QStringList units = {"Bytes", "KB", "MB", "GB", "TB", "PB"};
     int i;
     double outputSize = size;
-    for(i=0; i<units.size()-1; i++) {
-        if(outputSize<1024) break;
-        outputSize= outputSize/1024;
+    for (i = 0; i < units.size() - 1; i++) {
+        if (outputSize < 1024)
+            break;
+        outputSize = outputSize / 1024;
     }
     return QString("%0 %1").arg(outputSize, 0, 'f', 2).arg(units[i]);
 }
@@ -36,13 +39,14 @@ QString Utils::formatSize(qint64 size) {
 //******************************************************************************
 // fileProperties()
 //******************************************************************************
-QMap<QString, QString> Utils::fileProperties(QString f) {
+QMap<QString, QString> Utils::fileProperties(QString f)
+{
     QMap<QString, QString> props;
     QFileInfo fi(f);
 
     props.insert("File Name", fi.fileName());
     props.insert("Size Bytes", QString::number(fi.size()));
-    props.insert("Size Human",formatSize(fi.size()));
+    props.insert("Size Human", formatSize(fi.size()));
     props.insert("Date Created", fi.birthTime().toString("yyyy/MM/dd hh:mm:ss"));
     props.insert("Date Modified", fi.lastModified().toString("yyyy/MM/dd hh:mm:ss"));
     props.insert("Owner User", fi.owner());
@@ -65,7 +69,8 @@ QMap<QString, QString> Utils::fileProperties(QString f) {
 //******************************************************************************
 // systemProperties()
 //******************************************************************************
-QMap<QString, QString> Utils::systemProperties() {
+QMap<QString, QString> Utils::systemProperties()
+{
     QMap<QString, QString> props;
 
     props.insert("CPU Architecture", QSysInfo::currentCpuArchitecture());
@@ -81,7 +86,8 @@ QMap<QString, QString> Utils::systemProperties() {
 //******************************************************************************
 // fileChecksum()
 //******************************************************************************
-QByteArray Utils::fileChecksum(const QString &fileName, QCryptographicHash::Algorithm hashAlgorithm) {
+QByteArray Utils::fileChecksum(const QString &fileName, QCryptographicHash::Algorithm hashAlgorithm)
+{
     QFile f(fileName);
     if (f.open(QFile::ReadOnly)) {
         QCryptographicHash hash(hashAlgorithm);
@@ -96,25 +102,28 @@ QByteArray Utils::fileChecksum(const QString &fileName, QCryptographicHash::Algo
 //******************************************************************************
 // capitalize()
 //******************************************************************************
-QString Utils::capitalize(const QString &str) {
-  QString tmp = str;
-  // if you want to ensure all other letters are lowercase:
-  tmp = tmp.toLower();
-  tmp[0] = str[0].toUpper();
-  return tmp;
+QString Utils::capitalize(const QString &str)
+{
+    QString tmp = str;
+    // if you want to ensure all other letters are lowercase:
+    tmp = tmp.toLower();
+    tmp[0] = str[0].toUpper();
+    return tmp;
 }
 
 //******************************************************************************
 // pathAppend()
 //******************************************************************************
-QString Utils::pathAppend(const QString& path1, const QString& path2) {
+QString Utils::pathAppend(const QString &path1, const QString &path2)
+{
     return QDir::cleanPath(path1 + QDir::separator() + path2);
 }
 
 //******************************************************************************
 // downloadFile()
 //******************************************************************************
-void Utils::downloadFile(const QString& url, const QString& target) {
+void Utils::downloadFile(const QString &url, const QString &target)
+{
     QNetworkAccessManager manager;
     QNetworkReply *response = manager.get(QNetworkRequest(QUrl(url)));
     QEventLoop event;
@@ -130,27 +139,25 @@ void Utils::downloadFile(const QString& url, const QString& target) {
 //******************************************************************************
 // copyDirectoryNested()
 //******************************************************************************
-void Utils::copyDirectoryNested(QString from,QString to)
+void Utils::copyDirectoryNested(QString from, QString to)
 {
     QDirIterator it(from, QDirIterator::Subdirectories);
     while (it.hasNext()) {
         QString file_in = it.next();
         QFileInfo file_info = QFileInfo(file_in);
         QString file_out = file_in;
-        file_out.replace(from,to);
-        if(file_info.isFile())
-        {
+        file_out.replace(from, to);
+        if (file_info.isFile()) {
             //is file copy
             qDebug() << QFile::copy(file_in, file_out);
             qDebug() << file_in << "<----" << file_out;
         }
 
-        if(file_info.isDir())
-        {
+        if (file_info.isDir()) {
             //dir mkdir
             QDir dir(file_out);
             if (!dir.exists())
-                qDebug() << "mkpath"<< dir.mkpath(".");
+                qDebug() << "mkpath" << dir.mkpath(".");
         }
     }
 }
@@ -158,7 +165,8 @@ void Utils::copyDirectoryNested(QString from,QString to)
 //******************************************************************************
 // getExtension()
 //******************************************************************************
-QString Utils::getExtension(QString file) {
+QString Utils::getExtension(QString file)
+{
     QFileInfo fi(file);
     return ("." + fi.suffix());
 }
@@ -167,7 +175,8 @@ QString Utils::getExtension(QString file) {
 // tsToString()
 // Format a timestamp string to human readable string
 //******************************************************************************
-QString Utils::tsToString(QString ts, QString fmt) {
+QString Utils::tsToString(QString ts, QString fmt)
+{
     QDateTime qdt = QDateTime::fromString(ts, "yyyyMMdd-hhmmss");
     QString txt = qdt.toString(fmt);
     return txt;
@@ -176,9 +185,14 @@ QString Utils::tsToString(QString ts, QString fmt) {
 //******************************************************************************
 // secondsToString()
 //******************************************************************************
-QString Utils::secondsToString(qint64 seconds) {
+QString Utils::secondsToString(qint64 seconds)
+{
     const qint64 DAY = 86400;
     qint64 days = seconds / DAY;
-    QTime t = QTime(0,0).addSecs(seconds % DAY);
-    return QString("%1 days, %2 hours, %3 minutes, %4 seconds").arg(days).arg(t.hour()).arg(t.minute()).arg(t.second());
+    QTime t = QTime(0, 0).addSecs(seconds % DAY);
+    return QString("%1 days, %2 hours, %3 minutes, %4 seconds")
+        .arg(days)
+        .arg(t.hour())
+        .arg(t.minute())
+        .arg(t.second());
 }

@@ -1,5 +1,5 @@
 #include "settings.h"
-#include "mainwindow.h"
+#include "MainWindow.h"
 
 //******************************************************************************
 // Settings()
@@ -32,14 +32,14 @@ Settings::Settings()
     read();
 
     // Check if all defaults settings are set and set them if any
-    foreach (const auto& defaultKey, defaults.keys()) {
+    foreach (const auto &defaultKey, defaults.keys()) {
         if (!settings.contains(defaultKey)) {
             settings[defaultKey] = defaults[defaultKey];
         }
     }
 
     // Delete all keys that are no more in the defaults settings values
-    foreach (const auto& settingKey, settings.keys()) {
+    foreach (const auto &settingKey, settings.keys()) {
         if (!defaults.contains(settingKey)) {
             settings.erase(settings.find(settingKey));
         }
@@ -52,14 +52,16 @@ Settings::Settings()
 //******************************************************************************
 // get()
 //******************************************************************************
-QVariant Settings::get(QString param) {
+QVariant Settings::get(QString param)
+{
     return this->settings[param];
 }
 
 //******************************************************************************
 // write()
 //******************************************************************************
-void Settings::write() {
+void Settings::write()
+{
     // TODO : Apply new settings in real time
     Constants *appConstants = new Constants();
     QDir appDir = QDir(QDir::homePath()).filePath(appConstants->getQString("APP_FOLDER"));
@@ -74,7 +76,8 @@ void Settings::write() {
 //******************************************************************************
 // read()
 //******************************************************************************
-void Settings::read() {
+void Settings::read()
+{
     Constants *appConstants = new Constants();
     QDir appDir = QDir(QDir::homePath()).filePath(appConstants->getQString("APP_FOLDER"));
     QFile fSettings(QDir(appDir).filePath(appConstants->getQString("SETTINGS_FILE")));
@@ -88,11 +91,12 @@ void Settings::read() {
 //******************************************************************************
 // form()
 //******************************************************************************
-void Settings::form(MainWindow *w) {
+void Settings::form(MainWindow *w)
+{
     QFormLayout *form = new QFormLayout(w->ui->boxSettings);
     form->setLabelAlignment(Qt::AlignRight);
     QString previousKeyword;
-    for(auto e : settings.keys()) {
+    for (auto e : settings.keys()) {
         QString currentKeyword = e.section("_", 0, 0);
         if (currentKeyword != previousKeyword) {
             previousKeyword = currentKeyword;
@@ -102,7 +106,9 @@ void Settings::form(MainWindow *w) {
         }
         QLabel *lblSetting = new QLabel(e);
         QLineEdit *txtSetting = new QLineEdit(settings.value(e).toString());
-        connect(txtSetting, &QLineEdit::textChanged, [=]{handleTextChanged(w, lblSetting, txtSetting);});
+        connect(txtSetting, &QLineEdit::textChanged, [=] {
+            handleTextChanged(w, lblSetting, txtSetting);
+        });
         form->addRow(lblSetting, txtSetting);
     }
     w->setLayout(form);
@@ -111,7 +117,8 @@ void Settings::form(MainWindow *w) {
 //******************************************************************************
 // handleTextChanged()
 //******************************************************************************
-void Settings::handleTextChanged(MainWindow *w, QLabel *lbl, QLineEdit *txt) {
+void Settings::handleTextChanged(MainWindow *w, QLabel *lbl, QLineEdit *txt)
+{
     // qDebug(lbl->text().toLatin1());
     settings[lbl->text().toLatin1()] = QVariant(txt->text().toLatin1());
     write();

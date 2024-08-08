@@ -3,7 +3,8 @@
 //******************************************************************************
 // Class App()
 //******************************************************************************
-App::App() {
+App::App()
+{
     appSettings = new Settings();
     appConstants = new Constants();
     processRunning = false;
@@ -15,7 +16,7 @@ App::App() {
     appDir = QDir(QDir::homePath()).filePath(appConstants->getQString("APP_FOLDER"));
     if (!QDir(appDir).exists()) {
         QDir().mkdir(appDir);
-        Utils:: copyDirectoryNested(":/", appDir + QDir::separator());
+        Utils::copyDirectoryNested(":/", appDir + QDir::separator());
     }
 
     //**************************************************************************

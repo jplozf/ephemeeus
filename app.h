@@ -3,9 +3,9 @@
 
 #include <QString>
 #include "constants.h"
+#include "downloader.h"
 #include "settings.h"
 #include "utils.h"
-#include "downloader.h"
 
 class App
 {
