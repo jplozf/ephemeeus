@@ -9,7 +9,7 @@ QApplication *a;
 int main(int argc, char *argv[])
 {
     a = new QApplication(argc, argv);
-    a->setWindowIcon(QIcon(":/crush_icon.png"));
+    a->setWindowIcon(QIcon(":/16x16/Star.png"));
     MainWindow w(a);
     w.show();
     return a->exec();
