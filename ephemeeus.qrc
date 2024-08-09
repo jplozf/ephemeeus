@@ -2,23 +2,23 @@
     <qresource prefix="/">
         <file>16x16/Action Redo.png</file>
         <file>16x16/Action Undo.png</file>
-        <file>16x16/Arrow2 - Down.png</file>
-        <file>16x16/Arrow2 - Left.png</file>
-        <file>16x16/Arrow2 - Right.png</file>
-        <file>16x16/Arrow2 - Up.png</file>
         <file>16x16/Arrow - Down.png</file>
         <file>16x16/Arrow - DownLeft.png</file>
         <file>16x16/Arrow - DownRight.png</file>
         <file>16x16/Arrow - Left.png</file>
-        <file>16x16/Arrow Next.png</file>
-        <file>16x16/Arrow Previous.png</file>
         <file>16x16/Arrow - Right.png</file>
         <file>16x16/Arrow - Up.png</file>
         <file>16x16/Arrow - UpLeft.png</file>
         <file>16x16/Arrow - UpRight.png</file>
+        <file>16x16/Arrow Next.png</file>
+        <file>16x16/Arrow Previous.png</file>
+        <file>16x16/Arrow2 - Down.png</file>
+        <file>16x16/Arrow2 - Left.png</file>
+        <file>16x16/Arrow2 - Right.png</file>
+        <file>16x16/Arrow2 - Up.png</file>
         <file>16x16/Attach.png</file>
-        <file>16x16/Back.png</file>
         <file>16x16/Back Top.png</file>
+        <file>16x16/Back.png</file>
         <file>16x16/Bubble1.png</file>
         <file>16x16/Bubble2.png</file>
         <file>16x16/Bubble3.png</file>
@@ -61,23 +61,23 @@
         <file>16x16/Computer.png</file>
         <file>16x16/Construction.png</file>
         <file>16x16/Copyright.png</file>
-        <file>16x16/Document.png</file>
         <file>16x16/Document Graph.png</file>
         <file>16x16/Document Spreadsheet.png</file>
         <file>16x16/Document Text.png</file>
+        <file>16x16/Document.png</file>
         <file>16x16/Dollar.png</file>
         <file>16x16/Dollar2.png</file>
         <file>16x16/Download.png</file>
         <file>16x16/Email.png</file>
         <file>16x16/Euro.png</file>
         <file>16x16/Exclamation.png</file>
-        <file>16x16/Face.png</file>
         <file>16x16/Face Happy.png</file>
         <file>16x16/Face Sad.png</file>
+        <file>16x16/Face.png</file>
         <file>16x16/Flag.png</file>
-        <file>16x16/Folder.png</file>
         <file>16x16/Folder Open.png</file>
         <file>16x16/Folder Up.png</file>
+        <file>16x16/Folder.png</file>
         <file>16x16/Forbidden.png</file>
         <file>16x16/Fullscreen.png</file>
         <file>16x16/Gear.png</file>
@@ -91,11 +91,11 @@
         <file>16x16/Info2.png</file>
         <file>16x16/Internet.png</file>
         <file>16x16/Key.png</file>
-        <file>16x16/Light.png</file>
         <file>16x16/Light Off.png</file>
+        <file>16x16/Light.png</file>
         <file>16x16/Link.png</file>
-        <file>16x16/Lock.png</file>
         <file>16x16/Lock Open.png</file>
+        <file>16x16/Lock.png</file>
         <file>16x16/Loop.png</file>
         <file>16x16/Mail.png</file>
         <file>16x16/Man.png</file>
@@ -131,12 +131,12 @@
         <file>16x16/Pointer.png</file>
         <file>16x16/Poll.png</file>
         <file>16x16/Pound.png</file>
-        <file>16x16/Printer.png</file>
         <file>16x16/Print Preview.png</file>
+        <file>16x16/Printer.png</file>
         <file>16x16/Properties.png</file>
+        <file>16x16/Question - Bold.png</file>
         <file>16x16/Question.png</file>
         <file>16x16/Question2.png</file>
-        <file>16x16/Question - Bold.png</file>
         <file>16x16/Recycle.png</file>
         <file>16x16/Refresh.png</file>
         <file>16x16/Rotate.png</file>
@@ -147,19 +147,19 @@
         <file>16x16/Security.png</file>
         <file>16x16/Shutdown.png</file>
         <file>16x16/Sleep.png</file>
-        <file>16x16/Sound.png</file>
         <file>16x16/Sound Decrease.png</file>
         <file>16x16/Sound Increase.png</file>
         <file>16x16/Sound Mute.png</file>
+        <file>16x16/Sound.png</file>
         <file>16x16/Standby.png</file>
+        <file>16x16/Star Empty.png</file>
         <file>16x16/Star.png</file>
         <file>16x16/Star2.png</file>
-        <file>16x16/Star Empty.png</file>
         <file>16x16/Stats.png</file>
         <file>16x16/Target.png</file>
-        <file>16x16/Text2.png</file>
         <file>16x16/Text Decrease.png</file>
         <file>16x16/Text Increase.png</file>
+        <file>16x16/Text2.png</file>
         <file>16x16/Time.png</file>
         <file>16x16/Trash.png</file>
         <file>16x16/Under Construction.png</file>
@@ -172,11 +172,5 @@
         <file>16x16/Write.png</file>
         <file>16x16/Zoom In.png</file>
         <file>16x16/Zoom Out.png</file>
-        <file>led_green.png</file>
-        <file>led_red.png</file>
-        <file>help.html</file>
-        <file>crush_icon.png</file>
-        <file>crush_win.xml</file>
-        <file>crush_lnx.xml</file>
     </qresource>
 </RCC>
