@@ -1,16 +1,6 @@
 #ifndef MEEUS_H
 #define MEEUS_H
 
-<<<<<<< HEAD
-
-class Meeus
-{
-public:
-    Meeus();
-};
-
-#endif // MEEUS_H
-=======
 #include <QDateTime>
 #include <QTimeZone>
 
@@ -35,4 +25,3 @@ class Meeus {
 };
 
 #endif  // MEEUS_H
->>>>>>> 1e2a372 (First Commit)

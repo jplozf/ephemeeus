@@ -18,96 +18,19 @@
     <item row="0" column="0">
      <widget class="QSplitter" name="splitter">
       <property name="orientation">
-<<<<<<< HEAD
-       <enum>Qt::Horizontal</enum>
-=======
        <enum>Qt::Orientation::Horizontal</enum>
->>>>>>> 1e2a372 (First Commit)
       </property>
       <widget class="QWidget" name="verticalLayoutWidget">
        <layout class="QVBoxLayout" name="verticalLayout_2">
         <item>
-<<<<<<< HEAD
-         <layout class="QHBoxLayout" name="horizontalLayout">
-          <item>
-           <widget class="QLabel" name="label">
-            <property name="text">
-             <string>Time</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLineEdit" name="lineEdit"/>
-          </item>
-          <item>
-           <widget class="QPushButton" name="pushButton">
-            <property name="text">
-             <string/>
-            </property>
-            <property name="icon">
-             <iconset theme="appointment-soon">
-              <normaloff>.</normaloff>.</iconset>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="pushButton_2">
-            <property name="text">
-             <string/>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-        <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_2">
-          <item>
-           <widget class="QLabel" name="label_2">
-            <property name="text">
-=======
          <layout class="QFormLayout" name="formLayout_2">
           <item row="0" column="0">
            <widget class="QLabel" name="label">
             <property name="text">
->>>>>>> 1e2a372 (First Commit)
              <string>Location</string>
             </property>
            </widget>
           </item>
-<<<<<<< HEAD
-          <item>
-           <widget class="QLineEdit" name="lineEdit_2"/>
-          </item>
-          <item>
-           <widget class="QPushButton" name="pushButton_3">
-            <property name="text">
-             <string/>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="pushButton_4">
-            <property name="text">
-             <string/>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-        <item>
-         <spacer name="verticalSpacer">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>40</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-=======
           <item row="1" column="0">
            <widget class="QLabel" name="label_2">
             <property name="text">
@@ -211,7 +134,6 @@
           </item>
          </layout>
         </item>
->>>>>>> 1e2a372 (First Commit)
        </layout>
       </widget>
       <widget class="QTabWidget" name="tabWidget">
@@ -260,13 +182,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-<<<<<<< HEAD
-              <width>441</width>
-              <height>427</height>
-=======
               <width>436</width>
               <height>425</height>
->>>>>>> 1e2a372 (First Commit)
              </rect>
             </property>
            </widget>
@@ -309,11 +226,7 @@
      <x>0</x>
      <y>0</y>
      <width>901</width>
-<<<<<<< HEAD
-     <height>21</height>
-=======
      <height>22</height>
->>>>>>> 1e2a372 (First Commit)
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">

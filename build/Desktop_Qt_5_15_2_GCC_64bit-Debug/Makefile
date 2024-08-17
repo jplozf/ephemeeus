@@ -14,7 +14,7 @@ EQ            = =
 
 CC            = gcc
 CXX           = g++
-DEFINES       = -DGIT_HASH=\"\" -DGIT_BRANCH=\"\" -DBUILD_TIMESTAMP=\"2024-08-13T16:33:02UTC\" -DQT_QML_DEBUG -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_SQL_LIB -DQT_CORE_LIB
+DEFINES       = -DGIT_HASH=\"9ef0cf9\" -DGIT_BRANCH=\"main\" -DBUILD_TIMESTAMP=\"2024-08-17T07:30:21UTC\" -DQT_QML_DEBUG -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_SQL_LIB -DQT_CORE_LIB
 CFLAGS        = -pipe -g -Wall -Wextra -D_REENTRANT -fPIC $(DEFINES)
 CXXFLAGS      = -pipe -g -std=gnu++1z -Wall -Wextra -D_REENTRANT -fPIC $(DEFINES)
 INCPATH       = -I../../../ephemeeus -I. -I/home/jpl/Qt/5.15.2/gcc_64/include -I/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets -I/home/jpl/Qt/5.15.2/gcc_64/include/QtGui -I/home/jpl/Qt/5.15.2/gcc_64/include/QtNetwork -I/home/jpl/Qt/5.15.2/gcc_64/include/QtSql -I/home/jpl/Qt/5.15.2/gcc_64/include/QtCore -I. -I/usr/include/libdrm -I. -I/home/jpl/Qt/5.15.2/gcc_64/mkspecs/linux-g++
@@ -1186,7 +1186,6 @@ moc_MainWindow.cpp: ../../MainWindow.h \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QScrollArea \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qscrollarea.h \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qabstractscrollarea.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QSpacerItem \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QSplitter \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qsplitter.h \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QStatusBar \
@@ -2099,7 +2098,6 @@ main.o: ../../main.cpp /home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QApplication
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QScrollArea \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qscrollarea.h \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qabstractscrollarea.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QSpacerItem \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QSplitter \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qsplitter.h \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QStatusBar \
@@ -2332,7 +2330,6 @@ MainWindow.o: ../../MainWindow.cpp ../../MainWindow.h \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QScrollArea \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qscrollarea.h \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qabstractscrollarea.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QSpacerItem \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QSplitter \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qsplitter.h \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QStatusBar \
@@ -2565,7 +2562,6 @@ settings.o: ../../settings.cpp ../../settings.h \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QScrollArea \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qscrollarea.h \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qabstractscrollarea.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QSpacerItem \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QSplitter \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qsplitter.h \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QStatusBar \

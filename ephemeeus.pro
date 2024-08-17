@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-QT       += core gui network
-=======
 QT       += core gui network sql
->>>>>>> 1e2a372 (First Commit)
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 GIT_HASH="\\\"$$system(git -C \""$$_PRO_FILE_PWD_"\" rev-parse --short HEAD)\\\""
