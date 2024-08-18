@@ -11,12 +11,15 @@ class Meeus {
     double Latitude;
     double Longitude;
   };
+  double JD;
   Meeus();
   Meeus(QDateTime dt);
   Meeus(Location location);
   Meeus(Location location, QDateTime dt);
   Meeus(Location location, QDateTime dt, QTimeZone tz);
   ~Meeus();
+  void ComputeJD();
+  void SetDefaultLocation();
 
  private:
   QDateTime dt;
