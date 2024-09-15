@@ -15,6 +15,7 @@ CONFIG += c++17
 
 SOURCES += \
     Meeus.cpp \
+    Varget.cpp \
     app.cpp \
     constants.cpp \
     downloader.cpp \
@@ -26,6 +27,7 @@ SOURCES += \
 HEADERS += \
     MainWindow.h \
     Meeus.h \
+    Varget.h \
     app.h \
     constants.h \
     downloader.h \
@@ -42,3 +44,6 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 RESOURCES += \
     ephemeeus.qrc
+
+DISTFILES += \
+    db/cities.db

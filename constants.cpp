@@ -18,6 +18,8 @@ Constants::Constants()
     constants["APPLICATION_NAME"] = QVariant("Ephemeeus");
     constants["APP_FOLDER"] = QVariant(".ephemeeus");
     constants["SETTINGS_FILE"] = QVariant("settings.cfg");
+    constants["DEFAULT_VARBOARD"] = QVariant("default.vbd");
+    constants["CITIES_DATABASE"] = QVariant("cities.db");
 
     theme["LIGHT"] = QStringList({"#efefef",
                                   "#000000",

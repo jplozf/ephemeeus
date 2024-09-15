@@ -28,9 +28,13 @@ Settings::Settings() {
   defaults["THEME_HIGHLIGHT"] = QVariant("#308cc6");
   defaults["THEME_HIGHLIGHTED_TEXT"] = QVariant("#ffffff");
 
-  defaults["DEFAULT_LOCATION_NAME"] = QVariant("Ozoir-la-Ferrière (FR)");
+  defaults["DEFAULT_LOCATION_COUNTRY"] = QVariant("France");
+  defaults["DEFAULT_LOCATION_NAME"] = QVariant("Ozoir-la-Ferrière");
   defaults["DEFAULT_LOCATION_LATITUDE"] = QVariant(48.778056);
   defaults["DEFAULT_LOCATION_LONGITUDE"] = QVariant(2.68);
+
+  defaults["VARGET_COLOR_LINE_1"] = QVariant("#ccdee2");
+  defaults["VARGET_COLOR_LINE_2"] = QVariant("#b3b8bf");
 
   // Read the settings from user's settings
   read();
@@ -104,7 +108,7 @@ void Settings::form(MainWindow* w) {
     QString currentKeyword = e.section("_", 0, 0);
     if (currentKeyword != previousKeyword) {
       previousKeyword = currentKeyword;
-      QLabel* lblKeyword = new QLabel("► " + currentKeyword);
+      QLabel* lblKeyword = new QLabel("▸ " + currentKeyword);
       lblKeyword->setStyleSheet("font-weight: bold;");
       form->addRow(lblKeyword);
     }
