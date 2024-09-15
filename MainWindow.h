@@ -21,6 +21,7 @@
 #include "Meeus.h"
 #include "Varget.h"
 #include "app.h"
+#include "downloader.h"
 #include "qobjectdefs.h"
 #include "ui_MainWindow.h"
 

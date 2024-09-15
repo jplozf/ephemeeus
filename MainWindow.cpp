@@ -20,28 +20,29 @@ MainWindow::MainWindow(QApplication* a, QWidget* parent)
   showMessage("Welcome");
 
   db = QSqlDatabase::addDatabase("QSQLITE");
-  // FIXME : Fix the path to the SQLite database
-  // https://drive.google.com/file/d/1wSa3Py52II9EeCvbRUiVkr-MTIQF5lRa/view?usp=sharing
+  // Try to open the local database otherwise download it from ligorax.free.fr
   QString dbName = QDir(appDir).filePath(app->appConstants->getQString("CITIES_DATABASE"));
-  if (QFile::exists(dbName)) {
-      db.setDatabaseName(dbName);
-      if (!db.open()) {
-          showMessage("Can't open database");
-      } else {
-          QSqlTableModel *modelCities = new QSqlTableModel(this, db);
-          modelCities->setTable("cities");
-          modelCities->select();
+  if (!QFile::exists(dbName)) {
+      Downloader::downloadFile(app->appConstants->getQString("CITIES_URL"), dbName);
+  }
 
-          QCompleter *cityCompleter = new QCompleter(modelCities, this);
-          cityCompleter->setCompletionColumn(2); // "City" Column
-          ui->txtLocation->setCompleter(cityCompleter);
+  db.setDatabaseName(dbName);
+  if (!db.open()) {
+      showMessage("Can't open database");
+  } else {
+      QSqlTableModel *modelCities = new QSqlTableModel(this, db);
+      modelCities->setTable("cities");
+      modelCities->select();
 
-          QSqlTableModel *modelCountries = new QSqlTableModel(this, db);
-          modelCountries->setTable("countries");
-          modelCountries->select();
-          ui->cbxCountry->setModel(modelCountries);
-          ui->cbxCountry->setModelColumn(modelCountries->fieldIndex("country"));
-      }
+      QCompleter *cityCompleter = new QCompleter(modelCities, this);
+      cityCompleter->setCompletionColumn(2); // "City" Column
+      ui->txtLocation->setCompleter(cityCompleter);
+
+      QSqlTableModel *modelCountries = new QSqlTableModel(this, db);
+      modelCountries->setTable("countries");
+      modelCountries->select();
+      ui->cbxCountry->setModel(modelCountries);
+      ui->cbxCountry->setModelColumn(modelCountries->fieldIndex("country"));
   }
 
   Meeus::Location defaultLocation;
@@ -319,23 +320,25 @@ void MainWindow::on_btnRefresh_clicked() {
 // on_txtLocation_editingFinished()
 //******************************************************************************
 void MainWindow::on_txtLocation_editingFinished() {
-  QSqlQuery query;
-  // select * from cities where city="Paris" and country_idx=(select country_idx
-  // from countries where country="France");
-  if (db.isOpen()) {
-      query.prepare(
-          "SELECT latitude, longitude FROM cities WHERE city = :location AND " "country_idx = " "(S" "EL" "EC" "T " "co" "un" "tr" "y_" "id" "x " "FROM countries WHERE " "country = :country)");
-      query.bindValue(":location", ui->txtLocation->text());
-      query.bindValue(":country", ui->cbxCountry->currentText());
-      if (!query.exec()) {
-          showMessage("Query failed!");
-      } else {
-          if (query.first()) { // get the first record in the result,
-              ui->txtLatitude->setText(query.value("latitude").toString());
-              ui->txtLongitude->setText(query.value("longitude").toString());
-          } else {
-              showMessage("Data not found");
-          }
-      }
+    // FIXME : Manage the case the cities database is not accessible
+    QSqlQuery query;
+    // select * from cities where city="Paris" and country_idx=(select country_idx
+    // from countries where country="France");
+    if (db.isOpen()) {
+        query.prepare("SELECT latitude, longitude FROM cities WHERE city = :location AND "
+                      "country_idx " "= (SELECT country_idx FROM countries WHERE country = "
+                                     ":country)");
+        query.bindValue(":location", ui->txtLocation->text());
+        query.bindValue(":country", ui->cbxCountry->currentText());
+        if (!query.exec()) {
+            showMessage("Query failed!");
+        } else {
+            if (query.first()) { // get the first record in the result,
+                ui->txtLatitude->setText(query.value("latitude").toString());
+                ui->txtLongitude->setText(query.value("longitude").toString());
+            } else {
+                showMessage("Data not found");
+            }
+        }
   }
 }
