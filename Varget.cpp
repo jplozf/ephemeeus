@@ -104,9 +104,8 @@ void Varget::on_clicked_button_down()
     QPushButton *btn = qobject_cast<QPushButton *>(sender());
     Varget *vg = (Varget *) btn->parent();
     int current = vg->Order - 1;
-    qDebug() << ("Clicked DOWN #" + QString::number(current));
     Varboard *vb = vg->vb;
-
+    vb->mw->showMessage("Moving down varget at line #" + QString::number(current + 1));
     vb->vargets[current]->Order = vb->vargets[current]->Order + 1;
     vb->vargets[current + 1]->Order = vb->vargets[current + 1]->Order - 1;
     std::swap(vb->vargets[current], vb->vargets[current + 1]);
@@ -122,9 +121,8 @@ void Varget::on_clicked_button_up()
     QPushButton *btn = qobject_cast<QPushButton *>(sender());
     Varget *vg = (Varget *) btn->parent();
     int current = vg->Order - 1;
-    qDebug() << ("Clicked UP #" + QString::number(current));
     Varboard *vb = vg->vb;
-
+    vb->mw->showMessage("Moving up varget at line #" + QString::number(current + 1));
     vb->vargets[current]->Order = vb->vargets[current]->Order - 1;
     vb->vargets[current - 1]->Order = vb->vargets[current - 1]->Order + 1;
     std::swap(vb->vargets[current], vb->vargets[current - 1]);
@@ -146,7 +144,7 @@ void Varget::on_clicked_button_delete()
     // Get the Varboard's owner of this varget
     Varboard *vb = vg->vb;
     // The Varboard has a reference to the MainWindow, so let's display some blahblah
-    vb->mw->showMessage("Deleting Varget #" + QString::number(current));
+    vb->mw->showMessage("Deleting varget at line #" + QString::number(current + 1));
     // Compute new order for vargets below the varget deleted
     for (int i = current + 1; i < vb->vargets.size(); ++i) {
         vb->vargets[i]->Order = vb->vargets[i]->Order - 1;
