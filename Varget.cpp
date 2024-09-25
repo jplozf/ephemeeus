@@ -137,19 +137,25 @@ void Varget::on_clicked_button_up()
 //******************************************************************************
 void Varget::on_clicked_button_delete()
 {
+    // Which button was clicked ?
     QPushButton *btn = qobject_cast<QPushButton *>(sender());
+    // Get the parent's varget of the clicked button
     Varget *vg = (Varget *) btn->parent();
+    // Get the order of this varget
     int current = vg->Order - 1;
-    qDebug() << ("Clicked DELETE #" + QString::number(current));
-
+    // Get the Varboard's owner of this varget
     Varboard *vb = vg->vb;
+    // The Varboard has a reference to the MainWindow, so let's display some blahblah
     vb->mw->showMessage("Deleting Varget #" + QString::number(current));
-
+    // Compute new order for vargets below the varget deleted
     for (int i = current + 1; i < vb->vargets.size(); ++i) {
         vb->vargets[i]->Order = vb->vargets[i]->Order - 1;
     }
+    // Remove the varget from the Varboad's vargets list
     vb->vargets.removeAt(current);
-
+    // and don't forget to delete it
+    delete vg;
+    // Redisplay the modified Varboard
     vb->Refresh();
 }
 
