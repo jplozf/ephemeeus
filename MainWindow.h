@@ -6,6 +6,7 @@
 #include <QCompleter>
 #include <QDesktopWidget>
 #include <QFile>
+#include <QFileDialog>
 #include <QGuiApplication>
 #include <QHash>
 #include <QMainWindow>
@@ -18,12 +19,16 @@
 #include <QSqlTableModel>
 #include <QTimer>
 
+#include "DlgInputLocation.h"
 #include "Meeus.h"
 #include "Varget.h"
 #include "app.h"
 #include "downloader.h"
 #include "qobjectdefs.h"
 #include "ui_MainWindow.h"
+
+class Varget;
+class Varboard;
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -44,15 +49,16 @@ class MainWindow : public QMainWindow {
   void initUI();
   Ui::MainWindow* ui;
   void setTheme();
+  void showMessage(const QString &message, int timeout = -1);
 
- private:
+  private:
   QApplication* a;
-  void showMessage(const QString& message, int timeout = -1);
   void out(QString txt);
   void refresh();
   Meeus* meeus;
   QSqlDatabase db;
   Varboard *vb;
+  QString appTitle;
 
   private slots:
   void slotDoExit();
@@ -60,5 +66,13 @@ class MainWindow : public QMainWindow {
   void on_btnClearConsole_clicked();
   void on_btnRefresh_clicked();
   void on_txtLocation_editingFinished();
+  void on_actionOpen_triggered();
+  void on_btnAddVarget_clicked();
+  void on_cbxVargets_currentIndexChanged(int index);
+  void on_actionSave_triggered();
+  void on_btnAddHeader_clicked();
+  void on_btnAddTitle_clicked();
+  void on_actionSave_as_triggered();
+  void on_btnExportLog_clicked();
 };
 #endif  // MAINWINDOW_H

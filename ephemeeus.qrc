@@ -172,5 +172,6 @@
         <file>16x16/Write.png</file>
         <file>16x16/Zoom In.png</file>
         <file>16x16/Zoom Out.png</file>
+        <file>help.html</file>
     </qresource>
 </RCC>

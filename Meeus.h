@@ -2,6 +2,7 @@
 #define MEEUS_H
 
 #include <QDateTime>
+#include <QDebug>
 #include <QTimeZone>
 #include "cmath"
 #include "tuple"
@@ -25,6 +26,7 @@ class Meeus {
   ~Meeus();
   void ComputeJD();
   void SetDefaultLocation();
+  void SetLocation(Location loc);
   int getDay();
   int getMonth();
   int getYear();
@@ -40,6 +42,8 @@ class Meeus {
   QString VarJD();
   QString VarDateTime();
   QString VarLocation();
+  QString VarLatitude();
+  QString VarLongitude();
 
   private:
   QDateTime dt;
@@ -53,5 +57,7 @@ class Meeus {
 double frac(double d);
 double DHMS2DD(int d, int h, int m, int s);
 std::tuple<int, int, int, int> DD2DHMS(double dd);
+double DMS2DD(int d, int m, int s);
+std::tuple<int, int, int> DD2DMS(double dd);
 
 #endif  // MEEUS_H

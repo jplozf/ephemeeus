@@ -19,11 +19,13 @@ public:
     bool getBool(QString param);
     QString getQString(QString param);
     QString aboutText;
+    QString consoleText;
     QMap<QString, QVariant> constants;
     QMap<QString, QStringList> theme;
 
 private:
     QString setAbout();
+    QString setConsole();
 };
 
 #endif // CONSTANTS_H

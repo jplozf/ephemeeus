@@ -11,25 +11,25 @@ MainWindow::MainWindow(QApplication* a, QWidget* parent)
   QDir appDir = QDir(QDir::homePath()).filePath(app->appConstants->getQString("APP_FOLDER"));
   connect(ui->actionQuit, SIGNAL(triggered()), this, SLOT(slotDoExit()));
 
-  readSettings();
   initUI();
-  QString appTitle =
-      QString("%1 %2").arg(app->appConstants->getQString("APPLICATION_NAME"),
-                           app->appConstants->getQString("VERSION"));
-  setWindowTitle(appTitle);
+  this->appTitle = QString("%1 %2").arg(app->appConstants->getQString("APPLICATION_NAME"),
+                                        app->appConstants->getQString("VERSION"));
+  this->setWindowTitle(this->appTitle);
   showMessage("Welcome");
 
   db = QSqlDatabase::addDatabase("QSQLITE");
   // Try to open the local database otherwise download it from ligorax.free.fr
   QString dbName = QDir(appDir).filePath(app->appConstants->getQString("CITIES_DATABASE"));
   if (!QFile::exists(dbName)) {
+      showMessage("Downloading cities database from internet");
       Downloader::downloadFile(app->appConstants->getQString("CITIES_URL"), dbName);
   }
 
   db.setDatabaseName(dbName);
   if (!db.open()) {
-      showMessage("Can't open database");
+      showMessage("Can't open cities database");
   } else {
+      showMessage("Cities database open");
       QSqlTableModel *modelCities = new QSqlTableModel(this, db);
       modelCities->setTable("cities");
       modelCities->select();
@@ -45,6 +45,9 @@ MainWindow::MainWindow(QApplication* a, QWidget* parent)
       ui->cbxCountry->setModelColumn(modelCountries->fieldIndex("country"));
   }
 
+  readSettings();
+
+  // TODO : Read the previous location from the readSettings()
   Meeus::Location defaultLocation;
   defaultLocation.Name =
       app->appSettings->get("DEFAULT_LOCATION_NAME").toString();
@@ -57,18 +60,22 @@ MainWindow::MainWindow(QApplication* a, QWidget* parent)
   meeus->init();
 
   // Display the default Varboard
-  this->vb = new Varboard(app, ui);
+  this->vb = new Varboard(app, this, ui);
   QString fName = QDir(appDir).filePath(app->appConstants->getQString("DEFAULT_VARBOARD"));
   if (QFile::exists(fName)) {
       // Load default Varboard if it exists...
       this->vb->LoadFile(fName, meeus);
+      showMessage("Default varboard open");
   } else {
       // ...Or create it otherwise
       this->vb->addVarget("Date & Time", meeus, "VarDateTime");
       this->vb->addVarget("Location", meeus, "VarLocation");
+      this->vb->addVarget("Latitude", meeus, "VarLatitude");
+      this->vb->addVarget("Longitude", meeus, "VarLongitude");
       this->vb->addVarget("Julian Day", meeus, "VarJD");
       this->vb->pack();
       this->vb->SaveFile(fName);
+      showMessage("Creating default varboard");
   }
 
   this->refresh();
@@ -105,6 +112,15 @@ void MainWindow::initUI() {
   QString html = app->appConstants->aboutText;
   html += stream.readAll();
   ui->txtAbout->setHtml(html);
+  showMessage(app->appConstants->consoleText);
+
+  //**************************************************************************
+  // Populate Vargets List
+  //**************************************************************************
+  for (auto it = Varboard::aFunc.keyValueBegin(); it != Varboard::aFunc.keyValueEnd(); ++it) {
+      qDebug() << it->first << it->second;
+      ui->cbxVargets->addItem(it->first);
+  }
 }
 
 //******************************************************************************
@@ -193,7 +209,16 @@ void MainWindow::showMessage(const QString& message, int timeout) {
   if (timeout == -1) {
     timeout = app->appSettings->get("APPLICATION_STATUSBAR_TIMEOUT").toInt();
   }
-  ui->statusBar->showMessage(message, timeout);
+
+  QStringList msgList = message.split("\n");
+  for (const auto &i : msgList) {
+      if (i != "") {
+          ui->statusBar->showMessage(i, timeout);
+          QDateTime date = QDateTime::currentDateTime();
+          QString formattedTime = date.toString("yyyyMMdd-hhmmss");
+          ui->txtConsole->append(formattedTime + " : " + i);
+      }
+  }
 }
 
 //******************************************************************************
@@ -213,14 +238,17 @@ void MainWindow::closeEvent(QCloseEvent* event) {
         this, app->appConstants->getQString("APPLICATION_NAME"),
         QString("Really quit ?\n"), QMessageBox::Yes | QMessageBox::No);
     if (rc == QMessageBox::Yes) {
-      saveSettings();
-      event->accept();
+        showMessage("Exiting");
+        saveSettings();
+        event->accept();
     } else {
-      event->ignore();
+        showMessage("Cancel exit");
+        event->ignore();
     }
   } else {
-    saveSettings();
-    event->accept();
+      showMessage("Exiting");
+      saveSettings();
+      event->accept();
   }
 }
 
@@ -228,41 +256,46 @@ void MainWindow::closeEvent(QCloseEvent* event) {
 // saveSettings()
 //******************************************************************************
 void MainWindow::saveSettings() {
-  //**************************************************************************
-  // Application state saving
-  //**************************************************************************
-  QSettings registry(app->appConstants->getQString("ORGANIZATION_NAME"),
-                     app->appConstants->getQString("APPLICATION_NAME"));
-  registry.setValue("geometry", saveGeometry());
-  registry.setValue("windowState", saveState());
-  registry.setValue("splitter", ui->splitter->saveState());
-  registry.setValue("tab", ui->tabWidget->currentIndex());
+    showMessage("Saving settings");
+    //**************************************************************************
+    // Application state saving
+    //**************************************************************************
+    QSettings registry(app->appConstants->getQString("ORGANIZATION_NAME"),
+                       app->appConstants->getQString("APPLICATION_NAME"));
+    registry.setValue("geometry", saveGeometry());
+    registry.setValue("windowState", saveState());
+    registry.setValue("splitter", ui->splitter->saveState());
+    registry.setValue("tab", ui->tabWidget->currentIndex());
 
-  //**************************************************************************
-  // Settings saving
-  //**************************************************************************
-  Settings mySettings;
-  mySettings.write();
+    // TODO : Store the current location
+    registry.setValue("country", ui->cbxCountry->currentText());
+    registry.setValue("location", ui->txtLocation->text());
+    registry.setValue("latitude", ui->txtLatitude->text());
+    registry.setValue("longitude", ui->txtLongitude->text());
+
+    //**************************************************************************
+    // Settings saving
+    //**************************************************************************
+    Settings mySettings;
+    mySettings.write();    
 }
 
 //******************************************************************************
 // readSettings()
 //******************************************************************************
 void MainWindow::readSettings() {
-  QSettings registry(app->appConstants->getQString("ORGANIZATION_NAME"),
-                     app->appConstants->getQString("APPLICATION_NAME"));
+    showMessage("Reading settings");
+    QSettings registry(app->appConstants->getQString("ORGANIZATION_NAME"),
+                       app->appConstants->getQString("APPLICATION_NAME"));
 
-  const QByteArray geometry =
-      registry.value("geometry", QByteArray()).toByteArray();
-  if (geometry.isEmpty()) {
-    const QRect availableGeometry =
-        QApplication::desktop()->availableGeometry();
-    resize(availableGeometry.width() / 3, availableGeometry.height() / 2);
-    move((availableGeometry.width() - width()) / 2,
-         (availableGeometry.height() - height()) / 2);
-  } else {
-    restoreGeometry(geometry);
-  }
+    const QByteArray geometry = registry.value("geometry", QByteArray()).toByteArray();
+    if (geometry.isEmpty()) {
+        const QRect availableGeometry = QApplication::desktop()->availableGeometry();
+        resize(availableGeometry.width() / 3, availableGeometry.height() / 2);
+        move((availableGeometry.width() - width()) / 2, (availableGeometry.height() - height()) / 2);
+    } else {
+        restoreGeometry(geometry);
+    }
 
   const QByteArray windowState =
       registry.value("windowState", QByteArray()).toByteArray();
@@ -278,13 +311,31 @@ void MainWindow::readSettings() {
 
   const int tabIndex = registry.value("tab", 0).toInt();
   ui->tabWidget->setCurrentIndex(tabIndex);
+
+  // TODO : Read the previous stored location
+  const QString country = registry.value("country", "").toString();
+  qDebug() << country;
+  int index = ui->cbxCountry->findText(country);
+  if (index != -1) { // -1 for not found
+      ui->cbxCountry->setCurrentIndex(index);
+      qDebug() << index;
+  }
+  const QString location = registry.value("location", "").toString();
+  ui->txtLocation->setText(location);
+  qDebug() << location;
+  const QString latitude = registry.value("latitude", "").toString();
+  ui->txtLatitude->setText(latitude);
+  qDebug() << latitude;
+  const QString longitude = registry.value("longitude", "").toString();
+  ui->txtLongitude->setText(longitude);
+  qDebug() << longitude;
 }
 
 //******************************************************************************
 // out()
 //******************************************************************************
 void MainWindow::out(QString txt) {
-  ui->txtConsoleOut->append(txt);
+    ui->txtConsole->append(txt);
 }
 
 //******************************************************************************
@@ -306,14 +357,31 @@ void MainWindow::on_actionRefresh_triggered() {
 // on_btnClearConsole_clicked()
 //******************************************************************************
 void MainWindow::on_btnClearConsole_clicked() {
-  ui->txtConsoleOut->setText("");
+    ui->txtConsole->setText("");
+}
+
+//******************************************************************************
+// on_btnExportLog_clicked()
+//******************************************************************************
+void MainWindow::on_btnExportLog_clicked()
+{
+    QDateTime now = QDateTime::currentDateTime();
+    QString filename = QDir::homePath() + QDir::separator()
+                       + app->appConstants->getQString("APPLICATION_NAME") + "_"
+                       + now.toString("yyyyMMdd-hhmmss") + ".log";
+    showMessage("Log exported to " + filename);
+    QFile file(filename);
+    file.open(QIODevice::WriteOnly | QIODevice::Text);
+    QTextStream out(&file);
+    out << ui->txtConsole->toPlainText();
+    file.close();
 }
 
 //******************************************************************************
 // on_btnRefresh_clicked()
 //******************************************************************************
 void MainWindow::on_btnRefresh_clicked() {
-  this->refresh();
+    this->refresh();
 }
 
 //******************************************************************************
@@ -321,13 +389,13 @@ void MainWindow::on_btnRefresh_clicked() {
 //******************************************************************************
 void MainWindow::on_txtLocation_editingFinished() {
     // FIXME : Manage the case the cities database is not accessible
-    QSqlQuery query;
-    // select * from cities where city="Paris" and country_idx=(select country_idx
-    // from countries where country="France");
     if (db.isOpen()) {
-        query.prepare("SELECT latitude, longitude FROM cities WHERE city = :location AND "
-                      "country_idx " "= (SELECT country_idx FROM countries WHERE country = "
-                                     ":country)");
+        QSqlQuery query;
+        // select * from cities where city="Paris" and country_idx=(select country_idx
+        // from countries where country="France");
+        query
+            .prepare(
+                "SELECT latitude, longitude FROM cities WHERE city = :location AND " "country_idx " "= (SELECT country_idx FROM countries WHERE country = " ":country)");
         query.bindValue(":location", ui->txtLocation->text());
         query.bindValue(":country", ui->cbxCountry->currentText());
         if (!query.exec()) {
@@ -336,9 +404,97 @@ void MainWindow::on_txtLocation_editingFinished() {
             if (query.first()) { // get the first record in the result,
                 ui->txtLatitude->setText(query.value("latitude").toString());
                 ui->txtLongitude->setText(query.value("longitude").toString());
+                Meeus::Location loc;
+                loc.Name = ui->txtLocation->text();
+                loc.Latitude = ui->txtLatitude->text().toDouble();
+                loc.Longitude = ui->txtLongitude->text().toDouble();
+                meeus->SetLocation(loc);
+                showMessage("Location set");
             } else {
                 showMessage("Data not found");
             }
         }
-  }
+    } else {
+        // TODO : Raise a custom InputDialog to input the values
+        bool ok;
+        QStringList list = DlgInputLocation::getStrings(this, ui->txtLocation->text(), &ok);
+        if (ok) {
+            // Use list
+        } else {
+            // Use the default location
+        }
+    }
 }
+
+//******************************************************************************
+// on_actionOpen_triggered()
+//******************************************************************************
+void MainWindow::on_actionOpen_triggered()
+{
+    QString vbdName = QFileDialog::getOpenFileName(this,
+                                                   "Open a varboard...",
+                                                   QDir::homePath(),
+                                                   "Varboard (*.vbd)");
+    if (!vbdName.isNull()) {
+        showMessage("Opening " + vbdName);
+        QFileInfo fi(vbdName);
+        this->setWindowTitle(this->appTitle + " - " + fi.fileName());
+    } else {
+        showMessage("Cancelling open");
+    }
+}
+
+//******************************************************************************
+// on_btnAddVarget_clicked()
+//******************************************************************************
+void MainWindow::on_btnAddVarget_clicked()
+{
+    this->showMessage("Adding Varget [" + ui->cbxVargets->currentText() + "] with label \""
+                      + ui->txtVargetLabel->text() + "\"");
+    this->vb->addVarget(ui->txtVargetLabel->text(), meeus, ui->cbxVargets->currentText());
+    this->vb->Refresh();
+}
+
+//******************************************************************************
+// on_cbxVargets_currentIndexChanged()
+//******************************************************************************
+void MainWindow::on_cbxVargets_currentIndexChanged(int index)
+{
+    ui->txtVargetLabel->setText(ui->cbxVargets->currentText());
+    ui->txtVargetLabel->selectAll();
+    QTimer::singleShot(0, ui->txtVargetLabel, SLOT(setFocus()));
+}
+
+//******************************************************************************
+// on_actionSave_triggered()
+//******************************************************************************
+void MainWindow::on_actionSave_triggered() {}
+
+//******************************************************************************
+// on_actionSave_as_triggered()
+//******************************************************************************
+void MainWindow::on_actionSave_as_triggered()
+{
+    QString vbdName = QFileDialog::getSaveFileName(this,
+                                                   "Save this varboard...",
+                                                   QDir::homePath(),
+                                                   "Varboard (*.vbd)");
+    if (!vbdName.isNull()) {
+        showMessage("Saving " + vbdName);
+        QFileInfo fi(vbdName);
+        this->setWindowTitle(this->appTitle + " - " + fi.fileName());
+        this->vb->SaveFile(vbdName);
+    } else {
+        showMessage("Cancelling save");
+    }
+}
+
+//******************************************************************************
+// on_btnAddHeader_clicked()
+//******************************************************************************
+void MainWindow::on_btnAddHeader_clicked() {}
+
+//******************************************************************************
+// on_btnAddTitle_clicked()
+//******************************************************************************
+void MainWindow::on_btnAddTitle_clicked() {}

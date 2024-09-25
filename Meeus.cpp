@@ -39,9 +39,34 @@ QString Meeus::VarDateTime()
     return this->dt.toString();
 }
 
+//******************************************************************************
+// VarLocation()
+//******************************************************************************
 QString Meeus::VarLocation()
 {
     return this->location.Name;
+}
+
+//******************************************************************************
+// VarLatitude()
+//******************************************************************************
+QString Meeus::VarLatitude()
+{
+    auto dms = DD2DMS(this->location.Latitude);
+    QString lat
+        = QString("%1°%2'%3\"").arg(std::get<0>(dms)).arg(std::get<1>(dms)).arg(std::get<2>(dms));
+    return lat;
+}
+
+//******************************************************************************
+// VarLongitude()
+//******************************************************************************
+QString Meeus::VarLongitude()
+{
+    auto dms = DD2DMS(this->location.Longitude);
+    QString lon
+        = QString("%1°%2'%3\"").arg(std::get<0>(dms)).arg(std::get<1>(dms)).arg(std::get<2>(dms));
+    return lon;
 }
 
 //******************************************************************************
@@ -113,6 +138,14 @@ void Meeus::SetDefaultLocation() {
   loc.Latitude = 48.778056;
   loc.Longitude = 2.68;
   this->location = loc;
+}
+
+//******************************************************************************
+// SetLocation()
+//******************************************************************************
+void Meeus::SetLocation(Location loc)
+{
+    this->location = loc;
 }
 
 //******************************************************************************
@@ -208,6 +241,7 @@ double frac(double d)
 
 //******************************************************************************
 // DHMS2DD()
+// Warning : This is a conversion from DAYS, HOURS, MINUTES, SECONDS to DECIMAL DAYS
 //******************************************************************************
 double DHMS2DD(int d, int h, int m, int s)
 {
@@ -217,9 +251,16 @@ double DHMS2DD(int d, int h, int m, int s)
 
 //******************************************************************************
 // DD2DHMS() => tuple{ d, h, m, s }
+// Warning : This is a conversion from DECIMAL DAYS to DAYS, HOURS, MINUTES, SECONDS
 //******************************************************************************
 std::tuple<int, int, int, int> DD2DHMS(double dd)
 {
+    double sign = 1;
+    if (dd < 0) {
+        dd = abs(dd);
+        sign = -1;
+    }
+
     double fd = floor(dd);      // Full Day
     double dh = (dd - fd) * 24; // Double Hour
     double fh = floor(dh);      // Full Hour
@@ -227,5 +268,35 @@ std::tuple<int, int, int, int> DD2DHMS(double dd)
     double fm = floor(dm);      // Full Minute
     double ds = (dm - fm) * 60; // Double Second
     double fs = floor(ds);      // Full Second
-    return std::make_tuple((int) fd, (int) fh, (int) fm, (int) fs);
+    return std::make_tuple((int) (fd * sign), (int) fh, (int) fm, (int) fs);
+}
+
+//******************************************************************************
+// DMS2DD()
+// Warning : This is a conversion from DEGREES, MINUTES, SECONDS to DECIMAL DEGREES
+//******************************************************************************
+double DMS2DD(int d, int m, int s)
+{
+    double dd = d + (m / 60.0) + (s / 3600.0);
+    return dd;
+}
+
+//******************************************************************************
+// DD2DMS() => tuple{ d, m, s }
+// Warning : This is a conversion from DECIMAL DEGREES to DEGREES, MINUTES, SECONDS
+//******************************************************************************
+std::tuple<int, int, int> DD2DMS(double dd)
+{
+    double sign = 1;
+    if (dd < 0) {
+        dd = abs(dd);
+        sign = -1;
+    }
+
+    double fd = floor(dd);      // Full Degrees
+    double dm = (dd - fd) * 60; // Double Minute
+    double fm = floor(dm);      // Full Minute
+    double ds = (dm - fm) * 60; // Double Second
+    double fs = floor(ds);      // Full Second
+    return std::make_tuple((int) (fd * sign), (int) fm, (int) fs);
 }

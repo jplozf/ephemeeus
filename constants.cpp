@@ -50,6 +50,7 @@ Constants::Constants()
                                  "#000000"});
 
     this->aboutText = setAbout();
+    this->consoleText = setConsole();
 }
 
 //******************************************************************************
@@ -101,6 +102,29 @@ QString Constants::setAbout()
                "</tbody></table>" "</blockquote>" "<br>" "<hr>" "<p><center><em>%1</em></" "center>"
                                                                                            "</p>")
                .arg(this->getQString("COPYRIGHT"));
+
+    return str;
+}
+
+//******************************************************************************
+// setConsole()
+//******************************************************************************
+QString Constants::setConsole()
+{
+    QString str;
+    str = QString("\n%1 v%2\nbranch: %3, version: %4, built_at: %5\n")
+              .arg(this->getQString("APPLICATION_NAME"), this->getQString("VERSION"))
+              .arg(GIT_BRANCH)
+              .arg(GIT_HASH)
+              .arg(BUILD_TIMESTAMP);
+
+    QMap<QString, QString> props = Utils::systemProperties();
+    for (auto iter = props.constBegin(); iter != props.constEnd(); ++iter) {
+        // cout << iter.key() << ": " << iter.value() << endl;
+        str += QString("%1 : %2\n").arg(iter.key(), iter.value());
+    }
+
+    str += QString("%1\n").arg(this->getQString("COPYRIGHT"));
 
     return str;
 }

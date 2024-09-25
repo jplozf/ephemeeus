@@ -14,7 +14,7 @@ EQ            = =
 
 CC            = gcc
 CXX           = g++
-DEFINES       = -DGIT_HASH=\"22ef0ec\" -DGIT_BRANCH=\"main\" -DBUILD_TIMESTAMP=\"2024-09-14T18:40:54UTC\" -DQT_QML_DEBUG -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_SQL_LIB -DQT_CORE_LIB
+DEFINES       = -DGIT_HASH=\"690f2df\" -DGIT_BRANCH=\"main\" -DBUILD_TIMESTAMP=\"2024-09-22T17:54:30UTC\" -DQT_QML_DEBUG -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_SQL_LIB -DQT_CORE_LIB
 CFLAGS        = -pipe -g -Wall -Wextra -D_REENTRANT -fPIC $(DEFINES)
 CXXFLAGS      = -pipe -g -std=gnu++1z -Wall -Wextra -D_REENTRANT -fPIC $(DEFINES)
 INCPATH       = -I../../../ephemeeus -I. -I/home/jpl/Qt/5.15.2/gcc_64/include -I/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets -I/home/jpl/Qt/5.15.2/gcc_64/include/QtGui -I/home/jpl/Qt/5.15.2/gcc_64/include/QtNetwork -I/home/jpl/Qt/5.15.2/gcc_64/include/QtSql -I/home/jpl/Qt/5.15.2/gcc_64/include/QtCore -I. -I/usr/include/libdrm -I. -I/home/jpl/Qt/5.15.2/gcc_64/mkspecs/linux-g++
@@ -52,7 +52,8 @@ OBJECTS_DIR   = ./
 
 ####### Files
 
-SOURCES       = ../../Meeus.cpp \
+SOURCES       = ../../DlgInputLocation.cpp \
+		../../Meeus.cpp \
 		../../Varget.cpp \
 		../../app.cpp \
 		../../constants.cpp \
@@ -61,10 +62,12 @@ SOURCES       = ../../Meeus.cpp \
 		../../MainWindow.cpp \
 		../../settings.cpp \
 		../../utils.cpp qrc_ephemeeus.cpp \
+		moc_DlgInputLocation.cpp \
 		moc_MainWindow.cpp \
 		moc_Varget.cpp \
 		moc_settings.cpp
-OBJECTS       = Meeus.o \
+OBJECTS       = DlgInputLocation.o \
+		Meeus.o \
 		Varget.o \
 		app.o \
 		constants.o \
@@ -74,6 +77,7 @@ OBJECTS       = Meeus.o \
 		settings.o \
 		utils.o \
 		qrc_ephemeeus.o \
+		moc_DlgInputLocation.o \
 		moc_MainWindow.o \
 		moc_Varget.o \
 		moc_settings.o
@@ -289,14 +293,16 @@ DIST          = ../../db/cities.db \
 		/home/jpl/Qt/5.15.2/gcc_64/mkspecs/features/exceptions.prf \
 		/home/jpl/Qt/5.15.2/gcc_64/mkspecs/features/yacc.prf \
 		/home/jpl/Qt/5.15.2/gcc_64/mkspecs/features/lex.prf \
-		../../../../ephemeeus.pro ../../MainWindow.h \
+		../../../../ephemeeus.pro ../../DlgInputLocation.h \
+		../../MainWindow.h \
 		../../Meeus.h \
 		../../Varget.h \
 		../../app.h \
 		../../constants.h \
 		../../downloader.h \
 		../../settings.h \
-		../../utils.h ../../Meeus.cpp \
+		../../utils.h ../../DlgInputLocation.cpp \
+		../../Meeus.cpp \
 		../../Varget.cpp \
 		../../app.cpp \
 		../../constants.cpp \
@@ -759,8 +765,8 @@ distdir: FORCE
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents ../../ephemeeus.qrc $(DISTDIR)/
 	$(COPY_FILE) --parents /home/jpl/Qt/5.15.2/gcc_64/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents ../../MainWindow.h ../../Meeus.h ../../Varget.h ../../app.h ../../constants.h ../../downloader.h ../../settings.h ../../utils.h $(DISTDIR)/
-	$(COPY_FILE) --parents ../../Meeus.cpp ../../Varget.cpp ../../app.cpp ../../constants.cpp ../../downloader.cpp ../../main.cpp ../../MainWindow.cpp ../../settings.cpp ../../utils.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents ../../DlgInputLocation.h ../../MainWindow.h ../../Meeus.h ../../Varget.h ../../app.h ../../constants.h ../../downloader.h ../../settings.h ../../utils.h $(DISTDIR)/
+	$(COPY_FILE) --parents ../../DlgInputLocation.cpp ../../Meeus.cpp ../../Varget.cpp ../../app.cpp ../../constants.cpp ../../downloader.cpp ../../main.cpp ../../MainWindow.cpp ../../settings.cpp ../../utils.cpp $(DISTDIR)/
 	$(COPY_FILE) --parents ../../MainWindow.ui $(DISTDIR)/
 
 
@@ -790,6 +796,7 @@ compiler_rcc_clean:
 	-$(DEL_FILE) qrc_ephemeeus.cpp
 qrc_ephemeeus.cpp: ../../ephemeeus.qrc \
 		/home/jpl/Qt/5.15.2/gcc_64/bin/rcc \
+		../../help.html \
 		../../16x16/Info.png \
 		../../16x16/Char\ -\ Number.png \
 		../../16x16/Char\ -\ Smiley\ 2.png \
@@ -970,9 +977,118 @@ compiler_moc_predefs_clean:
 moc_predefs.h: /home/jpl/Qt/5.15.2/gcc_64/mkspecs/features/data/dummy.cpp
 	g++ -pipe -g -std=gnu++1z -Wall -Wextra -dM -E -o moc_predefs.h /home/jpl/Qt/5.15.2/gcc_64/mkspecs/features/data/dummy.cpp
 
-compiler_moc_header_make_all: moc_MainWindow.cpp moc_Varget.cpp moc_settings.cpp
+compiler_moc_header_make_all: moc_DlgInputLocation.cpp moc_MainWindow.cpp moc_Varget.cpp moc_settings.cpp
 compiler_moc_header_clean:
-	-$(DEL_FILE) moc_MainWindow.cpp moc_Varget.cpp moc_settings.cpp
+	-$(DEL_FILE) moc_DlgInputLocation.cpp moc_MainWindow.cpp moc_Varget.cpp moc_settings.cpp
+moc_DlgInputLocation.cpp: ../../DlgInputLocation.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QDialog \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qdialog.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qtwidgetsglobal.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtGui/qtguiglobal.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qglobal.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qconfig-bootstrapped.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qconfig.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qtcore-config.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qsystemdetection.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qprocessordetection.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qcompilerdetection.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qtypeinfo.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qsysinfo.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qlogging.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qflags.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qatomic.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qbasicatomic.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qatomic_bootstrap.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qgenericatomic.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qatomic_cxx11.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qatomic_msvc.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qglobalstatic.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qmutex.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qnumeric.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qversiontagging.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtGui/qtgui-config.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qtwidgets-config.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qwidget.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtGui/qwindowdefs.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qobjectdefs.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qnamespace.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qobjectdefs_impl.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtGui/qwindowdefs_win.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qobject.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qstring.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qchar.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qbytearray.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qrefcount.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qarraydata.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qstringliteral.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qstringalgorithms.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qstringview.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qstringbuilder.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qlist.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qalgorithms.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qiterator.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qhashfunctions.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qpair.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qvector.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qcontainertools_impl.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qpoint.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qbytearraylist.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qstringlist.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qregexp.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qstringmatcher.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qcoreevent.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qscopedpointer.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qmetatype.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qvarlengtharray.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qcontainerfwd.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qobject_impl.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qmargins.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtGui/qpaintdevice.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qrect.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qsize.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtGui/qpalette.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtGui/qcolor.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtGui/qrgb.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtGui/qrgba64.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtGui/qbrush.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtGui/qmatrix.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtGui/qpolygon.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtGui/qregion.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qdatastream.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qiodevice.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qline.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtGui/qtransform.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtGui/qimage.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtGui/qpixelformat.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtGui/qpixmap.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qsharedpointer.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qshareddata.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qhash.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qsharedpointer_impl.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtGui/qfont.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtGui/qfontmetrics.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtGui/qfontinfo.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qsizepolicy.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtGui/qcursor.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtGui/qkeysequence.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtGui/qevent.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qvariant.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qmap.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qdebug.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qtextstream.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qlocale.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qset.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qcontiguouscache.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qurl.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qurlquery.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qfile.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qfiledevice.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtGui/qvector2d.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtGui/qtouchdevice.h \
+		moc_predefs.h \
+		/home/jpl/Qt/5.15.2/gcc_64/bin/moc
+	/home/jpl/Qt/5.15.2/gcc_64/bin/moc $(DEFINES) --include '/media/HDD/Documents/Google Drive/Projets/Qt/ephemeeus/build/Desktop_Qt_5_15_2_GCC_64bit-Debug/moc_predefs.h' -I/home/jpl/Qt/5.15.2/gcc_64/mkspecs/linux-g++ -I'/media/HDD/Documents/Google Drive/Projets/Qt/ephemeeus' -I/home/jpl/Qt/5.15.2/gcc_64/include -I/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets -I/home/jpl/Qt/5.15.2/gcc_64/include/QtGui -I/home/jpl/Qt/5.15.2/gcc_64/include/QtNetwork -I/home/jpl/Qt/5.15.2/gcc_64/include/QtSql -I/home/jpl/Qt/5.15.2/gcc_64/include/QtCore -I. -I/usr/include/c++/14 -I/usr/include/c++/14/x86_64-redhat-linux -I/usr/include/c++/14/backward -I/usr/lib/gcc/x86_64-redhat-linux/14/include -I/usr/local/include -I/usr/include ../../DlgInputLocation.h -o moc_DlgInputLocation.cpp
+
 moc_MainWindow.cpp: ../../MainWindow.h \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtGui/QClipboard \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtGui/qclipboard.h \
@@ -1085,6 +1201,11 @@ moc_MainWindow.cpp: ../../MainWindow.h \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qsizepolicy.h \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtGui/qcursor.h \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/QFile \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QFileDialog \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qfiledialog.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qdir.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qfileinfo.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qdialog.h \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtGui/QGuiApplication \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtGui/qguiapplication.h \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qcoreapplication.h \
@@ -1097,7 +1218,6 @@ moc_MainWindow.cpp: ../../MainWindow.h \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtGui/qicon.h \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QMessageBox \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qmessagebox.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qdialog.h \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/QProcessEnvironment \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qprocess.h \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/QSettings \
@@ -1117,9 +1237,12 @@ moc_MainWindow.cpp: ../../MainWindow.h \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/QTimer \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qtimer.h \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qbasictimer.h \
+		../../DlgInputLocation.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QDialog \
 		../../Meeus.h \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/QDateTime \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qdatetime.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/QDebug \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/QTimeZone \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qtimezone.h \
 		../../Varget.h \
@@ -1143,10 +1266,7 @@ moc_MainWindow.cpp: ../../MainWindow.h \
 		../../utils.h \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/QCryptographicHash \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qcryptographichash.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/QDebug \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/QDir \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qdir.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qfileinfo.h \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/QDirIterator \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qdiriterator.h \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/QEventLoop \
@@ -1320,6 +1440,7 @@ moc_Varget.cpp: ../../Varget.h \
 		../../Meeus.h \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/QDateTime \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qdatetime.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/QDebug \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/QTimeZone \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qtimezone.h \
 		../../app.h \
@@ -1329,7 +1450,6 @@ moc_Varget.cpp: ../../Varget.h \
 		../../utils.h \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/QCryptographicHash \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qcryptographichash.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/QDebug \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/QDir \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qdir.h \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qfileinfo.h \
@@ -1587,6 +1707,131 @@ compiler_clean: compiler_rcc_clean compiler_moc_predefs_clean compiler_moc_heade
 
 ####### Compile
 
+DlgInputLocation.o: ../../DlgInputLocation.cpp ../../DlgInputLocation.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QDialog \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qdialog.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qtwidgetsglobal.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtGui/qtguiglobal.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qglobal.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qconfig-bootstrapped.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qconfig.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qtcore-config.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qsystemdetection.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qprocessordetection.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qcompilerdetection.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qtypeinfo.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qsysinfo.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qlogging.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qflags.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qatomic.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qbasicatomic.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qatomic_bootstrap.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qgenericatomic.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qatomic_cxx11.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qatomic_msvc.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qglobalstatic.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qmutex.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qnumeric.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qversiontagging.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtGui/qtgui-config.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qtwidgets-config.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qwidget.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtGui/qwindowdefs.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qobjectdefs.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qnamespace.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qobjectdefs_impl.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtGui/qwindowdefs_win.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qobject.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qstring.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qchar.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qbytearray.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qrefcount.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qarraydata.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qstringliteral.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qstringalgorithms.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qstringview.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qstringbuilder.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qlist.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qalgorithms.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qiterator.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qhashfunctions.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qpair.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qvector.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qcontainertools_impl.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qpoint.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qbytearraylist.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qstringlist.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qregexp.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qstringmatcher.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qcoreevent.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qscopedpointer.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qmetatype.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qvarlengtharray.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qcontainerfwd.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qobject_impl.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qmargins.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtGui/qpaintdevice.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qrect.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qsize.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtGui/qpalette.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtGui/qcolor.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtGui/qrgb.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtGui/qrgba64.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtGui/qbrush.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtGui/qmatrix.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtGui/qpolygon.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtGui/qregion.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qdatastream.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qiodevice.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qline.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtGui/qtransform.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtGui/qimage.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtGui/qpixelformat.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtGui/qpixmap.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qsharedpointer.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qshareddata.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qhash.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qsharedpointer_impl.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtGui/qfont.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtGui/qfontmetrics.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtGui/qfontinfo.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qsizepolicy.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtGui/qcursor.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtGui/qkeysequence.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtGui/qevent.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qvariant.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qmap.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qdebug.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qtextstream.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qlocale.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qset.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qcontiguouscache.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qurl.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qurlquery.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qfile.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qfiledevice.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtGui/qvector2d.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtGui/qtouchdevice.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QDialogButtonBox \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qdialogbuttonbox.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QFormLayout \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qformlayout.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QLayout \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qlayout.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qlayoutitem.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qboxlayout.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qgridlayout.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QLabel \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qlabel.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qframe.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QLineEdit \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qlineedit.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtGui/qtextcursor.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtGui/qtextformat.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtGui/qpen.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtGui/qtextoption.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o DlgInputLocation.o ../../DlgInputLocation.cpp
+
 Meeus.o: ../../Meeus.cpp ../../Meeus.h \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/QDateTime \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qdatetime.h \
@@ -1635,27 +1880,28 @@ Meeus.o: ../../Meeus.cpp ../../Meeus.h \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qstringlist.h \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qregexp.h \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qstringmatcher.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/QTimeZone \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qtimezone.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qlocale.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qvariant.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qmetatype.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qvarlengtharray.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qcontainerfwd.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qobjectdefs.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qobjectdefs_impl.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qmap.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/QDebug \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qdebug.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qmap.h \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qtextstream.h \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qiodevice.h \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qobject.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qobjectdefs.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qobjectdefs_impl.h \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qcoreevent.h \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qscopedpointer.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qmetatype.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qvarlengtharray.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qcontainerfwd.h \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qobject_impl.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qlocale.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qvariant.h \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qset.h \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qcontiguouscache.h \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qsharedpointer.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qsharedpointer_impl.h
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qsharedpointer_impl.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/QTimeZone \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qtimezone.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o Meeus.o ../../Meeus.cpp
 
 Varget.o: ../../Varget.cpp ../../Varget.h \
@@ -1779,6 +2025,7 @@ Varget.o: ../../Varget.cpp ../../Varget.h \
 		../../Meeus.h \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/QDateTime \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qdatetime.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/QDebug \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/QTimeZone \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qtimezone.h \
 		../../app.h \
@@ -1788,7 +2035,6 @@ Varget.o: ../../Varget.cpp ../../Varget.h \
 		../../utils.h \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/QCryptographicHash \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qcryptographichash.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/QDebug \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/QDir \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qdir.h \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qfileinfo.h \
@@ -2369,6 +2615,11 @@ main.o: ../../main.cpp /home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QApplication
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qabstractitemmodel.h \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QDesktopWidget \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/QFile \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QFileDialog \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qfiledialog.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qdir.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qfileinfo.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qdialog.h \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtGui/QGuiApplication \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/QHash \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QMainWindow \
@@ -2377,7 +2628,6 @@ main.o: ../../main.cpp /home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QApplication
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtGui/qicon.h \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QMessageBox \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qmessagebox.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qdialog.h \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/QProcessEnvironment \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qprocess.h \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/QSettings \
@@ -2397,9 +2647,12 @@ main.o: ../../main.cpp /home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QApplication
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/QTimer \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qtimer.h \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qbasictimer.h \
+		../../DlgInputLocation.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QDialog \
 		../../Meeus.h \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/QDateTime \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qdatetime.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/QDebug \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/QTimeZone \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qtimezone.h \
 		../../Varget.h \
@@ -2423,10 +2676,7 @@ main.o: ../../main.cpp /home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QApplication
 		../../utils.h \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/QCryptographicHash \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qcryptographichash.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/QDebug \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/QDir \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qdir.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qfileinfo.h \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/QDirIterator \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qdiriterator.h \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/QEventLoop \
@@ -2589,6 +2839,11 @@ MainWindow.o: ../../MainWindow.cpp ../../MainWindow.h \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qsizepolicy.h \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtGui/qcursor.h \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/QFile \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QFileDialog \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qfiledialog.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qdir.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qfileinfo.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qdialog.h \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtGui/QGuiApplication \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtGui/qguiapplication.h \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qcoreapplication.h \
@@ -2601,7 +2856,6 @@ MainWindow.o: ../../MainWindow.cpp ../../MainWindow.h \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtGui/qicon.h \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QMessageBox \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qmessagebox.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qdialog.h \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/QProcessEnvironment \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qprocess.h \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/QSettings \
@@ -2621,9 +2875,12 @@ MainWindow.o: ../../MainWindow.cpp ../../MainWindow.h \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/QTimer \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qtimer.h \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qbasictimer.h \
+		../../DlgInputLocation.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QDialog \
 		../../Meeus.h \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/QDateTime \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qdatetime.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/QDebug \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/QTimeZone \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qtimezone.h \
 		../../Varget.h \
@@ -2647,10 +2904,7 @@ MainWindow.o: ../../MainWindow.cpp ../../MainWindow.h \
 		../../utils.h \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/QCryptographicHash \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qcryptographichash.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/QDebug \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/QDir \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qdir.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qfileinfo.h \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/QDirIterator \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qdiriterator.h \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/QEventLoop \
@@ -2885,6 +3139,9 @@ settings.o: ../../settings.cpp ../../settings.h \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qabstractitemmodel.h \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QDesktopWidget \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qdesktopwidget.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QFileDialog \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qfiledialog.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qdialog.h \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtGui/QGuiApplication \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtGui/qguiapplication.h \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qcoreapplication.h \
@@ -2895,7 +3152,6 @@ settings.o: ../../settings.cpp ../../settings.h \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qtabwidget.h \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QMessageBox \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qmessagebox.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qdialog.h \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/QProcessEnvironment \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qprocess.h \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/QSettings \
@@ -2914,6 +3170,8 @@ settings.o: ../../settings.cpp ../../settings.h \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/QTimer \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qtimer.h \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qbasictimer.h \
+		../../DlgInputLocation.h \
+		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QDialog \
 		../../Meeus.h \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/QTimeZone \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qtimezone.h \
@@ -3041,6 +3299,9 @@ utils.o: ../../utils.cpp ../../utils.h \
 
 qrc_ephemeeus.o: qrc_ephemeeus.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o qrc_ephemeeus.o qrc_ephemeeus.cpp
+
+moc_DlgInputLocation.o: moc_DlgInputLocation.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_DlgInputLocation.o moc_DlgInputLocation.cpp
 
 moc_MainWindow.o: moc_MainWindow.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_MainWindow.o moc_MainWindow.cpp

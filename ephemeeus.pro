@@ -14,6 +14,7 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    DlgInputLocation.cpp \
     Meeus.cpp \
     Varget.cpp \
     app.cpp \
@@ -25,6 +26,7 @@ SOURCES += \
     utils.cpp
 
 HEADERS += \
+    DlgInputLocation.h \
     MainWindow.h \
     Meeus.h \
     Varget.h \

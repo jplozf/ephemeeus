@@ -25,13 +25,23 @@
         <item>
          <layout class="QFormLayout" name="formLayout_2">
           <item row="1" column="0">
+           <widget class="QLabel" name="label_6">
+            <property name="text">
+             <string>Country</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QComboBox" name="cbxCountry"/>
+          </item>
+          <item row="2" column="0">
            <widget class="QLabel" name="label">
             <property name="text">
              <string>Location</string>
             </property>
            </widget>
           </item>
-          <item row="1" column="1">
+          <item row="2" column="1">
            <layout class="QHBoxLayout" name="horizontalLayout_2">
             <item>
              <widget class="QLineEdit" name="txtLocation"/>
@@ -60,103 +70,14 @@
             </item>
            </layout>
           </item>
-          <item row="4" column="0">
-           <widget class="QLabel" name="label_2">
-            <property name="text">
-             <string>Time</string>
-            </property>
-           </widget>
-          </item>
-          <item row="4" column="1">
-           <layout class="QHBoxLayout" name="horizontalLayout_3">
-            <item>
-             <widget class="QLineEdit" name="lineEdit_2"/>
-            </item>
-            <item>
-             <widget class="QPushButton" name="pushButton_3">
-              <property name="text">
-               <string/>
-              </property>
-              <property name="icon">
-               <iconset resource="ephemeeus.qrc">
-                <normaloff>:/16x16/Rotate.png</normaloff>:/16x16/Rotate.png</iconset>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QPushButton" name="pushButton_4">
-              <property name="text">
-               <string/>
-              </property>
-              <property name="icon">
-               <iconset resource="ephemeeus.qrc">
-                <normaloff>:/16x16/Pen.png</normaloff>:/16x16/Pen.png</iconset>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item row="5" column="0">
-           <widget class="QLabel" name="label_3">
-            <property name="text">
-             <string>Time Zone</string>
-            </property>
-           </widget>
-          </item>
-          <item row="5" column="1">
-           <layout class="QHBoxLayout" name="horizontalLayout_4">
-            <item>
-             <widget class="QLineEdit" name="lineEdit_3"/>
-            </item>
-            <item>
-             <widget class="QPushButton" name="pushButton_5">
-              <property name="text">
-               <string/>
-              </property>
-              <property name="icon">
-               <iconset resource="ephemeeus.qrc">
-                <normaloff>:/16x16/Rotate.png</normaloff>:/16x16/Rotate.png</iconset>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QPushButton" name="pushButton_6">
-              <property name="text">
-               <string/>
-              </property>
-              <property name="icon">
-               <iconset resource="ephemeeus.qrc">
-                <normaloff>:/16x16/Pen.png</normaloff>:/16x16/Pen.png</iconset>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item row="2" column="0">
+          <item row="3" column="0">
            <widget class="QLabel" name="label_4">
             <property name="text">
              <string>Latitude</string>
             </property>
            </widget>
           </item>
-          <item row="3" column="0">
-           <widget class="QLabel" name="label_5">
-            <property name="text">
-             <string>Longitude</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="0">
-           <widget class="QLabel" name="label_6">
-            <property name="text">
-             <string>Country</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="1">
-           <widget class="QComboBox" name="cbxCountry"/>
-          </item>
-          <item row="2" column="1">
+          <item row="3" column="1">
            <layout class="QHBoxLayout" name="horizontalLayout_6">
             <item>
              <widget class="QLineEdit" name="txtLatitude">
@@ -192,7 +113,14 @@
             </item>
            </layout>
           </item>
-          <item row="3" column="1">
+          <item row="4" column="0">
+           <widget class="QLabel" name="label_5">
+            <property name="text">
+             <string>Longitude</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="1">
            <layout class="QHBoxLayout" name="horizontalLayout_7">
             <item>
              <widget class="QLineEdit" name="txtLongitude">
@@ -228,6 +156,180 @@
             </item>
            </layout>
           </item>
+          <item row="5" column="0">
+           <widget class="QLabel" name="label_2">
+            <property name="text">
+             <string>Time</string>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="1">
+           <layout class="QHBoxLayout" name="horizontalLayout_3">
+            <item>
+             <widget class="QLineEdit" name="lineEdit_2"/>
+            </item>
+            <item>
+             <widget class="QPushButton" name="pushButton_3">
+              <property name="text">
+               <string/>
+              </property>
+              <property name="icon">
+               <iconset resource="ephemeeus.qrc">
+                <normaloff>:/16x16/Rotate.png</normaloff>:/16x16/Rotate.png</iconset>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="pushButton_4">
+              <property name="text">
+               <string/>
+              </property>
+              <property name="icon">
+               <iconset resource="ephemeeus.qrc">
+                <normaloff>:/16x16/Pen.png</normaloff>:/16x16/Pen.png</iconset>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item row="6" column="0">
+           <widget class="QLabel" name="label_3">
+            <property name="text">
+             <string>Time Zone</string>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="1">
+           <layout class="QHBoxLayout" name="horizontalLayout_4">
+            <item>
+             <widget class="QLineEdit" name="lineEdit_3"/>
+            </item>
+            <item>
+             <widget class="QPushButton" name="pushButton_5">
+              <property name="text">
+               <string/>
+              </property>
+              <property name="icon">
+               <iconset resource="ephemeeus.qrc">
+                <normaloff>:/16x16/Rotate.png</normaloff>:/16x16/Rotate.png</iconset>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="pushButton_6">
+              <property name="text">
+               <string/>
+              </property>
+              <property name="icon">
+               <iconset resource="ephemeeus.qrc">
+                <normaloff>:/16x16/Pen.png</normaloff>:/16x16/Pen.png</iconset>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item row="10" column="0">
+           <widget class="QLabel" name="label_7">
+            <property name="text">
+             <string>Varget</string>
+            </property>
+           </widget>
+          </item>
+          <item row="10" column="1">
+           <layout class="QHBoxLayout" name="horizontalLayout_10">
+            <item>
+             <widget class="QComboBox" name="cbxVargets"/>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="txtVargetLabel"/>
+            </item>
+            <item>
+             <widget class="QPushButton" name="btnAddVarget">
+              <property name="text">
+               <string/>
+              </property>
+              <property name="icon">
+               <iconset resource="ephemeeus.qrc">
+                <normaloff>:/16x16/Plus.png</normaloff>:/16x16/Plus.png</iconset>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item row="0" column="1">
+           <widget class="QLabel" name="label_8">
+            <property name="font">
+             <font>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>▸ Time and Location Input</string>
+            </property>
+           </widget>
+          </item>
+          <item row="7" column="1">
+           <widget class="QLabel" name="label_9">
+            <property name="font">
+             <font>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>▸ Ephemerids Output</string>
+            </property>
+           </widget>
+          </item>
+          <item row="8" column="0">
+           <widget class="QLabel" name="label_10">
+            <property name="text">
+             <string>Title</string>
+            </property>
+           </widget>
+          </item>
+          <item row="8" column="1">
+           <layout class="QHBoxLayout" name="horizontalLayout_8">
+            <item>
+             <widget class="QLineEdit" name="txtVarboardTitle"/>
+            </item>
+            <item>
+             <widget class="QPushButton" name="btnAddTitle">
+              <property name="text">
+               <string/>
+              </property>
+              <property name="icon">
+               <iconset resource="ephemeeus.qrc">
+                <normaloff>:/16x16/Plus.png</normaloff>:/16x16/Plus.png</iconset>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item row="9" column="0">
+           <widget class="QLabel" name="label_11">
+            <property name="text">
+             <string>Header</string>
+            </property>
+           </widget>
+          </item>
+          <item row="9" column="1">
+           <layout class="QHBoxLayout" name="horizontalLayout_9">
+            <item>
+             <widget class="QLineEdit" name="txtVarboardHeader"/>
+            </item>
+            <item>
+             <widget class="QPushButton" name="btnAddHeader">
+              <property name="text">
+               <string/>
+              </property>
+              <property name="icon">
+               <iconset resource="ephemeeus.qrc">
+                <normaloff>:/16x16/Plus.png</normaloff>:/16x16/Plus.png</iconset>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
          </layout>
         </item>
         <item>
@@ -244,7 +346,23 @@
          </spacer>
         </item>
         <item>
+         <spacer name="verticalSpacer_2">
+          <property name="orientation">
+           <enum>Qt::Orientation::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
          <layout class="QHBoxLayout" name="horizontalLayout_5">
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout"/>
+          </item>
           <item>
            <widget class="QPushButton" name="btnRefresh">
             <property name="text">
@@ -282,9 +400,9 @@
       </widget>
       <widget class="QTabWidget" name="tabWidget">
        <property name="currentIndex">
-        <number>1</number>
+        <number>0</number>
        </property>
-       <widget class="QWidget" name="tabConsoleOut">
+       <widget class="QWidget" name="tabConsole">
         <property name="cursor">
          <cursorShape>CrossCursor</cursorShape>
         </property>
@@ -293,26 +411,36 @@
           <normaloff>:/16x16/Computer.png</normaloff>:/16x16/Computer.png</iconset>
         </attribute>
         <attribute name="title">
-         <string>Console Out</string>
+         <string>Console</string>
         </attribute>
         <layout class="QGridLayout" name="gridLayout_5">
          <item row="0" column="0">
           <layout class="QHBoxLayout" name="horizontalLayout">
            <item>
             <widget class="QPushButton" name="btnClearConsole">
+             <property name="toolTip">
+              <string>Clear the console log</string>
+             </property>
              <property name="text">
               <string/>
              </property>
              <property name="icon">
               <iconset resource="ephemeeus.qrc">
-               <normaloff>:/16x16/Trash.png</normaloff>:/16x16/Trash.png</iconset>
+               <normaloff>:/16x16/Recycle.png</normaloff>:/16x16/Recycle.png</iconset>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QPushButton" name="pushButton_7">
+            <widget class="QPushButton" name="btnExportLog">
+             <property name="toolTip">
+              <string>Export the console log to local file</string>
+             </property>
              <property name="text">
-              <string>PushButton</string>
+              <string/>
+             </property>
+             <property name="icon">
+              <iconset resource="ephemeeus.qrc">
+               <normaloff>:/16x16/Upload.png</normaloff>:/16x16/Upload.png</iconset>
              </property>
             </widget>
            </item>
@@ -332,7 +460,13 @@
           </layout>
          </item>
          <item row="2" column="0">
-          <widget class="QTextEdit" name="txtConsoleOut">
+          <widget class="QTextEdit" name="txtConsole">
+           <property name="font">
+            <font>
+             <family>Consolas</family>
+             <pointsize>10</pointsize>
+            </font>
+           </property>
            <property name="readOnly">
             <bool>true</bool>
            </property>
@@ -359,7 +493,7 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>425</width>
+              <width>398</width>
               <height>425</height>
              </rect>
             </property>
@@ -392,7 +526,7 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>425</width>
+              <width>398</width>
               <height>425</height>
              </rect>
             </property>
@@ -400,16 +534,6 @@
           </widget>
          </item>
         </layout>
-       </widget>
-       <widget class="QWidget" name="tabXMLFile">
-        <attribute name="icon">
-         <iconset resource="ephemeeus.qrc">
-          <normaloff>:/16x16/Document Text.png</normaloff>:/16x16/Document Text.png</iconset>
-        </attribute>
-        <attribute name="title">
-         <string>Commands</string>
-        </attribute>
-        <layout class="QGridLayout" name="gridLayout_8"/>
        </widget>
        <widget class="QWidget" name="tabAbout">
         <attribute name="icon">
@@ -444,6 +568,8 @@
      <string>&amp;File</string>
     </property>
     <addaction name="actionOpen"/>
+    <addaction name="actionSave"/>
+    <addaction name="actionSave_as"/>
     <addaction name="actionRefresh"/>
     <addaction name="actionQuit"/>
    </widget>
@@ -490,6 +616,24 @@
    </property>
    <property name="menuRole">
     <enum>QAction::MenuRole::TextHeuristicRole</enum>
+   </property>
+  </action>
+  <action name="actionSave">
+   <property name="icon">
+    <iconset resource="ephemeeus.qrc">
+     <normaloff>:/16x16/Save.png</normaloff>:/16x16/Save.png</iconset>
+   </property>
+   <property name="text">
+    <string>Save</string>
+   </property>
+  </action>
+  <action name="actionSave_as">
+   <property name="icon">
+    <iconset resource="ephemeeus.qrc">
+     <normaloff>:/16x16/Save.png</normaloff>:/16x16/Save.png</iconset>
+   </property>
+   <property name="text">
+    <string>Save as...</string>
    </property>
   </action>
  </widget>
