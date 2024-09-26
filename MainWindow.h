@@ -59,6 +59,7 @@ class MainWindow : public QMainWindow {
   QSqlDatabase db;
   Varboard *vb;
   QString appTitle;
+  QString vbdFileName;
 
   private slots:
   void slotDoExit();

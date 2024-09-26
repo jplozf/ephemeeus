@@ -32,6 +32,16 @@ QString Meeus::VarJD()
 }
 
 //******************************************************************************
+// VarDayOfWeek()
+//******************************************************************************
+QString Meeus::VarDayOfWeek()
+{
+    int dow = this->DayOfWeek(this->JD);
+    QString days[7] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
+    return days[dow];
+}
+
+//******************************************************************************
 // VarDateTime()
 //******************************************************************************
 QString Meeus::VarDateTime()
@@ -127,6 +137,15 @@ QDateTime Meeus::JD2Date(double JD)
     }
     QDateTime qdate(QDate(qy, qm, qd), QTime(qh, qn, qs));
     return qdate;
+}
+
+//******************************************************************************
+// DayOfWeek()
+//******************************************************************************
+int Meeus::DayOfWeek(double JD)
+{
+    int dow = (int) (JD + 1.5) % 7;
+    return dow;
 }
 
 //******************************************************************************

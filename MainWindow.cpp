@@ -439,6 +439,10 @@ void MainWindow::on_actionOpen_triggered()
         showMessage("Opening " + vbdName);
         QFileInfo fi(vbdName);
         this->setWindowTitle(this->appTitle + " - " + fi.fileName());
+        delete this->vb;
+        this->vb = new Varboard(app, this, ui);
+        this->vb->LoadFile(vbdName, meeus);
+        this->vbdFileName = vbdName;
     } else {
         showMessage("Cancelling open");
     }
@@ -468,7 +472,17 @@ void MainWindow::on_cbxVargets_currentIndexChanged(int index)
 //******************************************************************************
 // on_actionSave_triggered()
 //******************************************************************************
-void MainWindow::on_actionSave_triggered() {}
+void MainWindow::on_actionSave_triggered()
+{
+    if (this->vbdFileName != "") {
+        showMessage("Saving " + vbdFileName);
+        QFileInfo fi2(vbdFileName);
+        this->setWindowTitle(this->appTitle + " - " + fi2.fileName());
+        this->vb->SaveFile(vbdFileName);
+    } else {
+        this->on_actionSave_as_triggered();
+    }
+}
 
 //******************************************************************************
 // on_actionSave_as_triggered()
@@ -480,10 +494,18 @@ void MainWindow::on_actionSave_as_triggered()
                                                    QDir::homePath(),
                                                    "Varboard (*.vbd)");
     if (!vbdName.isNull()) {
+        // Check if extension is .vbd
+        QFileInfo fi1(vbdName);
+        QString ext = fi1.suffix();
+        if (ext != "vbd") {
+            vbdName += ".vbd";
+        }
+        // Save the file
         showMessage("Saving " + vbdName);
-        QFileInfo fi(vbdName);
-        this->setWindowTitle(this->appTitle + " - " + fi.fileName());
+        QFileInfo fi2(vbdName);
+        this->setWindowTitle(this->appTitle + " - " + fi2.fileName());
         this->vb->SaveFile(vbdName);
+        this->vbdFileName = vbdName;
     } else {
         showMessage("Cancelling save");
     }

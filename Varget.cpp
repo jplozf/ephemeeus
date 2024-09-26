@@ -2,6 +2,7 @@
 
 QMap<QString, callback_function> Varboard::aFunc = {{"VarDateTime", &Meeus::VarDateTime},
                                                     {"VarJD", &Meeus::VarJD},
+                                                    {"VarDayOfWeek", &Meeus::VarDayOfWeek},
                                                     {"VarLatitude", &Meeus::VarLatitude},
                                                     {"VarLongitude", &Meeus::VarLongitude},
                                                     {"VarLocation", &Meeus::VarLocation}};

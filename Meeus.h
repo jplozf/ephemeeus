@@ -39,7 +39,9 @@ class Meeus {
   QString getLocation();
   double Date2JD(QDateTime dt);
   QDateTime JD2Date(double JD);
+  int DayOfWeek(double JD);
   QString VarJD();
+  QString VarDayOfWeek();
   QString VarDateTime();
   QString VarLocation();
   QString VarLatitude();
