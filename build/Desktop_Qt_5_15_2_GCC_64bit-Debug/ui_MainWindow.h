@@ -30,6 +30,7 @@
 #include <QtWidgets/QTabWidget>
 #include <QtWidgets/QTextBrowser>
 #include <QtWidgets/QTextEdit>
+#include <QtWidgets/QToolBar>
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QWidget>
 
@@ -125,6 +126,7 @@ public:
     QMenuBar *menuBar;
     QMenu *menu_File;
     QStatusBar *statusBar;
+    QToolBar *toolBar;
 
     void setupUi(QMainWindow *MainWindow)
     {
@@ -541,7 +543,7 @@ public:
         scrollArea_2->setWidgetResizable(true);
         boxSettings = new QWidget();
         boxSettings->setObjectName(QString::fromUtf8("boxSettings"));
-        boxSettings->setGeometry(QRect(0, 0, 398, 425));
+        boxSettings->setGeometry(QRect(0, 0, 398, 392));
         scrollArea_2->setWidget(boxSettings);
 
         gridLayout_7->addWidget(scrollArea_2, 0, 1, 1, 1);
@@ -575,6 +577,11 @@ public:
         statusBar = new QStatusBar(MainWindow);
         statusBar->setObjectName(QString::fromUtf8("statusBar"));
         MainWindow->setStatusBar(statusBar);
+        toolBar = new QToolBar(MainWindow);
+        toolBar->setObjectName(QString::fromUtf8("toolBar"));
+        toolBar->setMovable(false);
+        toolBar->setFloatable(false);
+        MainWindow->addToolBar(Qt::TopToolBarArea, toolBar);
 
         menuBar->addAction(menu_File->menuAction());
         menu_File->addAction(actionOpen);
@@ -582,6 +589,13 @@ public:
         menu_File->addAction(actionSave_as);
         menu_File->addAction(actionRefresh);
         menu_File->addAction(actionQuit);
+        toolBar->addAction(actionOpen);
+        toolBar->addAction(actionSave);
+        toolBar->addAction(actionSave_as);
+        toolBar->addSeparator();
+        toolBar->addAction(actionRefresh);
+        toolBar->addSeparator();
+        toolBar->addAction(actionQuit);
 
         retranslateUi(MainWindow);
 
@@ -649,6 +663,7 @@ public:
         tabWidget->setTabText(tabWidget->indexOf(tabSettings), QCoreApplication::translate("MainWindow", "Settings", nullptr));
         tabWidget->setTabText(tabWidget->indexOf(tabAbout), QCoreApplication::translate("MainWindow", "About", nullptr));
         menu_File->setTitle(QCoreApplication::translate("MainWindow", "&File", nullptr));
+        toolBar->setWindowTitle(QCoreApplication::translate("MainWindow", "toolBar", nullptr));
     } // retranslateUi
 
 };
