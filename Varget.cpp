@@ -28,15 +28,22 @@ Varget::Varget(
     QFont *f = new QFont();
     f->setBold(true);
     lbl->setFont(*f);
-    lbl->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
+    if (this->Function != NULL) {
+        lbl->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
+    } else {
+        lbl->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+    }
     hbox->addWidget(this->lblOrder);
     hbox->addWidget(lbl);
 
-    txtValue = new QLineEdit();
-    txtValue->setReadOnly(true);
-    txtValue->setStyleSheet("background-color : #f5f5f4; color : black; border: 2px solid grey;");
-    txtValue->setFixedWidth(this->lblOrder->frameGeometry().width() / 2);
-    hbox->addWidget(txtValue);
+    if (this->Function != NULL) { // Function is NULL for Labels
+        txtValue = new QLineEdit();
+        txtValue->setReadOnly(true);
+        txtValue->setStyleSheet(
+            "background-color : #f5f5f4; color : black; border: 2px solid grey;");
+        txtValue->setFixedWidth(this->lblOrder->frameGeometry().width() / 2);
+        hbox->addWidget(txtValue);
+    }
 
     this->btnDelete = new QPushButton(
         this); // parent is specified to this, because we need to know the parent when clicked
@@ -80,11 +87,12 @@ Varget::Varget(
 //******************************************************************************
 void Varget::Refresh()
 {
-    this->compute();
+    if (this->Function != NULL) { // Function is NULL for Labels
+        this->compute();
+        this->txtValue->setText(this->Value);
+    }
     QString o = QString::asprintf("%05d", this->Order);
     this->lblOrder->setText(o);
-    this->txtValue->setText(this->Value);
-    qDebug() << "REFRESH VARGET #" + o;
 }
 
 //******************************************************************************
@@ -146,7 +154,7 @@ void Varget::on_clicked_button_delete()
     Varboard *vb = vg->vb;
     // The Varboard has a reference to the MainWindow, so let's display some blahblah
     vb->mw->showMessage("Deleting varget at line #" + QString::number(current + 1));
-    // Compute new order for vargets below the varget deleted
+    // Compute New Order (but I prefer Joy Division) for vargets below the varget deleted
     for (int i = current + 1; i < vb->vargets.size(); ++i) {
         vb->vargets[i]->Order = vb->vargets[i]->Order - 1;
     }
@@ -208,11 +216,11 @@ void Varboard::Refresh()
         this->ui->boardLayout->addWidget(vargets[i]);
         if (i % 2 == 0) {
             this->vargets[i]->css = "background-color : "
-                                    + a->appSettings->get("VARGET_COLOR_LINE_1").toString()
+                                    + a->appSettings->get("VARBOARD_COLOR_LINE_1").toString()
                                     + "; color : black;";
         } else {
             this->vargets[i]->css = "background-color : "
-                                    + a->appSettings->get("VARGET_COLOR_LINE_2").toString()
+                                    + a->appSettings->get("VARBOARD_COLOR_LINE_2").toString()
                                     + "; color : black;";
         }
         this->vargets[i]->btnUp->setEnabled(true);
@@ -224,24 +232,44 @@ void Varboard::Refresh()
     // Disable the first UP button and the last DOWN button
     this->vargets[0]->btnUp->setEnabled(false);
     this->vargets[this->vargets.size() - 1]->btnDown->setEnabled(false);
+    // Hide or Show Help panel according to settings
+    if (a->appSettings->get("VARBOARD_SHOW_HELP").toBool() == true) {
+        this->ui->txtHelp->show();
+    } else {
+        this->ui->txtHelp->hide();
+    }
     // Set the focus on the dashboard tab
     this->ui->tabWidget->setCurrentWidget(this->ui->tabDashboard);
 }
 
 //******************************************************************************
-// SaveFile()
+// SaveJSON()
 //******************************************************************************
-int Varboard::SaveFile(QString name)
+int Varboard::SaveJSON(QString name)
 {
     int rc = 0;
-    QFile file(name);
-    if (file.open(QFile::WriteOnly | QFile::Truncate)) {
-        QTextStream stream(&file);
-        for (int i = 0; i < this->vargets.size(); ++i) {
-            stream << "\"" + this->vargets[i]->Label + "\"" << ","
-                   << "\"" + this->vargets[i]->Function + "\"" << "\n";
-        }
-        file.close();
+    QJsonObject root;
+    root.insert("title", this->ui->txtTitle->text());
+
+    QJsonArray varboard;
+    for (int i = 0; i < this->vargets.size(); ++i) {
+        QJsonObject varget;
+        varget.insert("label", this->vargets[i]->Label);
+        varget.insert("function", this->vargets[i]->Function);
+        varboard.push_back(varget);
+    }
+    root.insert("varboard", varboard);
+
+    QJsonDocument jsonDoc;
+    jsonDoc.setObject(root);
+
+    QFile fJSON(name);
+    if (fJSON.open(QFile::ReadWrite)) {
+        fJSON.open(QIODevice::WriteOnly);
+        QByteArray uncompressedData = jsonDoc.toJson();
+        QByteArray compressedData = qCompress(uncompressedData, 9);
+        fJSON.write(compressedData);
+        fJSON.close();
     } else {
         rc = 1;
     }
@@ -249,21 +277,25 @@ int Varboard::SaveFile(QString name)
 }
 
 //******************************************************************************
-// LoadFile()
+// LoadJSON()
 //******************************************************************************
-int Varboard::LoadFile(QString name, Meeus *m)
+int Varboard::LoadJSON(QString name, Meeus *m)
 {
     int rc = 0;
     QFile file(name);
-    if (file.open(QFile::ReadOnly | QFile::Text)) {
+    if (file.open(QIODevice::ReadOnly)) {
+        QByteArray data = qUncompress(file.readAll());
+        QJsonDocument jsonDoc = QJsonDocument::fromJson(data);
+        QJsonObject root = jsonDoc.object();
+
         this->Clear();
-        QTextStream stream(&file);
-        while (!stream.atEnd()) {
-            QString line = stream.readLine();
-            QStringList list = line.split(",");
-            this->addVarget(list[0].mid(1, list[0].size() - 2),
+        this->ui->txtTitle->setText(root.value("title").toString());
+        QJsonArray varboard = root.value("varboard").toArray();
+        for (auto i = 0; i < varboard.size(); i++) {
+            QJsonObject varget = varboard.at(i).toObject();
+            this->addVarget(varget.value("label").toString(),
                             m,
-                            list[1].mid(1, list[1].size() - 2));
+                            varget.value("function").toString());
         }
         file.close();
         this->Refresh();

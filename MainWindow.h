@@ -71,7 +71,7 @@ class MainWindow : public QMainWindow {
   void on_btnAddVarget_clicked();
   void on_cbxVargets_currentIndexChanged(int index);
   void on_actionSave_triggered();
-  void on_btnAddHeader_clicked();
+  void on_btnAddLabel_clicked();
   void on_btnAddTitle_clicked();
   void on_actionSave_as_triggered();
   void on_btnExportLog_clicked();

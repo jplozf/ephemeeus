@@ -308,17 +308,17 @@
           <item row="9" column="0">
            <widget class="QLabel" name="label_11">
             <property name="text">
-             <string>Header</string>
+             <string>Label</string>
             </property>
            </widget>
           </item>
           <item row="9" column="1">
            <layout class="QHBoxLayout" name="horizontalLayout_9">
             <item>
-             <widget class="QLineEdit" name="txtVarboardHeader"/>
+             <widget class="QLineEdit" name="txtVarboardLabel"/>
             </item>
             <item>
-             <widget class="QPushButton" name="btnAddHeader">
+             <widget class="QPushButton" name="btnAddLabel">
               <property name="text">
                <string/>
               </property>
@@ -400,7 +400,7 @@
       </widget>
       <widget class="QTabWidget" name="tabWidget">
        <property name="currentIndex">
-        <number>0</number>
+        <number>1</number>
        </property>
        <widget class="QWidget" name="tabConsole">
         <property name="cursor">
@@ -482,26 +482,54 @@
         <attribute name="title">
          <string>Dashboard</string>
         </attribute>
-        <layout class="QGridLayout" name="gridLayout_3">
+        <layout class="QGridLayout" name="gridLayout_4">
          <item row="0" column="0">
-          <widget class="QScrollArea" name="scrollArea">
-           <property name="widgetResizable">
+          <widget class="QLineEdit" name="txtTitle">
+           <property name="font">
+            <font>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>Varboard</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignmentFlag::AlignCenter</set>
+           </property>
+           <property name="readOnly">
             <bool>true</bool>
            </property>
-           <widget class="QWidget" name="scrollAreaWidgetContents">
-            <property name="geometry">
-             <rect>
-              <x>0</x>
-              <y>0</y>
-              <width>398</width>
-              <height>425</height>
-             </rect>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QSplitter" name="splitterHelp">
+           <property name="orientation">
+            <enum>Qt::Orientation::Vertical</enum>
+           </property>
+           <widget class="QScrollArea" name="scrollArea">
+            <property name="widgetResizable">
+             <bool>true</bool>
             </property>
-            <layout class="QGridLayout" name="gridLayout_4">
-             <item row="0" column="0">
-              <layout class="QVBoxLayout" name="boardLayout"/>
-             </item>
-            </layout>
+            <widget class="QWidget" name="scrollAreaWidgetContents">
+             <property name="geometry">
+              <rect>
+               <x>0</x>
+               <y>0</y>
+               <width>398</width>
+               <height>68</height>
+              </rect>
+             </property>
+             <layout class="QGridLayout" name="gridLayout_3">
+              <item row="0" column="0">
+               <layout class="QVBoxLayout" name="boardLayout"/>
+              </item>
+             </layout>
+            </widget>
+           </widget>
+           <widget class="QTextEdit" name="txtHelp">
+            <property name="readOnly">
+             <bool>true</bool>
+            </property>
            </widget>
           </widget>
          </item>
@@ -538,7 +566,7 @@
        <widget class="QWidget" name="tabAbout">
         <attribute name="icon">
          <iconset resource="ephemeeus.qrc">
-          <normaloff>:/16x16/Copyright.png</normaloff>:/16x16/Copyright.png</iconset>
+          <normaloff>:/16x16/Info2.png</normaloff>:/16x16/Info2.png</iconset>
         </attribute>
         <attribute name="title">
          <string>About</string>

@@ -2,16 +2,21 @@
 #define VARGET_H
 
 #include <QHBoxLayout>
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonParseError>
+#include <QJsonValue>
 #include <QLabel>
 #include <QObject>
 #include <QPushButton>
+#include <QTemporaryFile>
 #include <QVariant>
 #include <QWidget>
 #include "MainWindow.h"
 #include "Meeus.h"
 #include "app.h"
 #include "ui_MainWindow.h"
-
 class Varboard;
 class MainWindow;
 
@@ -66,8 +71,8 @@ public:
     void pack();
     explicit Varboard(App *a, MainWindow *mw, Ui::MainWindow *ui);
     void Refresh();
-    int SaveFile(QString name);
-    int LoadFile(QString name, Meeus *m);
+    int SaveJSON(QString name);
+    int LoadJSON(QString name, Meeus *m);
     void Clear();
     MainWindow *mw;
 

@@ -23,7 +23,7 @@ QT_WARNING_PUSH
 QT_WARNING_DISABLE_DEPRECATED
 struct qt_meta_stringdata_MainWindow_t {
     QByteArrayData data[16];
-    char stringdata0[340];
+    char stringdata0[339];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -44,10 +44,10 @@ QT_MOC_LITERAL(8, 154, 23), // "on_btnAddVarget_clicked"
 QT_MOC_LITERAL(9, 178, 33), // "on_cbxVargets_currentIndexCha..."
 QT_MOC_LITERAL(10, 212, 5), // "index"
 QT_MOC_LITERAL(11, 218, 23), // "on_actionSave_triggered"
-QT_MOC_LITERAL(12, 242, 23), // "on_btnAddHeader_clicked"
-QT_MOC_LITERAL(13, 266, 22), // "on_btnAddTitle_clicked"
-QT_MOC_LITERAL(14, 289, 26), // "on_actionSave_as_triggered"
-QT_MOC_LITERAL(15, 316, 23) // "on_btnExportLog_clicked"
+QT_MOC_LITERAL(12, 242, 22), // "on_btnAddLabel_clicked"
+QT_MOC_LITERAL(13, 265, 22), // "on_btnAddTitle_clicked"
+QT_MOC_LITERAL(14, 288, 26), // "on_actionSave_as_triggered"
+QT_MOC_LITERAL(15, 315, 23) // "on_btnExportLog_clicked"
 
     },
     "MainWindow\0slotDoExit\0\0"
@@ -58,7 +58,7 @@ QT_MOC_LITERAL(15, 316, 23) // "on_btnExportLog_clicked"
     "on_actionOpen_triggered\0on_btnAddVarget_clicked\0"
     "on_cbxVargets_currentIndexChanged\0"
     "index\0on_actionSave_triggered\0"
-    "on_btnAddHeader_clicked\0on_btnAddTitle_clicked\0"
+    "on_btnAddLabel_clicked\0on_btnAddTitle_clicked\0"
     "on_actionSave_as_triggered\0"
     "on_btnExportLog_clicked"
 };
@@ -125,7 +125,7 @@ void MainWindow::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
         case 6: _t->on_btnAddVarget_clicked(); break;
         case 7: _t->on_cbxVargets_currentIndexChanged((*reinterpret_cast< int(*)>(_a[1]))); break;
         case 8: _t->on_actionSave_triggered(); break;
-        case 9: _t->on_btnAddHeader_clicked(); break;
+        case 9: _t->on_btnAddLabel_clicked(); break;
         case 10: _t->on_btnAddTitle_clicked(); break;
         case 11: _t->on_actionSave_as_triggered(); break;
         case 12: _t->on_btnExportLog_clicked(); break;

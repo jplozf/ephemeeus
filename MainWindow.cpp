@@ -64,7 +64,7 @@ MainWindow::MainWindow(QApplication* a, QWidget* parent)
   QString fName = QDir(appDir).filePath(app->appConstants->getQString("DEFAULT_VARBOARD"));
   if (QFile::exists(fName)) {
       // Load default Varboard if it exists...
-      this->vb->LoadFile(fName, meeus);
+      this->vb->LoadJSON(fName, meeus);
       showMessage("Default varboard open");
   } else {
       // ...Or create it otherwise
@@ -74,7 +74,7 @@ MainWindow::MainWindow(QApplication* a, QWidget* parent)
       this->vb->addVarget("Longitude", meeus, "VarLongitude");
       this->vb->addVarget("Julian Day", meeus, "VarJD");
       this->vb->pack();
-      this->vb->SaveFile(fName);
+      this->vb->SaveJSON(fName);
       showMessage("Creating default varboard");
   }
 
@@ -265,6 +265,7 @@ void MainWindow::saveSettings() {
     registry.setValue("geometry", saveGeometry());
     registry.setValue("windowState", saveState());
     registry.setValue("splitter", ui->splitter->saveState());
+    registry.setValue("splitterHelp", ui->splitterHelp->saveState());
     registry.setValue("tab", ui->tabWidget->currentIndex());
 
     // TODO : Store the current location
@@ -307,6 +308,11 @@ void MainWindow::readSettings() {
       registry.value("splitter", QByteArray()).toByteArray();
   if (!splitter.isEmpty()) {
     ui->splitter->restoreState(registry.value("splitter").toByteArray());
+  }
+
+  const QByteArray splitterHelp = registry.value("splitterHelp", QByteArray()).toByteArray();
+  if (!splitterHelp.isEmpty()) {
+      ui->splitterHelp->restoreState(registry.value("splitterHelp").toByteArray());
   }
 
   const int tabIndex = registry.value("tab", 0).toInt();
@@ -441,7 +447,8 @@ void MainWindow::on_actionOpen_triggered()
         this->setWindowTitle(this->appTitle + " - " + fi.fileName());
         delete this->vb;
         this->vb = new Varboard(app, this, ui);
-        this->vb->LoadFile(vbdName, meeus);
+        // this->vb->LoadFile(vbdName, meeus);
+        this->vb->LoadJSON(vbdName, meeus);
         this->vbdFileName = vbdName;
     } else {
         showMessage("Cancelling open");
@@ -478,7 +485,8 @@ void MainWindow::on_actionSave_triggered()
         showMessage("Saving " + vbdFileName);
         QFileInfo fi2(vbdFileName);
         this->setWindowTitle(this->appTitle + " - " + fi2.fileName());
-        this->vb->SaveFile(vbdFileName);
+        // this->vb->SaveFile(vbdFileName);
+        this->vb->SaveJSON(vbdFileName);
     } else {
         this->on_actionSave_as_triggered();
     }
@@ -504,7 +512,8 @@ void MainWindow::on_actionSave_as_triggered()
         showMessage("Saving " + vbdName);
         QFileInfo fi2(vbdName);
         this->setWindowTitle(this->appTitle + " - " + fi2.fileName());
-        this->vb->SaveFile(vbdName);
+        // this->vb->SaveFile(vbdName);
+        this->vb->SaveJSON(vbdName);
         this->vbdFileName = vbdName;
     } else {
         showMessage("Cancelling save");
@@ -512,11 +521,32 @@ void MainWindow::on_actionSave_as_triggered()
 }
 
 //******************************************************************************
-// on_btnAddHeader_clicked()
+// on_btnAddLabel_clicked()
 //******************************************************************************
-void MainWindow::on_btnAddHeader_clicked() {}
+void MainWindow::on_btnAddLabel_clicked()
+{
+    QString label = ui->txtVarboardLabel->text();
+    if (label != "") {
+        this->vb->addVarget(ui->txtVarboardLabel->text(), meeus, NULL);
+        this->vb->Refresh();
+        ui->txtVarboardLabel->setText("");
+        showMessage("Label \"" + label + "\" added");
+    } else {
+        showMessage("Cannot add an empty label");
+    }
+}
 
 //******************************************************************************
 // on_btnAddTitle_clicked()
 //******************************************************************************
-void MainWindow::on_btnAddTitle_clicked() {}
+void MainWindow::on_btnAddTitle_clicked()
+{
+    QString title = ui->txtVarboardTitle->text();
+    if (title != "") {
+        ui->txtTitle->setText(title);
+        ui->txtVarboardTitle->setText("");
+        showMessage("Title set to \"" + title + "\"");
+    } else {
+        showMessage("Cannot set an empty title");
+    }
+}

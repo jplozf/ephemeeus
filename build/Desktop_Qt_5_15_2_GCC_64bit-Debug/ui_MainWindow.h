@@ -89,8 +89,8 @@ public:
     QPushButton *btnAddTitle;
     QLabel *label_11;
     QHBoxLayout *horizontalLayout_9;
-    QLineEdit *txtVarboardHeader;
-    QPushButton *btnAddHeader;
+    QLineEdit *txtVarboardLabel;
+    QPushButton *btnAddLabel;
     QSpacerItem *verticalSpacer;
     QSpacerItem *verticalSpacer_2;
     QHBoxLayout *horizontalLayout_5;
@@ -107,11 +107,14 @@ public:
     QSpacerItem *horizontalSpacer;
     QTextEdit *txtConsole;
     QWidget *tabDashboard;
-    QGridLayout *gridLayout_3;
+    QGridLayout *gridLayout_4;
+    QLineEdit *txtTitle;
+    QSplitter *splitterHelp;
     QScrollArea *scrollArea;
     QWidget *scrollAreaWidgetContents;
-    QGridLayout *gridLayout_4;
+    QGridLayout *gridLayout_3;
     QVBoxLayout *boardLayout;
+    QTextEdit *txtHelp;
     QWidget *tabSettings;
     QGridLayout *gridLayout_7;
     QScrollArea *scrollArea_2;
@@ -393,16 +396,16 @@ public:
 
         horizontalLayout_9 = new QHBoxLayout();
         horizontalLayout_9->setObjectName(QString::fromUtf8("horizontalLayout_9"));
-        txtVarboardHeader = new QLineEdit(verticalLayoutWidget);
-        txtVarboardHeader->setObjectName(QString::fromUtf8("txtVarboardHeader"));
+        txtVarboardLabel = new QLineEdit(verticalLayoutWidget);
+        txtVarboardLabel->setObjectName(QString::fromUtf8("txtVarboardLabel"));
 
-        horizontalLayout_9->addWidget(txtVarboardHeader);
+        horizontalLayout_9->addWidget(txtVarboardLabel);
 
-        btnAddHeader = new QPushButton(verticalLayoutWidget);
-        btnAddHeader->setObjectName(QString::fromUtf8("btnAddHeader"));
-        btnAddHeader->setIcon(icon8);
+        btnAddLabel = new QPushButton(verticalLayoutWidget);
+        btnAddLabel->setObjectName(QString::fromUtf8("btnAddLabel"));
+        btnAddLabel->setIcon(icon8);
 
-        horizontalLayout_9->addWidget(btnAddHeader);
+        horizontalLayout_9->addWidget(btnAddLabel);
 
 
         formLayout_2->setLayout(9, QFormLayout::FieldRole, horizontalLayout_9);
@@ -491,24 +494,40 @@ public:
         tabWidget->addTab(tabConsole, icon11, QString());
         tabDashboard = new QWidget();
         tabDashboard->setObjectName(QString::fromUtf8("tabDashboard"));
-        gridLayout_3 = new QGridLayout(tabDashboard);
-        gridLayout_3->setObjectName(QString::fromUtf8("gridLayout_3"));
-        scrollArea = new QScrollArea(tabDashboard);
+        gridLayout_4 = new QGridLayout(tabDashboard);
+        gridLayout_4->setObjectName(QString::fromUtf8("gridLayout_4"));
+        txtTitle = new QLineEdit(tabDashboard);
+        txtTitle->setObjectName(QString::fromUtf8("txtTitle"));
+        txtTitle->setFont(font);
+        txtTitle->setAlignment(Qt::AlignmentFlag::AlignCenter);
+        txtTitle->setReadOnly(true);
+
+        gridLayout_4->addWidget(txtTitle, 0, 0, 1, 1);
+
+        splitterHelp = new QSplitter(tabDashboard);
+        splitterHelp->setObjectName(QString::fromUtf8("splitterHelp"));
+        splitterHelp->setOrientation(Qt::Orientation::Vertical);
+        scrollArea = new QScrollArea(splitterHelp);
         scrollArea->setObjectName(QString::fromUtf8("scrollArea"));
         scrollArea->setWidgetResizable(true);
         scrollAreaWidgetContents = new QWidget();
         scrollAreaWidgetContents->setObjectName(QString::fromUtf8("scrollAreaWidgetContents"));
-        scrollAreaWidgetContents->setGeometry(QRect(0, 0, 398, 425));
-        gridLayout_4 = new QGridLayout(scrollAreaWidgetContents);
-        gridLayout_4->setObjectName(QString::fromUtf8("gridLayout_4"));
+        scrollAreaWidgetContents->setGeometry(QRect(0, 0, 398, 68));
+        gridLayout_3 = new QGridLayout(scrollAreaWidgetContents);
+        gridLayout_3->setObjectName(QString::fromUtf8("gridLayout_3"));
         boardLayout = new QVBoxLayout();
         boardLayout->setObjectName(QString::fromUtf8("boardLayout"));
 
-        gridLayout_4->addLayout(boardLayout, 0, 0, 1, 1);
+        gridLayout_3->addLayout(boardLayout, 0, 0, 1, 1);
 
         scrollArea->setWidget(scrollAreaWidgetContents);
+        splitterHelp->addWidget(scrollArea);
+        txtHelp = new QTextEdit(splitterHelp);
+        txtHelp->setObjectName(QString::fromUtf8("txtHelp"));
+        txtHelp->setReadOnly(true);
+        splitterHelp->addWidget(txtHelp);
 
-        gridLayout_3->addWidget(scrollArea, 0, 0, 1, 1);
+        gridLayout_4->addWidget(splitterHelp, 1, 0, 1, 1);
 
         QIcon icon12;
         icon12.addFile(QString::fromUtf8(":/16x16/Document Spreadsheet.png"), QSize(), QIcon::Normal, QIcon::Off);
@@ -540,7 +559,7 @@ public:
         gridLayout_2->addWidget(txtAbout, 0, 0, 1, 1);
 
         QIcon icon14;
-        icon14.addFile(QString::fromUtf8(":/16x16/Copyright.png"), QSize(), QIcon::Normal, QIcon::Off);
+        icon14.addFile(QString::fromUtf8(":/16x16/Info2.png"), QSize(), QIcon::Normal, QIcon::Off);
         tabWidget->addTab(tabAbout, icon14, QString());
         splitter->addWidget(tabWidget);
 
@@ -566,7 +585,7 @@ public:
 
         retranslateUi(MainWindow);
 
-        tabWidget->setCurrentIndex(0);
+        tabWidget->setCurrentIndex(1);
 
 
         QMetaObject::connectSlotsByName(MainWindow);
@@ -612,8 +631,8 @@ public:
         label_9->setText(QCoreApplication::translate("MainWindow", "\342\226\270 Ephemerids Output", nullptr));
         label_10->setText(QCoreApplication::translate("MainWindow", "Title", nullptr));
         btnAddTitle->setText(QString());
-        label_11->setText(QCoreApplication::translate("MainWindow", "Header", nullptr));
-        btnAddHeader->setText(QString());
+        label_11->setText(QCoreApplication::translate("MainWindow", "Label", nullptr));
+        btnAddLabel->setText(QString());
         btnRefresh->setText(QString());
         pushButton_9->setText(QCoreApplication::translate("MainWindow", "PushButton", nullptr));
 #if QT_CONFIG(tooltip)
@@ -625,6 +644,7 @@ public:
 #endif // QT_CONFIG(tooltip)
         btnExportLog->setText(QString());
         tabWidget->setTabText(tabWidget->indexOf(tabConsole), QCoreApplication::translate("MainWindow", "Console", nullptr));
+        txtTitle->setText(QCoreApplication::translate("MainWindow", "Varboard", nullptr));
         tabWidget->setTabText(tabWidget->indexOf(tabDashboard), QCoreApplication::translate("MainWindow", "Dashboard", nullptr));
         tabWidget->setTabText(tabWidget->indexOf(tabSettings), QCoreApplication::translate("MainWindow", "Settings", nullptr));
         tabWidget->setTabText(tabWidget->indexOf(tabAbout), QCoreApplication::translate("MainWindow", "About", nullptr));

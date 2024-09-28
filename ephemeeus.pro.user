@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by QtCreator 14.0.1, 2024-09-25T21:48:59. -->
+<!-- Written by QtCreator 14.0.1, 2024-09-28T11:15:39. -->
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>
@@ -85,6 +85,10 @@
     <valuelist type="QVariantList" key="ClangTools.SuppressedDiagnostics"/>
     <value type="bool" key="ClangTools.UseGlobalSettings">true</value>
    </valuemap>
+   <value type="QDateTime" key="GitLab.LastRequest"></value>
+   <value type="QString" key="GitLab.LinkedId"></value>
+   <value type="QString" key="GitLab.Project"></value>
+   <value type="QString" key="GitLab.Server"></value>
   </valuemap>
  </data>
  <data>
