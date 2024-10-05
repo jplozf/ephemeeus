@@ -4,6 +4,7 @@
 #include <QClipboard>
 #include <QCloseEvent>
 #include <QCompleter>
+#include <QDesktopServices>
 #include <QDesktopWidget>
 #include <QFile>
 #include <QFileDialog>
@@ -19,9 +20,20 @@
 #include <QSqlTableModel>
 #include <QTimer>
 
+#include <QHBoxLayout>
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonParseError>
+#include <QJsonValue>
+#include <QLabel>
+#include <QObject>
+#include <QPushButton>
+#include <QTemporaryFile>
+#include <QVariant>
+#include <QWidget>
 #include "DlgInputLocation.h"
 #include "Meeus.h"
-#include "Varget.h"
 #include "app.h"
 #include "downloader.h"
 #include "qobjectdefs.h"
@@ -43,6 +55,7 @@ class MainWindow : public QMainWindow {
   MainWindow(QApplication* a, QWidget* parent = nullptr);
   ~MainWindow();
   App* app;
+  QDir appDir;
   void closeEvent(QCloseEvent*);
   void saveSettings();
   void readSettings();
@@ -68,6 +81,7 @@ class MainWindow : public QMainWindow {
   void on_btnRefresh_clicked();
   void on_txtLocation_editingFinished();
   void on_actionOpen_triggered();
+  void on_actionHelp_triggered();
   void on_btnAddVarget_clicked();
   void on_cbxVargets_currentIndexChanged(int index);
   void on_actionSave_triggered();
@@ -76,4 +90,70 @@ class MainWindow : public QMainWindow {
   void on_actionSave_as_triggered();
   void on_btnExportLog_clicked();
 };
+
+class MainWindow;
+class Varboard;
+// class MainWindow;
+
+typedef QString (Meeus::*callback_function)(void);
+void clearLayout(QLayout *layout);
+
+class Varget : public QWidget
+{
+    Q_OBJECT
+public:
+    explicit Varget(App *a,
+                    int Order,
+                    QString Label,
+                    Meeus *m,
+                    QString Function,
+                    Varboard *vb,
+                    QWidget *parent = nullptr);
+    void Refresh();
+    int Order;
+    QString Label;
+    QString Help;
+    QString Value;
+    QString Function;
+    Meeus *m;
+    QPushButton *btnUp;
+    QPushButton *btnDown;
+    QPushButton *btnDelete;
+    Varboard *vb;
+    QString css;
+    QLabel *lblOrder;
+
+private:
+    void compute();
+
+    callback_function pFunc;
+    QLineEdit *txtValue;
+
+private slots:
+    void on_clicked_button_down();
+    void on_clicked_button_up();
+    void on_clicked_button_delete();
+
+signals:
+};
+
+class Varboard
+{
+public:
+    QVector<Varget *> vargets;
+    static QMap<QString, callback_function> aFunc;
+    int addVarget(QString Label, Meeus *m, QString Function, QWidget *parent = nullptr);
+    void pack();
+    explicit Varboard(App *a, MainWindow *mw, Ui::MainWindow *ui);
+    void Refresh();
+    int SaveJSON(QString name);
+    int LoadJSON(QString name, Meeus *m);
+    void Clear();
+    MainWindow *mw;
+
+private:
+    App *a;
+    Ui::MainWindow *ui;
+};
+
 #endif  // MAINWINDOW_H

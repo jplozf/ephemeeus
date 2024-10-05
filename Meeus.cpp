@@ -1,7 +1,7 @@
 #include "Meeus.h"
 
 //******************************************************************************
-// Meeus()
+// Meeus::Meeus()
 //******************************************************************************
 Meeus::Meeus(Location location, QDateTime dt, QTimeZone tz, int time_mode) {
   this->location = location;
@@ -11,19 +11,19 @@ Meeus::Meeus(Location location, QDateTime dt, QTimeZone tz, int time_mode) {
 }
 
 //******************************************************************************
-// ~Meeus()
+// Meeus::~Meeus()
 //******************************************************************************
 Meeus::~Meeus() {}
 
 //******************************************************************************
-// ComputeJD()
+// Meeus::ComputeJD()
 //******************************************************************************
 void Meeus::ComputeJD() {
     this->JD = this->Date2JD(this->dt);
 }
 
 //******************************************************************************
-// VarJD()
+// Meeus::VarJD()
 //******************************************************************************
 QString Meeus::VarJD()
 {
@@ -32,7 +32,7 @@ QString Meeus::VarJD()
 }
 
 //******************************************************************************
-// VarDayOfWeek()
+// Meeus::VarDayOfWeek()
 //******************************************************************************
 QString Meeus::VarDayOfWeek()
 {
@@ -42,7 +42,7 @@ QString Meeus::VarDayOfWeek()
 }
 
 //******************************************************************************
-// VarDateTime()
+// Meeus::VarDateTime()
 //******************************************************************************
 QString Meeus::VarDateTime()
 {
@@ -50,7 +50,7 @@ QString Meeus::VarDateTime()
 }
 
 //******************************************************************************
-// VarLocation()
+// Meeus::VarLocation()
 //******************************************************************************
 QString Meeus::VarLocation()
 {
@@ -58,7 +58,7 @@ QString Meeus::VarLocation()
 }
 
 //******************************************************************************
-// VarLatitude()
+// Meeus::VarLatitude()
 //******************************************************************************
 QString Meeus::VarLatitude()
 {
@@ -69,7 +69,7 @@ QString Meeus::VarLatitude()
 }
 
 //******************************************************************************
-// VarLongitude()
+// Meeus::VarLongitude()
 //******************************************************************************
 QString Meeus::VarLongitude()
 {
@@ -80,7 +80,7 @@ QString Meeus::VarLongitude()
 }
 
 //******************************************************************************
-// Date2JD()
+// Meeus::Date2JD()
 //******************************************************************************
 double Meeus::Date2JD(QDateTime dt)
 {
@@ -104,7 +104,7 @@ double Meeus::Date2JD(QDateTime dt)
 }
 
 //******************************************************************************
-// JD2Date()
+// Meeus::JD2Date()
 //******************************************************************************
 QDateTime Meeus::JD2Date(double JD)
 {
@@ -140,7 +140,7 @@ QDateTime Meeus::JD2Date(double JD)
 }
 
 //******************************************************************************
-// DayOfWeek()
+// Meeus::DayOfWeek()
 //******************************************************************************
 int Meeus::DayOfWeek(double JD)
 {
@@ -149,7 +149,27 @@ int Meeus::DayOfWeek(double JD)
 }
 
 //******************************************************************************
-// SetDefaultLocation()
+// Meeus::DaysBetweenDates()
+//******************************************************************************
+int Meeus::DaysBetweenDates(QDateTime dt1, QDateTime dt2)
+{
+    double jd1 = Date2JD(dt1);
+    double jd2 = Date2JD(dt2);
+    return (int) (jd2 - jd1);
+}
+
+//******************************************************************************
+// Meeus::AddDays2Date()
+//******************************************************************************
+QDateTime Meeus::AddDays2Date(QDateTime dt, int d)
+{
+    double jd = Date2JD(dt);
+    jd = jd + (double) d;
+    return JD2Date(jd);
+}
+
+//******************************************************************************
+// Meeus::SetDefaultLocation()
 //******************************************************************************
 void Meeus::SetDefaultLocation() {
   Location loc;
@@ -160,7 +180,7 @@ void Meeus::SetDefaultLocation() {
 }
 
 //******************************************************************************
-// SetLocation()
+// Meeus::SetLocation()
 //******************************************************************************
 void Meeus::SetLocation(Location loc)
 {
@@ -168,56 +188,56 @@ void Meeus::SetLocation(Location loc)
 }
 
 //******************************************************************************
-// getDay()
+// Meeus::getDay()
 //******************************************************************************
 int Meeus::getDay() {
   return this->dt.date().day();
 }
 
 //******************************************************************************
-// getMonth()
+// Meeus::getMonth()
 //******************************************************************************
 int Meeus::getMonth() {
   return this->dt.date().month();
 }
 
 //******************************************************************************
-// getYear()
+// Meeus::getYear()
 //******************************************************************************
 int Meeus::getYear() {
   return this->dt.date().year();
 }
 
 //******************************************************************************
-// getHour()
+// Meeus::getHour()
 //******************************************************************************
 int Meeus::getHour() {
   return this->dt.time().hour();
 }
 
 //******************************************************************************
-// getMinute()
+// Meeus::getMinute()
 //******************************************************************************
 int Meeus::getMinute() {
   return this->dt.time().minute();
 }
 
 //******************************************************************************
-// getSecond()
+// Meeus::getSecond()
 //******************************************************************************
 int Meeus::getSecond() {
   return this->dt.time().second();
 }
 
 //******************************************************************************
-// init()
+// Meeus::init()
 //******************************************************************************
 void Meeus::init() {
   this->refresh();
 }
 
 //******************************************************************************
-// refresh()
+// Meeus::refresh()
 //******************************************************************************
 void Meeus::refresh()
 {
@@ -228,7 +248,7 @@ void Meeus::refresh()
 }
 
 //******************************************************************************
-// getDateTime()
+// Meeus::getDateTime()
 //******************************************************************************
 QString Meeus::getDateTime()
 {
@@ -236,11 +256,47 @@ QString Meeus::getDateTime()
 }
 
 //******************************************************************************
-// getLocation()
+// Meeus::getLocation()
 //******************************************************************************
 QString Meeus::getLocation()
 {
     return this->location.Name;
+}
+
+//******************************************************************************
+// Static variables need to be defined before use
+//******************************************************************************
+double Sun::MeanLongitude = 0;     // L0
+double Sun::MeanAnomaly = 0;       // M
+double Sun::Center = 0;            // C
+double Sun::TrueLongitude = 0;     // Θ
+double Sun::TrueAnomaly = 0;       // ν
+double Sun::ApparentLongitude = 0; // λ
+double Sun::RadiusVector = 0;      // R
+
+//******************************************************************************
+// Sun::compute()
+//******************************************************************************
+void Sun::compute(double JD)
+{
+    // Time in Julian Centuries
+    double T = (JD - 2451545.0) / 36525.0;
+    // Earth's Eccentricity
+    double e = 0.016708634 - 0.000042037 * T - 0.0000001267 * (T * T);
+    // Sun's Mean Longitude
+    Sun::MeanLongitude = 280.46646 + 36000.76983 * T + 0.0003032 * (T * T);
+    // Sun's Mean Anomaly
+    Sun::MeanAnomaly = 357.52911 + 35999.05029 * T - 0.0001537 * (T * T);
+    // Sun's Equation of the Center
+    Sun::Center = (1.914602 - 0.004817 * T - 0.000014 * (T * T)) * sin(deg2rad(Sun::MeanAnomaly));
+    Sun::Center += (0.01993 - 0.000101 * T) * sin(deg2rad(2 * Sun::MeanAnomaly));
+    Sun::Center += 0.000289 * sin(deg2rad(3 * Sun::MeanAnomaly));
+    // Sun's True Longitude
+    Sun::TrueLongitude = Sun::MeanLongitude + Sun::Center;
+    // Sun's True Anomaly
+    Sun::TrueAnomaly = Sun::MeanAnomaly + Sun::Center;
+    // Sun's Radius Vector
+    Sun::RadiusVector = (1.000001018 * (1 - (e * e))) / (1 + e * cos(deg2rad(Sun::TrueAnomaly)));
 }
 
 //******************************************************************************
@@ -319,3 +375,53 @@ std::tuple<int, int, int> DD2DMS(double dd)
     double fs = floor(ds);      // Full Second
     return std::make_tuple((int) (fd * sign), (int) fm, (int) fs);
 }
+
+//******************************************************************************
+// deg2rad()
+//******************************************************************************
+double deg2rad(double d)
+{
+    return (d * M_PI / 180.0);
+}
+
+//******************************************************************************
+// rad2deg()
+//******************************************************************************
+double rad2deg(double r)
+{
+    return (r * 180.0 / M_PI);
+}
+
+/*
+--------------------------------------------------------------------------------
+The Greek Alphabet
+https://web.mit.edu/jmorzins/www/greek-alphabet.html
+--------------------------------------------------------------------------------
+
+Α	α		alpha		a		father
+Β	β		beta		b
+Γ	γ		gamma		g
+Δ	δ		delta		d
+Ε	ε		epsilon 	e		end
+Ζ	ζ		zêta		z
+Η	η		êta			ê		hey
+Θ	θ		thêta 		th		thick
+Ι	ι		iota		i		it
+Κ	κ		kappa		k
+Λ	λ		lambda		l
+Μ	μ		mu			m
+Ν	ν		nu			n
+Ξ	ξ		xi			ks		box
+Ο	ο		omikron		o 		off
+Π	π		pi			p
+Ρ	ρ		rho			r
+Σ	σ, ς	sigma		s		say
+Τ	τ		tau			t
+Υ	υ		upsilon		u		put
+Φ	φ		phi			f
+Χ	χ		chi			ch		Bach
+Ψ	ψ		psi			ps
+Ω	ω		omega		ô		grow
+
+--------------------------------------------------------------------------------
+*/

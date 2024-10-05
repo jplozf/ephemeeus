@@ -13,6 +13,7 @@ Settings::Settings() {
   defaults["APPLICATION_THEME"] =
       QVariant("LIGHT");  // DARK, LIGHT or ALTERNATE
   defaults["APPLICATION_STATUSBAR_TIMEOUT"] = QVariant(3000);
+  defaults["APPLICATION_SHOW_DOC"] = QVariant(false);
 
   defaults["THEME_WINDOW"] = QVariant("#efefef");
   defaults["THEME_WINDOW_TEXT"] = QVariant("#000000");

@@ -44,6 +44,7 @@ public:
     QAction *actionRefresh;
     QAction *actionSave;
     QAction *actionSave_as;
+    QAction *actionHelp;
     QWidget *centralwidget;
     QGridLayout *gridLayout;
     QSplitter *splitter;
@@ -132,7 +133,7 @@ public:
     {
         if (MainWindow->objectName().isEmpty())
             MainWindow->setObjectName(QString::fromUtf8("MainWindow"));
-        MainWindow->resize(901, 538);
+        MainWindow->resize(1086, 538);
         actionQuit = new QAction(MainWindow);
         actionQuit->setObjectName(QString::fromUtf8("actionQuit"));
         QIcon icon;
@@ -157,6 +158,12 @@ public:
         actionSave_as = new QAction(MainWindow);
         actionSave_as->setObjectName(QString::fromUtf8("actionSave_as"));
         actionSave_as->setIcon(icon3);
+        actionHelp = new QAction(MainWindow);
+        actionHelp->setObjectName(QString::fromUtf8("actionHelp"));
+        QIcon icon4;
+        icon4.addFile(QString::fromUtf8(":/16x16/pdf.png"), QSize(), QIcon::Normal, QIcon::Off);
+        actionHelp->setIcon(icon4);
+        actionHelp->setMenuRole(QAction::MenuRole::TextHeuristicRole);
         centralwidget = new QWidget(MainWindow);
         centralwidget->setObjectName(QString::fromUtf8("centralwidget"));
         gridLayout = new QGridLayout(centralwidget);
@@ -195,17 +202,17 @@ public:
 
         pushButton = new QPushButton(verticalLayoutWidget);
         pushButton->setObjectName(QString::fromUtf8("pushButton"));
-        QIcon icon4;
-        icon4.addFile(QString::fromUtf8(":/16x16/Rotate.png"), QSize(), QIcon::Normal, QIcon::Off);
-        pushButton->setIcon(icon4);
+        QIcon icon5;
+        icon5.addFile(QString::fromUtf8(":/16x16/Rotate.png"), QSize(), QIcon::Normal, QIcon::Off);
+        pushButton->setIcon(icon5);
 
         horizontalLayout_2->addWidget(pushButton);
 
         pushButton_2 = new QPushButton(verticalLayoutWidget);
         pushButton_2->setObjectName(QString::fromUtf8("pushButton_2"));
-        QIcon icon5;
-        icon5.addFile(QString::fromUtf8(":/16x16/Pen.png"), QSize(), QIcon::Normal, QIcon::Off);
-        pushButton_2->setIcon(icon5);
+        QIcon icon6;
+        icon6.addFile(QString::fromUtf8(":/16x16/Pen.png"), QSize(), QIcon::Normal, QIcon::Off);
+        pushButton_2->setIcon(icon6);
 
         horizontalLayout_2->addWidget(pushButton_2);
 
@@ -228,17 +235,17 @@ public:
 
         pushButton_10 = new QPushButton(verticalLayoutWidget);
         pushButton_10->setObjectName(QString::fromUtf8("pushButton_10"));
-        QIcon icon6;
-        icon6.addFile(QString::fromUtf8(":/16x16/Lock.png"), QSize(), QIcon::Normal, QIcon::Off);
-        pushButton_10->setIcon(icon6);
+        QIcon icon7;
+        icon7.addFile(QString::fromUtf8(":/16x16/Lock.png"), QSize(), QIcon::Normal, QIcon::Off);
+        pushButton_10->setIcon(icon7);
 
         horizontalLayout_6->addWidget(pushButton_10);
 
         pushButton_8 = new QPushButton(verticalLayoutWidget);
         pushButton_8->setObjectName(QString::fromUtf8("pushButton_8"));
-        QIcon icon7;
-        icon7.addFile(QString::fromUtf8(":/16x16/Write.png"), QSize(), QIcon::Normal, QIcon::Off);
-        pushButton_8->setIcon(icon7);
+        QIcon icon8;
+        icon8.addFile(QString::fromUtf8(":/16x16/Write.png"), QSize(), QIcon::Normal, QIcon::Off);
+        pushButton_8->setIcon(icon8);
 
         horizontalLayout_6->addWidget(pushButton_8);
 
@@ -261,13 +268,13 @@ public:
 
         pushButton_12 = new QPushButton(verticalLayoutWidget);
         pushButton_12->setObjectName(QString::fromUtf8("pushButton_12"));
-        pushButton_12->setIcon(icon6);
+        pushButton_12->setIcon(icon7);
 
         horizontalLayout_7->addWidget(pushButton_12);
 
         pushButton_11 = new QPushButton(verticalLayoutWidget);
         pushButton_11->setObjectName(QString::fromUtf8("pushButton_11"));
-        pushButton_11->setIcon(icon7);
+        pushButton_11->setIcon(icon8);
 
         horizontalLayout_7->addWidget(pushButton_11);
 
@@ -288,13 +295,13 @@ public:
 
         pushButton_3 = new QPushButton(verticalLayoutWidget);
         pushButton_3->setObjectName(QString::fromUtf8("pushButton_3"));
-        pushButton_3->setIcon(icon4);
+        pushButton_3->setIcon(icon5);
 
         horizontalLayout_3->addWidget(pushButton_3);
 
         pushButton_4 = new QPushButton(verticalLayoutWidget);
         pushButton_4->setObjectName(QString::fromUtf8("pushButton_4"));
-        pushButton_4->setIcon(icon5);
+        pushButton_4->setIcon(icon6);
 
         horizontalLayout_3->addWidget(pushButton_4);
 
@@ -315,13 +322,13 @@ public:
 
         pushButton_5 = new QPushButton(verticalLayoutWidget);
         pushButton_5->setObjectName(QString::fromUtf8("pushButton_5"));
-        pushButton_5->setIcon(icon4);
+        pushButton_5->setIcon(icon5);
 
         horizontalLayout_4->addWidget(pushButton_5);
 
         pushButton_6 = new QPushButton(verticalLayoutWidget);
         pushButton_6->setObjectName(QString::fromUtf8("pushButton_6"));
-        pushButton_6->setIcon(icon5);
+        pushButton_6->setIcon(icon6);
 
         horizontalLayout_4->addWidget(pushButton_6);
 
@@ -347,9 +354,9 @@ public:
 
         btnAddVarget = new QPushButton(verticalLayoutWidget);
         btnAddVarget->setObjectName(QString::fromUtf8("btnAddVarget"));
-        QIcon icon8;
-        icon8.addFile(QString::fromUtf8(":/16x16/Plus.png"), QSize(), QIcon::Normal, QIcon::Off);
-        btnAddVarget->setIcon(icon8);
+        QIcon icon9;
+        icon9.addFile(QString::fromUtf8(":/16x16/Plus.png"), QSize(), QIcon::Normal, QIcon::Off);
+        btnAddVarget->setIcon(icon9);
 
         horizontalLayout_10->addWidget(btnAddVarget);
 
@@ -384,7 +391,7 @@ public:
 
         btnAddTitle = new QPushButton(verticalLayoutWidget);
         btnAddTitle->setObjectName(QString::fromUtf8("btnAddTitle"));
-        btnAddTitle->setIcon(icon8);
+        btnAddTitle->setIcon(icon9);
 
         horizontalLayout_8->addWidget(btnAddTitle);
 
@@ -405,7 +412,7 @@ public:
 
         btnAddLabel = new QPushButton(verticalLayoutWidget);
         btnAddLabel->setObjectName(QString::fromUtf8("btnAddLabel"));
-        btnAddLabel->setIcon(icon8);
+        btnAddLabel->setIcon(icon9);
 
         horizontalLayout_9->addWidget(btnAddLabel);
 
@@ -460,17 +467,17 @@ public:
         horizontalLayout->setObjectName(QString::fromUtf8("horizontalLayout"));
         btnClearConsole = new QPushButton(tabConsole);
         btnClearConsole->setObjectName(QString::fromUtf8("btnClearConsole"));
-        QIcon icon9;
-        icon9.addFile(QString::fromUtf8(":/16x16/Recycle.png"), QSize(), QIcon::Normal, QIcon::Off);
-        btnClearConsole->setIcon(icon9);
+        QIcon icon10;
+        icon10.addFile(QString::fromUtf8(":/16x16/Recycle.png"), QSize(), QIcon::Normal, QIcon::Off);
+        btnClearConsole->setIcon(icon10);
 
         horizontalLayout->addWidget(btnClearConsole);
 
         btnExportLog = new QPushButton(tabConsole);
         btnExportLog->setObjectName(QString::fromUtf8("btnExportLog"));
-        QIcon icon10;
-        icon10.addFile(QString::fromUtf8(":/16x16/Upload.png"), QSize(), QIcon::Normal, QIcon::Off);
-        btnExportLog->setIcon(icon10);
+        QIcon icon11;
+        icon11.addFile(QString::fromUtf8(":/16x16/Upload.png"), QSize(), QIcon::Normal, QIcon::Off);
+        btnExportLog->setIcon(icon11);
 
         horizontalLayout->addWidget(btnExportLog);
 
@@ -491,9 +498,9 @@ public:
 
         gridLayout_5->addWidget(txtConsole, 2, 0, 1, 1);
 
-        QIcon icon11;
-        icon11.addFile(QString::fromUtf8(":/16x16/Computer.png"), QSize(), QIcon::Normal, QIcon::Off);
-        tabWidget->addTab(tabConsole, icon11, QString());
+        QIcon icon12;
+        icon12.addFile(QString::fromUtf8(":/16x16/Computer.png"), QSize(), QIcon::Normal, QIcon::Off);
+        tabWidget->addTab(tabConsole, icon12, QString());
         tabDashboard = new QWidget();
         tabDashboard->setObjectName(QString::fromUtf8("tabDashboard"));
         gridLayout_4 = new QGridLayout(tabDashboard);
@@ -514,7 +521,7 @@ public:
         scrollArea->setWidgetResizable(true);
         scrollAreaWidgetContents = new QWidget();
         scrollAreaWidgetContents->setObjectName(QString::fromUtf8("scrollAreaWidgetContents"));
-        scrollAreaWidgetContents->setGeometry(QRect(0, 0, 398, 68));
+        scrollAreaWidgetContents->setGeometry(QRect(0, 0, 487, 68));
         gridLayout_3 = new QGridLayout(scrollAreaWidgetContents);
         gridLayout_3->setObjectName(QString::fromUtf8("gridLayout_3"));
         boardLayout = new QVBoxLayout();
@@ -531,9 +538,9 @@ public:
 
         gridLayout_4->addWidget(splitterHelp, 1, 0, 1, 1);
 
-        QIcon icon12;
-        icon12.addFile(QString::fromUtf8(":/16x16/Document Spreadsheet.png"), QSize(), QIcon::Normal, QIcon::Off);
-        tabWidget->addTab(tabDashboard, icon12, QString());
+        QIcon icon13;
+        icon13.addFile(QString::fromUtf8(":/16x16/Document Spreadsheet.png"), QSize(), QIcon::Normal, QIcon::Off);
+        tabWidget->addTab(tabDashboard, icon13, QString());
         tabSettings = new QWidget();
         tabSettings->setObjectName(QString::fromUtf8("tabSettings"));
         gridLayout_7 = new QGridLayout(tabSettings);
@@ -543,14 +550,14 @@ public:
         scrollArea_2->setWidgetResizable(true);
         boxSettings = new QWidget();
         boxSettings->setObjectName(QString::fromUtf8("boxSettings"));
-        boxSettings->setGeometry(QRect(0, 0, 398, 392));
+        boxSettings->setGeometry(QRect(0, 0, 487, 386));
         scrollArea_2->setWidget(boxSettings);
 
         gridLayout_7->addWidget(scrollArea_2, 0, 1, 1, 1);
 
-        QIcon icon13;
-        icon13.addFile(QString::fromUtf8(":/16x16/Gear.png"), QSize(), QIcon::Normal, QIcon::Off);
-        tabWidget->addTab(tabSettings, icon13, QString());
+        QIcon icon14;
+        icon14.addFile(QString::fromUtf8(":/16x16/Gear.png"), QSize(), QIcon::Normal, QIcon::Off);
+        tabWidget->addTab(tabSettings, icon14, QString());
         tabAbout = new QWidget();
         tabAbout->setObjectName(QString::fromUtf8("tabAbout"));
         gridLayout_2 = new QGridLayout(tabAbout);
@@ -560,9 +567,9 @@ public:
 
         gridLayout_2->addWidget(txtAbout, 0, 0, 1, 1);
 
-        QIcon icon14;
-        icon14.addFile(QString::fromUtf8(":/16x16/Info2.png"), QSize(), QIcon::Normal, QIcon::Off);
-        tabWidget->addTab(tabAbout, icon14, QString());
+        QIcon icon15;
+        icon15.addFile(QString::fromUtf8(":/16x16/Copyright.png"), QSize(), QIcon::Normal, QIcon::Off);
+        tabWidget->addTab(tabAbout, icon15, QString());
         splitter->addWidget(tabWidget);
 
         gridLayout->addWidget(splitter, 0, 0, 1, 1);
@@ -570,7 +577,7 @@ public:
         MainWindow->setCentralWidget(centralwidget);
         menuBar = new QMenuBar(MainWindow);
         menuBar->setObjectName(QString::fromUtf8("menuBar"));
-        menuBar->setGeometry(QRect(0, 0, 901, 22));
+        menuBar->setGeometry(QRect(0, 0, 1086, 22));
         menu_File = new QMenu(menuBar);
         menu_File->setObjectName(QString::fromUtf8("menu_File"));
         MainWindow->setMenuBar(menuBar);
@@ -596,10 +603,12 @@ public:
         toolBar->addAction(actionRefresh);
         toolBar->addSeparator();
         toolBar->addAction(actionQuit);
+        toolBar->addSeparator();
+        toolBar->addAction(actionHelp);
 
         retranslateUi(MainWindow);
 
-        tabWidget->setCurrentIndex(1);
+        tabWidget->setCurrentIndex(3);
 
 
         QMetaObject::connectSlotsByName(MainWindow);
@@ -623,6 +632,10 @@ public:
 #endif // QT_CONFIG(shortcut)
         actionSave->setText(QCoreApplication::translate("MainWindow", "Save", nullptr));
         actionSave_as->setText(QCoreApplication::translate("MainWindow", "Save as...", nullptr));
+        actionHelp->setText(QCoreApplication::translate("MainWindow", "Help", nullptr));
+#if QT_CONFIG(tooltip)
+        actionHelp->setToolTip(QCoreApplication::translate("MainWindow", "Open PDF Meeus Documentation", nullptr));
+#endif // QT_CONFIG(tooltip)
         label_6->setText(QCoreApplication::translate("MainWindow", "Country", nullptr));
         label->setText(QCoreApplication::translate("MainWindow", "Location", nullptr));
         pushButton->setText(QString());

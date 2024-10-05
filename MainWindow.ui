@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>901</width>
+    <width>1086</width>
     <height>538</height>
    </rect>
   </property>
@@ -400,7 +400,7 @@
       </widget>
       <widget class="QTabWidget" name="tabWidget">
        <property name="currentIndex">
-        <number>1</number>
+        <number>3</number>
        </property>
        <widget class="QWidget" name="tabConsole">
         <property name="cursor">
@@ -515,7 +515,7 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>398</width>
+               <width>487</width>
                <height>68</height>
               </rect>
              </property>
@@ -554,8 +554,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>398</width>
-              <height>392</height>
+              <width>487</width>
+              <height>386</height>
              </rect>
             </property>
            </widget>
@@ -566,7 +566,7 @@
        <widget class="QWidget" name="tabAbout">
         <attribute name="icon">
          <iconset resource="ephemeeus.qrc">
-          <normaloff>:/16x16/Info2.png</normaloff>:/16x16/Info2.png</iconset>
+          <normaloff>:/16x16/Copyright.png</normaloff>:/16x16/Copyright.png</iconset>
         </attribute>
         <attribute name="title">
          <string>About</string>
@@ -587,7 +587,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>901</width>
+     <width>1086</width>
      <height>22</height>
     </rect>
    </property>
@@ -627,6 +627,8 @@
    <addaction name="actionRefresh"/>
    <addaction name="separator"/>
    <addaction name="actionQuit"/>
+   <addaction name="separator"/>
+   <addaction name="actionHelp"/>
   </widget>
   <action name="actionQuit">
    <property name="icon">
@@ -686,6 +688,21 @@
    </property>
    <property name="text">
     <string>Save as...</string>
+   </property>
+  </action>
+  <action name="actionHelp">
+   <property name="icon">
+    <iconset resource="ephemeeus.qrc">
+     <normaloff>:/16x16/pdf.png</normaloff>:/16x16/pdf.png</iconset>
+   </property>
+   <property name="text">
+    <string>Help</string>
+   </property>
+   <property name="toolTip">
+    <string>Open PDF Meeus Documentation</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::MenuRole::TextHeuristicRole</enum>
    </property>
   </action>
  </widget>

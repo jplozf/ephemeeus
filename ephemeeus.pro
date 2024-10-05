@@ -1,5 +1,4 @@
-QT       += core gui network sql
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+QT       += core gui network sql widgets
 
 GIT_HASH="\\\"$$system(git -C \""$$_PRO_FILE_PWD_"\" rev-parse --short HEAD)\\\""
 GIT_BRANCH="\\\"$$system(git -C \""$$_PRO_FILE_PWD_"\" rev-parse --abbrev-ref HEAD)\\\""
@@ -16,7 +15,6 @@ CONFIG += c++17
 SOURCES += \
     DlgInputLocation.cpp \
     Meeus.cpp \
-    Varget.cpp \
     app.cpp \
     constants.cpp \
     downloader.cpp \
@@ -29,7 +27,6 @@ HEADERS += \
     DlgInputLocation.h \
     MainWindow.h \
     Meeus.h \
-    Varget.h \
     app.h \
     constants.h \
     downloader.h \

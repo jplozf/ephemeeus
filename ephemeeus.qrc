@@ -173,5 +173,7 @@
         <file>16x16/Zoom In.png</file>
         <file>16x16/Zoom Out.png</file>
         <file>help.html</file>
+        <file>dox/Astronomical Algorithms - Jean Meeus.pdf</file>
+        <file>16x16/pdf.png</file>
     </qresource>
 </RCC>
