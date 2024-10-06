@@ -29,6 +29,7 @@
 #include <QLabel>
 #include <QObject>
 #include <QPushButton>
+#include <QScreen>
 #include <QTemporaryFile>
 #include <QVariant>
 #include <QWidget>
@@ -63,6 +64,7 @@ class MainWindow : public QMainWindow {
   Ui::MainWindow* ui;
   void setTheme();
   void showMessage(const QString &message, int timeout = -1);
+  void notify(QString message, QString title = "*DEFAULT");
 
   private:
   QApplication* a;
@@ -89,6 +91,7 @@ class MainWindow : public QMainWindow {
   void on_btnAddTitle_clicked();
   void on_actionSave_as_triggered();
   void on_btnExportLog_clicked();
+  void on_action_About_triggered();
 };
 
 class MainWindow;

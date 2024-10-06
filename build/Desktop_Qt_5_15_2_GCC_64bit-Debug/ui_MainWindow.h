@@ -45,6 +45,7 @@ public:
     QAction *actionSave;
     QAction *actionSave_as;
     QAction *actionHelp;
+    QAction *action_About;
     QWidget *centralwidget;
     QGridLayout *gridLayout;
     QSplitter *splitter;
@@ -126,6 +127,7 @@ public:
     QTextBrowser *txtAbout;
     QMenuBar *menuBar;
     QMenu *menu_File;
+    QMenu *menu;
     QStatusBar *statusBar;
     QToolBar *toolBar;
 
@@ -164,6 +166,8 @@ public:
         icon4.addFile(QString::fromUtf8(":/16x16/pdf.png"), QSize(), QIcon::Normal, QIcon::Off);
         actionHelp->setIcon(icon4);
         actionHelp->setMenuRole(QAction::MenuRole::TextHeuristicRole);
+        action_About = new QAction(MainWindow);
+        action_About->setObjectName(QString::fromUtf8("action_About"));
         centralwidget = new QWidget(MainWindow);
         centralwidget->setObjectName(QString::fromUtf8("centralwidget"));
         gridLayout = new QGridLayout(centralwidget);
@@ -580,6 +584,8 @@ public:
         menuBar->setGeometry(QRect(0, 0, 1086, 22));
         menu_File = new QMenu(menuBar);
         menu_File->setObjectName(QString::fromUtf8("menu_File"));
+        menu = new QMenu(menuBar);
+        menu->setObjectName(QString::fromUtf8("menu"));
         MainWindow->setMenuBar(menuBar);
         statusBar = new QStatusBar(MainWindow);
         statusBar->setObjectName(QString::fromUtf8("statusBar"));
@@ -591,11 +597,14 @@ public:
         MainWindow->addToolBar(Qt::TopToolBarArea, toolBar);
 
         menuBar->addAction(menu_File->menuAction());
+        menuBar->addAction(menu->menuAction());
         menu_File->addAction(actionOpen);
         menu_File->addAction(actionSave);
         menu_File->addAction(actionSave_as);
         menu_File->addAction(actionRefresh);
         menu_File->addAction(actionQuit);
+        menu->addAction(action_About);
+        menu->addAction(actionHelp);
         toolBar->addAction(actionOpen);
         toolBar->addAction(actionSave);
         toolBar->addAction(actionSave_as);
@@ -636,6 +645,7 @@ public:
 #if QT_CONFIG(tooltip)
         actionHelp->setToolTip(QCoreApplication::translate("MainWindow", "Open PDF Meeus Documentation", nullptr));
 #endif // QT_CONFIG(tooltip)
+        action_About->setText(QCoreApplication::translate("MainWindow", "&About", nullptr));
         label_6->setText(QCoreApplication::translate("MainWindow", "Country", nullptr));
         label->setText(QCoreApplication::translate("MainWindow", "Location", nullptr));
         pushButton->setText(QString());
@@ -676,6 +686,7 @@ public:
         tabWidget->setTabText(tabWidget->indexOf(tabSettings), QCoreApplication::translate("MainWindow", "Settings", nullptr));
         tabWidget->setTabText(tabWidget->indexOf(tabAbout), QCoreApplication::translate("MainWindow", "About", nullptr));
         menu_File->setTitle(QCoreApplication::translate("MainWindow", "&File", nullptr));
+        menu->setTitle(QCoreApplication::translate("MainWindow", "?", nullptr));
         toolBar->setWindowTitle(QCoreApplication::translate("MainWindow", "toolBar", nullptr));
     } // retranslateUi
 

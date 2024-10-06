@@ -366,6 +366,52 @@ void MainWindow::refresh() {
 }
 
 //******************************************************************************
+// notify()
+//******************************************************************************
+void MainWindow::notify(QString message, QString title)
+{
+    if (title == "*DEFAULT") {
+        title = this->app->appConstants->getQString("APPLICATION_NAME");
+    }
+    qDebug() << "NOTIFICATION";
+#ifdef Q_OS_LINUX
+    if (this->app->appSettings->get("APPLICATION_NOTIFICATION_SYSTEM").toBool() == true) {
+        system(QString("notify-send \"%1\" \"%2\"").arg(title).arg(message).toStdString().c_str());
+    } else {
+        QMessageBox *mbox = new QMessageBox;
+        mbox->setWindowTitle(title);
+        mbox->setText(message);
+        mbox->show();
+
+        QSize sizePopup = mbox->frameSize();
+        QScreen *screen = qApp->screens().at(0);
+        int heightScreen = screen->availableGeometry().height();
+        int widthScreen = screen->availableGeometry().width();
+        mbox->move(widthScreen - sizePopup.width() - 10, heightScreen - sizePopup.height() - 10);
+
+        QTimer::singleShot(this->app->appSettings->get("APPLICATION_NOTIFICATION_TIMEOUT").toInt(),
+                           mbox,
+                           SLOT(hide()));
+    }
+#else
+    QMessageBox *mbox = new QMessageBox;
+    mbox->setWindowTitle(title);
+    mbox->setText(message);
+    mbox->show();
+
+    QSize sizePopup = mbox->frameSize();
+    QScreen *screen = qApp->screens().at(0);
+    int heightScreen = screen->availableGeometry().height();
+    int widthScreen = screen->availableGeometry().width();
+    mbox->move(widthScreen - sizePopup.width() - 10, heightScreen - sizePopup.height() - 10);
+
+    QTimer::singleShot(this->app->appSettings->get("APPLICATION_NOTIFICATION_TIMEOUT").toInt(),
+                       mbox,
+                       SLOT(hide()));
+#endif
+}
+
+//******************************************************************************
 // on_actionRefresh_triggered()
 //******************************************************************************
 void MainWindow::on_actionRefresh_triggered() {
@@ -575,6 +621,14 @@ void MainWindow::on_actionHelp_triggered()
         QFile::copy(":/dox/Astronomical Algorithms - Jean Meeus.pdf", fDoc);
     }
     QDesktopServices::openUrl(QUrl(QString(fDoc), QUrl::TolerantMode));
+}
+
+//******************************************************************************
+// MainWindow::on_action_About_triggered()
+//******************************************************************************
+void MainWindow::on_action_About_triggered()
+{
+    ui->tabWidget->setCurrentIndex(3);
 }
 
 QMap<QString, callback_function> Varboard::aFunc = {{"VarDateTime", &Meeus::VarDateTime},

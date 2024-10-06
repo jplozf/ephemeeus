@@ -14,6 +14,8 @@ Settings::Settings() {
       QVariant("LIGHT");  // DARK, LIGHT or ALTERNATE
   defaults["APPLICATION_STATUSBAR_TIMEOUT"] = QVariant(3000);
   defaults["APPLICATION_SHOW_DOC"] = QVariant(false);
+  defaults["APPLICATION_NOTIFICATION_SYSTEM"] = QVariant(false);
+  defaults["APPLICATION_NOTIFICATION_TIMEOUT"] = QVariant(3000);
 
   defaults["THEME_WINDOW"] = QVariant("#efefef");
   defaults["THEME_WINDOW_TEXT"] = QVariant("#000000");
@@ -116,8 +118,9 @@ void Settings::form(MainWindow* w) {
     }
     QLabel* lblSetting = new QLabel(e);
     QLineEdit* txtSetting = new QLineEdit(settings.value(e).toString());
-    connect(txtSetting, &QLineEdit::textChanged,
-            [=] { handleTextChanged(w, lblSetting, txtSetting); });
+    connect(txtSetting, &QLineEdit::returnPressed, [=] {
+        handleTextChanged(w, lblSetting, txtSetting);
+    });
     form->addRow(lblSetting, txtSetting);
   }
   w->setLayout(form);
@@ -127,8 +130,15 @@ void Settings::form(MainWindow* w) {
 // handleTextChanged()
 //******************************************************************************
 void Settings::handleTextChanged(MainWindow* w, QLabel* lbl, QLineEdit* txt) {
-  // qDebug(lbl->text().toLatin1());
-  settings[lbl->text().toLatin1()] = QVariant(txt->text().toLatin1());
-  write();
-  w->setTheme();
+    QString param = lbl->text().toLatin1();
+    QString oldValue = settings[lbl->text().toLatin1()].toString();
+    QString newValue = txt->text().toLatin1();
+    settings[param] = QVariant(newValue);
+    write();
+    w->setTheme();
+    w->showMessage(QString("Setting \"%1\" updated with value \"%2\", previous value was \"%3\"")
+                       .arg(param)
+                       .arg(newValue)
+                       .arg(oldValue));
+    w->notify("Settings updated, application may need to be restarted");
 }

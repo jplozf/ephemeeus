@@ -601,7 +601,15 @@
     <addaction name="actionRefresh"/>
     <addaction name="actionQuit"/>
    </widget>
+   <widget class="QMenu" name="menu">
+    <property name="title">
+     <string>?</string>
+    </property>
+    <addaction name="action_About"/>
+    <addaction name="actionHelp"/>
+   </widget>
    <addaction name="menu_File"/>
+   <addaction name="menu"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <widget class="QToolBar" name="toolBar">
@@ -703,6 +711,11 @@
    </property>
    <property name="menuRole">
     <enum>QAction::MenuRole::TextHeuristicRole</enum>
+   </property>
+  </action>
+  <action name="action_About">
+   <property name="text">
+    <string>&amp;About</string>
    </property>
   </action>
  </widget>
