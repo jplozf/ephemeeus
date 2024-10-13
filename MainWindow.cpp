@@ -6,6 +6,7 @@
 MainWindow::MainWindow(QApplication* a, QWidget* parent)
     : QMainWindow(parent), ui(new Ui::MainWindow) {
   this->a = a;
+  this->TimeLocked = false;
   ui->setupUi(this);
   app = new App();
 
@@ -36,8 +37,9 @@ MainWindow::MainWindow(QApplication* a, QWidget* parent)
       showMessage("Can't open cities database");
   } else {
       showMessage("Cities database open");
-      QSqlTableModel *modelCities = new QSqlTableModel(this, db);
+      modelCities = new QSqlTableModel(this, db);
       modelCities->setTable("cities");
+      // modelCities->setFilter("country_idx='be'");
       modelCities->select();
 
       QCompleter *cityCompleter = new QCompleter(modelCities, this);
@@ -55,8 +57,8 @@ MainWindow::MainWindow(QApplication* a, QWidget* parent)
 
   // TODO : Read the previous location from the readSettings()
   Meeus::Location defaultLocation;
-  defaultLocation.Name =
-      app->appSettings->get("DEFAULT_LOCATION_NAME").toString();
+  defaultLocation.Country = app->appSettings->get("DEFAULT_LOCATION_COUNTRY").toString();
+  defaultLocation.Name = app->appSettings->get("DEFAULT_LOCATION_NAME").toString();
   defaultLocation.Latitude =
       app->appSettings->get("DEFAULT_LOCATION_LATITUDE").toDouble();
   defaultLocation.Longitude =
@@ -64,6 +66,17 @@ MainWindow::MainWindow(QApplication* a, QWidget* parent)
 
   meeus = new Meeus(defaultLocation);
   meeus->init();
+
+  //****************************************************************************
+  // Real Time or not
+  //****************************************************************************
+  this->tTime = new QTimer(this);
+  this->tTime->setInterval(1000);
+  connect(this->tTime, &QTimer::timeout, [&]() {
+      QString time1 = QDateTime::currentDateTime().toString("dd/MM/yyyy hh:mm:ss");
+      ui->txtTime->setDateTime(QDateTime::currentDateTime());
+  });
+  this->tTime->start();
 
   // Display the default Varboard
   this->vb = new Varboard(app, this, ui);
@@ -84,7 +97,11 @@ MainWindow::MainWindow(QApplication* a, QWidget* parent)
       showMessage("Creating default varboard");
   }
 
-  this->refresh();
+  // And the Show must go on !
+  // We have to specify manually the current datetime,
+  // because the timer is not yet triggered at this time
+  this->meeus->refresh(QDateTime::currentDateTime());
+  this->vb->Refresh();
 }
 
 //******************************************************************************
@@ -105,6 +122,24 @@ void MainWindow::initUI() {
   setTheme();
 
   //**************************************************************************
+  // Status Bar
+  //**************************************************************************
+  this->lblFileName = new QLabel();
+  ui->statusBar->addPermanentWidget(this->lblFileName);
+
+  //**************************************************************************
+  // MRU Menu
+  //**************************************************************************
+  for (int i = 0; i < this->app->appConstants->getInt("MRU_FILES"); i++) {
+      actMRUFiles.resize(i + 1);
+      actMRUFiles[i] = new QAction(this);
+      actMRUFiles[i]->setVisible(false);
+      connect(actMRUFiles[i], SIGNAL(triggered()), this, SLOT(openMRUFile()));
+      ui->menuRecent->addAction(actMRUFiles[i]);
+      qDebug() << i;
+  }
+
+  //**************************************************************************
   // Settings Form
   //**************************************************************************
   app->appSettings->form(this);
@@ -121,6 +156,14 @@ void MainWindow::initUI() {
   showMessage(app->appConstants->consoleText);
 
   //**************************************************************************
+  // Populate Time Zone List
+  //**************************************************************************
+  QList<QByteArray> ids = QTimeZone::availableTimeZoneIds();
+  foreach (QByteArray id, ids) {
+      ui->cbxTimeZone->addItem(id);
+  }
+
+  //**************************************************************************
   // Populate Vargets List
   //**************************************************************************
   for (auto it = Varboard::aFunc.keyValueBegin(); it != Varboard::aFunc.keyValueEnd(); ++it) {
@@ -134,6 +177,15 @@ void MainWindow::initUI() {
   if (app->appSettings->get("APPLICATION_SHOW_DOC").toBool() == false) {
       ui->actionHelp->setEnabled(false);
   }
+
+  //**************************************************************************
+  // Show Time !!!
+  //**************************************************************************
+  ui->txtTime->setReadOnly(true);
+  // this->tTime->start();
+  QPixmap pixmap(":/16x16/Lock Open.png");
+  QIcon btnIcon(pixmap);
+  ui->btnTimeLocked->setIcon(btnIcon);
 }
 
 //******************************************************************************
@@ -286,6 +338,15 @@ void MainWindow::saveSettings() {
     registry.setValue("location", ui->txtLocation->text());
     registry.setValue("latitude", ui->txtLatitude->text());
     registry.setValue("longitude", ui->txtLongitude->text());
+    registry.setValue("timezone", ui->cbxTimeZone->currentText());
+
+    // Save MRU Files
+    registry.beginWriteArray("MRUFiles");
+    for (int i = 0; i < mruFiles.size(); ++i) {
+        registry.setArrayIndex(i);
+        registry.setValue("MRUFiles", mruFiles.at(i));
+    }
+    registry.endArray();
 
     //**************************************************************************
     // Settings saving
@@ -334,11 +395,14 @@ void MainWindow::readSettings() {
   // TODO : Read the previous stored location
   const QString country = registry.value("country", "").toString();
   qDebug() << country;
+  ui->cbxCountry->setCurrentText(country);
+  /*
   int index = ui->cbxCountry->findText(country);
   if (index != -1) { // -1 for not found
       ui->cbxCountry->setCurrentIndex(index);
       qDebug() << index;
   }
+ */
   const QString location = registry.value("location", "").toString();
   ui->txtLocation->setText(location);
   qDebug() << location;
@@ -348,6 +412,29 @@ void MainWindow::readSettings() {
   const QString longitude = registry.value("longitude", "").toString();
   ui->txtLongitude->setText(longitude);
   qDebug() << longitude;
+  const QString timezone = registry.value("timezone", "").toString();
+  qDebug() << timezone;
+  ui->cbxTimeZone->setCurrentText(timezone);
+
+  int size = registry.beginReadArray("MRUFiles");
+  for (int i = 0; i < size; ++i) {
+      registry.setArrayIndex(i);
+      this->mruFiles.append(registry.value("MRUFiles").toString());
+  }
+  registry.endArray();
+  this->updateMRUMenu();
+}
+
+//******************************************************************************
+// updateMRUMenu()
+//******************************************************************************
+void MainWindow::updateMRUMenu()
+{
+    for (int i = 0; i < this->mruFiles.size(); i++) {
+        actMRUFiles[i]->setText(mruFiles[i].split("/").last());
+        actMRUFiles[i]->setData(mruFiles[i]);
+        actMRUFiles[i]->setVisible(true);
+    }
 }
 
 //******************************************************************************
@@ -361,7 +448,8 @@ void MainWindow::out(QString txt) {
 // refresh()
 //******************************************************************************
 void MainWindow::refresh() {
-    this->meeus->refresh();
+    showMessage("Computing");
+    this->meeus->refresh(ui->txtTime->dateTime());
     this->vb->Refresh();
 }
 
@@ -443,10 +531,34 @@ void MainWindow::on_btnExportLog_clicked()
 }
 
 //******************************************************************************
-// on_btnRefresh_clicked()
+// on_btnCompute_clicked()
 //******************************************************************************
-void MainWindow::on_btnRefresh_clicked() {
+void MainWindow::on_btnCompute_clicked()
+{
     this->refresh();
+}
+
+//******************************************************************************
+// on_cbxCountry_currentTextChanged()
+//******************************************************************************
+void MainWindow::on_cbxCountry_currentTextChanged(const QString &arg1)
+{
+    QString country_idx;
+    QSqlQuery query;
+    query.prepare("SELECT country_idx FROM countries WHERE country = :country");
+    query.bindValue(":country", arg1);
+    qDebug() << arg1;
+    if (!query.exec()) {
+        showMessage("Query failed!");
+    } else {
+        if (query.first()) { // get the first record in the result,
+            country_idx = query.value("country_idx").toString();
+            this->modelCities->setFilter("country_idx='" + country_idx + "'");
+            qDebug() << country_idx;
+        } else {
+            showMessage("Data not found");
+        }
+    }
 }
 
 //******************************************************************************
@@ -469,12 +581,7 @@ void MainWindow::on_txtLocation_editingFinished() {
             if (query.first()) { // get the first record in the result,
                 ui->txtLatitude->setText(query.value("latitude").toString());
                 ui->txtLongitude->setText(query.value("longitude").toString());
-                Meeus::Location loc;
-                loc.Name = ui->txtLocation->text();
-                loc.Latitude = ui->txtLatitude->text().toDouble();
-                loc.Longitude = ui->txtLongitude->text().toDouble();
-                meeus->SetLocation(loc);
-                showMessage("Location set");
+                this->SetLocation();
             } else {
                 showMessage("Data not found");
             }
@@ -490,6 +597,45 @@ void MainWindow::on_txtLocation_editingFinished() {
         }
     }
 }
+//******************************************************************************
+// SetLocation()
+//******************************************************************************
+void MainWindow::SetLocation()
+{
+    Meeus::Location loc;
+    loc.Country = ui->cbxCountry->currentText();
+    loc.Name = ui->txtLocation->text();
+    loc.Latitude = ui->txtLatitude->text().toDouble();
+    loc.Longitude = ui->txtLongitude->text().toDouble();
+    loc.TimeZone = ui->cbxTimeZone->currentText();
+    meeus->SetLocation(loc);
+}
+
+//******************************************************************************
+// openMRUFile()
+//******************************************************************************
+void MainWindow::openMRUFile()
+{
+    qDebug() << "OpenMRUFile()";
+    QAction *action = qobject_cast<QAction *>(sender());
+    if (action) {
+        QString vbdName = action->data().toString();
+        showMessage("Opening " + vbdName);
+        QFileInfo fi(vbdName);
+        // this->setWindowTitle(this->appTitle + " - " + fi.fileName());
+        this->lblFileName->setText(fi.fileName());
+        delete this->vb;
+        this->vb = new Varboard(app, this, ui);
+        // this->vb->LoadFile(vbdName, meeus);
+        this->vb->LoadJSON(vbdName, meeus);
+        this->vbdFileName = vbdName;
+        /*
+        this->BcStatus->CurFile = action->data().toString();
+        LoadFile();
+        //LoadFile(action->data().toString());
+        */
+    }
+}
 
 //******************************************************************************
 // on_actionOpen_triggered()
@@ -499,11 +645,12 @@ void MainWindow::on_actionOpen_triggered()
     QString vbdName = QFileDialog::getOpenFileName(this,
                                                    "Open a varboard...",
                                                    QDir::homePath(),
-                                                   "Varboard (*.vbd)");
+                                                   "Varboard (*.vbd | *.vbz)");
     if (!vbdName.isNull()) {
         showMessage("Opening " + vbdName);
         QFileInfo fi(vbdName);
-        this->setWindowTitle(this->appTitle + " - " + fi.fileName());
+        // this->setWindowTitle(this->appTitle + " - " + fi.fileName());
+        this->lblFileName->setText(fi.fileName());
         delete this->vb;
         this->vb = new Varboard(app, this, ui);
         // this->vb->LoadFile(vbdName, meeus);
@@ -530,7 +677,15 @@ void MainWindow::on_btnAddVarget_clicked()
 //******************************************************************************
 void MainWindow::on_cbxVargets_currentIndexChanged(int index)
 {
-    ui->txtVargetLabel->setText(ui->cbxVargets->currentText());
+    QString lblRaw = ui->cbxVargets->currentText();
+    if (lblRaw.left(3) == "Var") {
+        lblRaw.remove(0, 3);
+    }
+    QString lblNice;
+    QStringList sl = lblRaw.split(QRegExp("(?=[A-Z])"), QString::SkipEmptyParts);
+    lblNice = sl.join(" ");
+
+    ui->txtVargetLabel->setText(lblNice);
     ui->txtVargetLabel->selectAll();
     QTimer::singleShot(0, ui->txtVargetLabel, SLOT(setFocus()));
 }
@@ -543,8 +698,9 @@ void MainWindow::on_actionSave_triggered()
     if (this->vbdFileName != "") {
         showMessage("Saving " + vbdFileName);
         QFileInfo fi2(vbdFileName);
-        this->setWindowTitle(this->appTitle + " - " + fi2.fileName());
+        // this->setWindowTitle(this->appTitle + " - " + fi2.fileName());
         // this->vb->SaveFile(vbdFileName);
+        this->lblFileName->setText(fi2.fileName());
         this->vb->SaveJSON(vbdFileName);
     } else {
         this->on_actionSave_as_triggered();
@@ -559,18 +715,19 @@ void MainWindow::on_actionSave_as_triggered()
     QString vbdName = QFileDialog::getSaveFileName(this,
                                                    "Save this varboard...",
                                                    QDir::homePath(),
-                                                   "Varboard (*.vbd)");
+                                                   "Varboard (*.vbd | *.vbz)");
     if (!vbdName.isNull()) {
-        // Check if extension is .vbd
+        // Check if extension is .vbd or .vbz
         QFileInfo fi1(vbdName);
         QString ext = fi1.suffix();
-        if (ext != "vbd") {
+        if (ext != "vbd" && ext != "vbz") {
             vbdName += ".vbd";
         }
         // Save the file
         showMessage("Saving " + vbdName);
         QFileInfo fi2(vbdName);
-        this->setWindowTitle(this->appTitle + " - " + fi2.fileName());
+        // this->setWindowTitle(this->appTitle + " - " + fi2.fileName());
+        this->lblFileName->setText(fi2.fileName());
         // this->vb->SaveFile(vbdName);
         this->vb->SaveJSON(vbdName);
         this->vbdFileName = vbdName;
@@ -631,12 +788,63 @@ void MainWindow::on_action_About_triggered()
     ui->tabWidget->setCurrentIndex(3);
 }
 
-QMap<QString, callback_function> Varboard::aFunc = {{"VarDateTime", &Meeus::VarDateTime},
-                                                    {"VarJD", &Meeus::VarJD},
-                                                    {"VarDayOfWeek", &Meeus::VarDayOfWeek},
-                                                    {"VarLatitude", &Meeus::VarLatitude},
-                                                    {"VarLongitude", &Meeus::VarLongitude},
-                                                    {"VarLocation", &Meeus::VarLocation}};
+//******************************************************************************
+// MainWindow::on_actionSettings_triggered()
+//******************************************************************************
+void MainWindow::on_actionSettings_triggered()
+{
+    ui->tabWidget->setCurrentIndex(2);
+}
+
+//******************************************************************************
+// MainWindow::on_btnTimeLocked_clicked()
+//******************************************************************************
+void MainWindow::on_btnTimeLocked_clicked()
+{
+    if (!this->TimeLocked) {
+        // Locked => Fixed Time
+        this->TimeLocked = true;
+        ui->txtTime->setReadOnly(false);
+        // Stop the timer and set the current time
+        this->tTime->stop();
+        QDateTime date = QDateTime::currentDateTime();
+        QString formattedTime = date.toString("dd/MM/yyyy hh:mm:ss");
+        // ui->txtTime->setText(formattedTime);
+        ui->txtTime->setDateTime(date);
+        // Set Icon to Locked
+        QPixmap pixmap(":/16x16/Lock.png");
+        QIcon btnIcon(pixmap);
+        ui->btnTimeLocked->setIcon(btnIcon);
+    } else {
+        // Unlocked => Real Time
+        this->TimeLocked = false;
+        ui->txtTime->setReadOnly(true);
+        // Start the timer
+        this->tTime->start();
+        // Set Icon to Unlocked
+        QPixmap pixmap(":/16x16/Lock Open.png");
+        QIcon btnIcon(pixmap);
+        ui->btnTimeLocked->setIcon(btnIcon);
+    }
+}
+
+QMap<QString, callback_function> Varboard::aFunc
+    = {{"VarDateTime", &Meeus::VarDateTime},
+       {"VarJD", &Meeus::VarJD},
+       {"VarT", &Meeus::VarT},
+       {"VarDayOfWeek", &Meeus::VarDayOfWeek},
+       {"VarLatitude", &Meeus::VarLatitude},
+       {"VarLongitude", &Meeus::VarLongitude},
+       {"VarLocation", &Meeus::VarLocation},
+       {"VarCountry", &Meeus::VarCountry},
+       {"VarTimeZone", &Meeus::VarTimeZone},
+       {"VarSunMeanLongitude", &Meeus::VarSunMeanLongitude},
+       {"VarSunMeanAnomaly", &Meeus::VarSunMeanAnomaly},
+       {"VarSunCenter", &Meeus::VarSunCenter},
+       {"VarSunTrueLongitude", &Meeus::VarSunTrueLongitude},
+       {"VarSunTrueAnomaly", &Meeus::VarSunTrueAnomaly},
+       {"VarSunApparentLongitude", &Meeus::VarSunApparentLongitude},
+       {"VarSunRadiusVector", &Meeus::VarSunRadiusVector}};
 
 //******************************************************************************
 // Varget()
@@ -659,12 +867,12 @@ Varget::Varget(
     QFont *f = new QFont();
     f->setBold(true);
     lbl->setFont(*f);
-    if (this->Function != NULL) {
-        lbl->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
-    } else {
-        lbl->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-    }
+    lbl->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
     hbox->addWidget(this->lblOrder);
+    if (this->Function == NULL) { // Function is NULL for Labels
+        // Add a dummy filler for Label's Vargets
+        hbox->addWidget(new QLabel(""));
+    }
     hbox->addWidget(lbl);
 
     if (this->Function != NULL) { // Function is NULL for Labels
@@ -882,6 +1090,23 @@ int Varboard::SaveJSON(QString name)
     QJsonObject root;
     root.insert("title", this->ui->txtTitle->text());
 
+    QJsonObject location;
+    location.insert("country", ui->cbxCountry->currentText());
+    location.insert("name", ui->txtLocation->text());
+    location.insert("latitude", ui->txtLatitude->text());
+    location.insert("longitude", ui->txtLongitude->text());
+    location.insert("timezone", ui->cbxTimeZone->currentText());
+    root.insert("location", location);
+
+    QJsonObject timing;
+    timing.insert("time", ui->txtTime->dateTime().toString("yyyy/MM/dd hh:mm:ss"));
+    if (this->mw->TimeLocked) {
+        timing.insert("refresh", "fixed");
+    } else {
+        timing.insert("refresh", "running");
+    }
+    root.insert("time", timing);
+
     QJsonArray varboard;
     for (int i = 0; i < this->vargets.size(); ++i) {
         QJsonObject varget;
@@ -899,7 +1124,13 @@ int Varboard::SaveJSON(QString name)
         fJSON.open(QIODevice::WriteOnly);
         QByteArray uncompressedData = jsonDoc.toJson();
         QByteArray compressedData = qCompress(uncompressedData, 9);
-        fJSON.write(compressedData);
+        QFileInfo fi1(name);
+        QString ext = fi1.suffix();
+        if (ext == "vbz") {
+            fJSON.write(compressedData);
+        } else {
+            fJSON.write(uncompressedData);
+        }
         fJSON.close();
     } else {
         rc = 1;
@@ -914,13 +1145,75 @@ int Varboard::LoadJSON(QString name, Meeus *m)
 {
     int rc = 0;
     QFile file(name);
+
+    // Add it to MRU
+    bool found = false;
+    for (const auto &i : this->mw->mruFiles) {
+        if (name == i) {
+            found = true;
+        }
+    }
+    if (!found) {
+        this->mw->mruFiles.append(name);
+        if (this->mw->mruFiles.size() > mw->app->appConstants->getInt("MRU_FILES")) {
+            this->mw->mruFiles.removeAt(0);
+        }
+    }
+    this->mw->updateMRUMenu();
+
+    // Parse the JSON file
     if (file.open(QIODevice::ReadOnly)) {
-        QByteArray data = qUncompress(file.readAll());
+        QFileInfo fi1(name);
+        QString ext = fi1.suffix();
+        QByteArray data;
+        if (ext == "vbz") {
+            data = qUncompress(file.readAll());
+        } else {
+            data = file.readAll();
+        }
         QJsonDocument jsonDoc = QJsonDocument::fromJson(data);
         QJsonObject root = jsonDoc.object();
 
         this->Clear();
         this->ui->txtTitle->setText(root.value("title").toString());
+
+        QJsonObject location = root.value("location").toObject();
+        this->ui->cbxCountry->setCurrentText(location.value("country").toString());
+        this->ui->txtLocation->setText(location.value("name").toString());
+        this->ui->txtLatitude->setText(location.value("latitude").toString());
+        this->ui->txtLongitude->setText(location.value("longitude").toString());
+        this->ui->cbxTimeZone->setCurrentText(location.value("timezone").toString());
+        this->mw->SetLocation();
+
+        QJsonObject timing = root.value("time").toObject();
+        if (timing.value("refresh").toString() == "fixed") {
+            // Locked => Fixed Time
+            this->mw->TimeLocked = true;
+            ui->txtTime->setReadOnly(false);
+            // Stop the timer and set the current time
+            this->mw->tTime->stop();
+            this->ui->txtTime->setDateTime(
+                QDateTime::fromString(timing.value("time").toString(), "yyyy/MM/dd hh:mm:ss"));
+            // QDateTime date = QDateTime::currentDateTime();
+            // QString formattedTime = date.toString("dd/MM/yyyy hh:mm:ss");
+            // ui->txtTime->setText(formattedTime);
+            // ui->txtTime->setDateTime(date);
+            // Set Icon to Locked
+            QPixmap pixmap(":/16x16/Lock.png");
+            QIcon btnIcon(pixmap);
+            ui->btnTimeLocked->setIcon(btnIcon);
+        } else {
+            // Unlocked => Real Time
+            this->mw->TimeLocked = false;
+            ui->txtTime->setReadOnly(true);
+            // Start the timer
+            this->mw->tTime->start();
+            // Set Icon to Unlocked
+            QPixmap pixmap(":/16x16/Lock Open.png");
+            QIcon btnIcon(pixmap);
+            ui->btnTimeLocked->setIcon(btnIcon);
+        }
+
         QJsonArray varboard = root.value("varboard").toArray();
         for (auto i = 0; i < varboard.size(); i++) {
             QJsonObject varget = varboard.at(i).toObject();
@@ -929,6 +1222,7 @@ int Varboard::LoadJSON(QString name, Meeus *m)
                             varget.value("function").toString());
         }
         file.close();
+        this->mw->meeus->refresh(ui->txtTime->dateTime());
         this->Refresh();
     } else {
         rc = 1;
@@ -959,3 +1253,8 @@ void clearLayout(QLayout *layout)
         delete child;
     }
 }
+
+//******************************************************************************
+// on_chkAutoRefresh_stateChanged()
+//******************************************************************************
+void MainWindow::on_chkAutoRefresh_stateChanged(int arg1) {}

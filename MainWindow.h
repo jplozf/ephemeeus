@@ -1,6 +1,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include <QAction>
 #include <QClipboard>
 #include <QCloseEvent>
 #include <QCompleter>
@@ -65,22 +66,30 @@ class MainWindow : public QMainWindow {
   void setTheme();
   void showMessage(const QString &message, int timeout = -1);
   void notify(QString message, QString title = "*DEFAULT");
+  bool TimeLocked;
+  QTimer *tTime;
+  void SetLocation();
+  Meeus *meeus;
+  QStringList mruFiles;
+  void updateMRUMenu();
+  QVector<QAction *> actMRUFiles;
 
   private:
   QApplication* a;
   void out(QString txt);
   void refresh();
-  Meeus* meeus;
   QSqlDatabase db;
   Varboard *vb;
   QString appTitle;
   QString vbdFileName;
+  QSqlTableModel *modelCities;
+  QLabel *lblFileName;
 
   private slots:
   void slotDoExit();
   void on_actionRefresh_triggered();
   void on_btnClearConsole_clicked();
-  void on_btnRefresh_clicked();
+  void on_btnCompute_clicked();
   void on_txtLocation_editingFinished();
   void on_actionOpen_triggered();
   void on_actionHelp_triggered();
@@ -92,6 +101,11 @@ class MainWindow : public QMainWindow {
   void on_actionSave_as_triggered();
   void on_btnExportLog_clicked();
   void on_action_About_triggered();
+  void on_btnTimeLocked_clicked();
+  void on_actionSettings_triggered();
+  void on_cbxCountry_currentTextChanged(const QString &arg1);
+  void on_chkAutoRefresh_stateChanged(int arg1);
+  void openMRUFile();
 };
 
 class MainWindow;

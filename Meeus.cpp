@@ -32,6 +32,16 @@ QString Meeus::VarJD()
 }
 
 //******************************************************************************
+// Meeus::VarT()
+//******************************************************************************
+QString Meeus::VarT()
+{
+    this->ComputeJD();
+    double T = (JD - 2451545.0) / 36525.0;
+    return QString::number(T, 'f', 9);
+}
+
+//******************************************************************************
 // Meeus::VarDayOfWeek()
 //******************************************************************************
 QString Meeus::VarDayOfWeek()
@@ -50,11 +60,27 @@ QString Meeus::VarDateTime()
 }
 
 //******************************************************************************
+// Meeus::VarCountry()
+//******************************************************************************
+QString Meeus::VarCountry()
+{
+    return this->location.Country;
+}
+
+//******************************************************************************
 // Meeus::VarLocation()
 //******************************************************************************
 QString Meeus::VarLocation()
 {
     return this->location.Name;
+}
+
+//******************************************************************************
+// Meeus::VarTimeZone()
+//******************************************************************************
+QString Meeus::VarTimeZone()
+{
+    return this->location.TimeZone;
 }
 
 //******************************************************************************
@@ -173,9 +199,11 @@ QDateTime Meeus::AddDays2Date(QDateTime dt, int d)
 //******************************************************************************
 void Meeus::SetDefaultLocation() {
   Location loc;
+  loc.Country = "France";
   loc.Name = "Ozoir-la-Ferrière (FR)";
   loc.Latitude = 48.778056;
   loc.Longitude = 2.68;
+  loc.TimeZone = "Europe/Paris";
   this->location = loc;
 }
 
@@ -233,17 +261,15 @@ int Meeus::getSecond() {
 // Meeus::init()
 //******************************************************************************
 void Meeus::init() {
-  this->refresh();
+    this->refresh(this->dt);
 }
 
 //******************************************************************************
 // Meeus::refresh()
 //******************************************************************************
-void Meeus::refresh()
+void Meeus::refresh(QDateTime dt)
 {
-    if (this->time_mode == Meeus::TIME_MODE_REAL) {
-        this->dt = QDateTime::currentDateTime();
-    }
+    this->dt = dt;
     this->ComputeJD();
 }
 
@@ -261,6 +287,69 @@ QString Meeus::getDateTime()
 QString Meeus::getLocation()
 {
     return this->location.Name;
+}
+
+//******************************************************************************
+// Meeus::VarSunMeanLongitude()
+//******************************************************************************
+QString Meeus::VarSunMeanLongitude()
+{
+    Sun::compute(this->JD);
+    return printDMS(Sun::MeanLongitude);
+}
+
+//******************************************************************************
+// Meeus::VarSunMeanAnomaly()
+//******************************************************************************
+QString Meeus::VarSunMeanAnomaly()
+{
+    Sun::compute(this->JD);
+    return printDMS(Sun::MeanAnomaly);
+}
+
+//******************************************************************************
+// Meeus::VarSunCenter()
+//******************************************************************************
+QString Meeus::VarSunCenter()
+{
+    Sun::compute(this->JD);
+    return printDMS(Sun::Center);
+}
+
+//******************************************************************************
+// Meeus::VarSunTrueLongitude()
+//******************************************************************************
+QString Meeus::VarSunTrueLongitude()
+{
+    Sun::compute(this->JD);
+    return printDMS(Sun::TrueLongitude);
+}
+
+//******************************************************************************
+// Meeus::VarSunTrueAnomaly()
+//******************************************************************************
+QString Meeus::VarSunTrueAnomaly()
+{
+    Sun::compute(this->JD);
+    return printDMS(Sun::TrueAnomaly);
+}
+
+//******************************************************************************
+// Meeus::VarSunApparentLongitude()
+//******************************************************************************
+QString Meeus::VarSunApparentLongitude()
+{
+    Sun::compute(this->JD);
+    return printDMS(Sun::ApparentLongitude);
+}
+
+//******************************************************************************
+// Meeus::VarSunRadiusVector()
+//******************************************************************************
+QString Meeus::VarSunRadiusVector()
+{
+    Sun::compute(this->JD);
+    return QString::number(Sun::RadiusVector);
 }
 
 //******************************************************************************
@@ -284,17 +373,18 @@ void Sun::compute(double JD)
     // Earth's Eccentricity
     double e = 0.016708634 - 0.000042037 * T - 0.0000001267 * (T * T);
     // Sun's Mean Longitude
-    Sun::MeanLongitude = 280.46646 + 36000.76983 * T + 0.0003032 * (T * T);
+    Sun::MeanLongitude = reduceAngle(280.46646 + 36000.76983 * T + 0.0003032 * (T * T));
     // Sun's Mean Anomaly
-    Sun::MeanAnomaly = 357.52911 + 35999.05029 * T - 0.0001537 * (T * T);
+    Sun::MeanAnomaly = reduceAngle(357.52911 + 35999.05029 * T - 0.0001537 * (T * T));
     // Sun's Equation of the Center
     Sun::Center = (1.914602 - 0.004817 * T - 0.000014 * (T * T)) * sin(deg2rad(Sun::MeanAnomaly));
     Sun::Center += (0.01993 - 0.000101 * T) * sin(deg2rad(2 * Sun::MeanAnomaly));
     Sun::Center += 0.000289 * sin(deg2rad(3 * Sun::MeanAnomaly));
+    Sun::Center = reduceAngle(Sun::Center);
     // Sun's True Longitude
-    Sun::TrueLongitude = Sun::MeanLongitude + Sun::Center;
+    Sun::TrueLongitude = reduceAngle(Sun::MeanLongitude + Sun::Center);
     // Sun's True Anomaly
-    Sun::TrueAnomaly = Sun::MeanAnomaly + Sun::Center;
+    Sun::TrueAnomaly = reduceAngle(Sun::MeanAnomaly + Sun::Center);
     // Sun's Radius Vector
     Sun::RadiusVector = (1.000001018 * (1 - (e * e))) / (1 + e * cos(deg2rad(Sun::TrueAnomaly)));
 }
@@ -390,6 +480,25 @@ double deg2rad(double d)
 double rad2deg(double r)
 {
     return (r * 180.0 / M_PI);
+}
+
+//******************************************************************************
+// reduceAngle()
+//******************************************************************************
+double reduceAngle(double a)
+{
+    return fmod(a, 360.0);
+}
+
+//******************************************************************************
+// printDMS()
+//******************************************************************************
+QString printDMS(double a)
+{
+    auto dms = DD2DMS(reduceAngle(a));
+    QString s
+        = QString("%1°%2'%3\"").arg(std::get<0>(dms)).arg(std::get<1>(dms)).arg(std::get<2>(dms));
+    return s;
 }
 
 /*

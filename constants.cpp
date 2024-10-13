@@ -21,6 +21,7 @@ Constants::Constants()
     constants["DEFAULT_VARBOARD"] = QVariant("default.vbd");
     constants["CITIES_DATABASE"] = QVariant("cities.db");
     constants["CITIES_URL"] = QVariant("http://ligorax.free.fr/cities.db");
+    constants["MRU_FILES"] = QVariant(5);
 
     theme["LIGHT"] = QStringList({"#efefef",
                                   "#000000",

@@ -14,6 +14,7 @@ CONFIG += c++17
 
 SOURCES += \
     DlgInputLocation.cpp \
+    DlgInputTime.cpp \
     Meeus.cpp \
     app.cpp \
     constants.cpp \
@@ -25,6 +26,7 @@ SOURCES += \
 
 HEADERS += \
     DlgInputLocation.h \
+    DlgInputTime.h \
     MainWindow.h \
     Meeus.h \
     app.h \

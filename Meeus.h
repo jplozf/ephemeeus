@@ -14,9 +14,11 @@ class Meeus {
   const static int TIME_MODE_REAL = 1;
   const static int TIME_MODE_RUNNING = 2;
   struct Location {
-    QString Name;
-    double Latitude;
-    double Longitude;
+      QString Country;
+      QString Name;
+      double Latitude;
+      double Longitude;
+      QString TimeZone;
   };
   double JD;
   int time_mode;
@@ -35,7 +37,7 @@ class Meeus {
   int getMinute();
   int getSecond();
   void init();
-  void refresh();
+  void refresh(QDateTime dt);
   QString getDateTime();
   QString getLocation();
   double Date2JD(QDateTime dt);
@@ -43,12 +45,24 @@ class Meeus {
   int DayOfWeek(double JD);
   int DaysBetweenDates(QDateTime dt1, QDateTime dt2);
   QDateTime AddDays2Date(QDateTime dt, int d);
+  // Misc General Purpose
   QString VarJD();
+  QString VarT();
   QString VarDayOfWeek();
   QString VarDateTime();
+  QString VarCountry();
   QString VarLocation();
   QString VarLatitude();
   QString VarLongitude();
+  QString VarTimeZone();
+  // SUN
+  QString VarSunMeanLongitude();
+  QString VarSunMeanAnomaly();
+  QString VarSunCenter();
+  QString VarSunTrueLongitude();
+  QString VarSunTrueAnomaly();
+  QString VarSunApparentLongitude();
+  QString VarSunRadiusVector();
 
   private:
   QDateTime dt;
@@ -79,5 +93,7 @@ double DMS2DD(int d, int m, int s);
 std::tuple<int, int, int> DD2DMS(double dd);
 double deg2rad(double d);
 double rad2deg(double r);
+double reduceAngle(double a);
+QString printDMS(double a);
 
 #endif  // MEEUS_H
