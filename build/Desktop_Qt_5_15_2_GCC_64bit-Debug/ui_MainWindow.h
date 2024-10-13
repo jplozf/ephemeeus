@@ -634,7 +634,7 @@ public:
         tabWidget->setTabText(tabWidget->indexOf(tabSettings), QCoreApplication::translate("MainWindow", "Settings", nullptr));
         tabWidget->setTabText(tabWidget->indexOf(tabAbout), QCoreApplication::translate("MainWindow", "About", nullptr));
         menu_File->setTitle(QCoreApplication::translate("MainWindow", "&File", nullptr));
-        menuRecent->setTitle(QCoreApplication::translate("MainWindow", " Recent Files", nullptr));
+        menuRecent->setTitle(QCoreApplication::translate("MainWindow", " Recent &Files", nullptr));
         menu->setTitle(QCoreApplication::translate("MainWindow", "?", nullptr));
         toolBar->setWindowTitle(QCoreApplication::translate("MainWindow", "toolBar", nullptr));
     } // retranslateUi

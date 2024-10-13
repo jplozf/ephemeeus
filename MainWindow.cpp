@@ -75,6 +75,9 @@ MainWindow::MainWindow(QApplication* a, QWidget* parent)
   connect(this->tTime, &QTimer::timeout, [&]() {
       QString time1 = QDateTime::currentDateTime().toString("dd/MM/yyyy hh:mm:ss");
       ui->txtTime->setDateTime(QDateTime::currentDateTime());
+      if (this->ui->chkAutoRefresh->isChecked()) {
+          this->refresh();
+      }
   });
   this->tTime->start();
 
@@ -621,19 +624,24 @@ void MainWindow::openMRUFile()
     if (action) {
         QString vbdName = action->data().toString();
         showMessage("Opening " + vbdName);
-        QFileInfo fi(vbdName);
-        // this->setWindowTitle(this->appTitle + " - " + fi.fileName());
-        this->lblFileName->setText(fi.fileName());
         delete this->vb;
         this->vb = new Varboard(app, this, ui);
-        // this->vb->LoadFile(vbdName, meeus);
-        this->vb->LoadJSON(vbdName, meeus);
-        this->vbdFileName = vbdName;
-        /*
-        this->BcStatus->CurFile = action->data().toString();
-        LoadFile();
-        //LoadFile(action->data().toString());
-        */
+        if (this->vb->LoadJSON(vbdName, meeus) == 0) {
+            QFileInfo fi(vbdName);
+            this->lblFileName->setText(fi.fileName());
+            this->vbdFileName = vbdName;
+        } else {
+            showMessage("File " + vbdName + " not found");
+            this->vb->Clear();
+            this->vb->addVarget("Date & Time", meeus, "VarDateTime");
+            this->vb->addVarget("Location", meeus, "VarLocation");
+            this->vb->addVarget("Latitude", meeus, "VarLatitude");
+            this->vb->addVarget("Longitude", meeus, "VarLongitude");
+            this->vb->addVarget("Julian Day", meeus, "VarJD");
+            this->vb->pack();
+            this->vb->Refresh();
+            this->lblFileName->setText("");
+        }
     }
 }
 
@@ -648,14 +656,25 @@ void MainWindow::on_actionOpen_triggered()
                                                    "Varboard (*.vbd | *.vbz)");
     if (!vbdName.isNull()) {
         showMessage("Opening " + vbdName);
-        QFileInfo fi(vbdName);
-        // this->setWindowTitle(this->appTitle + " - " + fi.fileName());
-        this->lblFileName->setText(fi.fileName());
         delete this->vb;
         this->vb = new Varboard(app, this, ui);
-        // this->vb->LoadFile(vbdName, meeus);
-        this->vb->LoadJSON(vbdName, meeus);
-        this->vbdFileName = vbdName;
+        if (this->vb->LoadJSON(vbdName, meeus) == 0) {
+            QFileInfo fi(vbdName);
+            this->lblFileName->setText(fi.fileName());
+            this->vbdFileName = vbdName;
+        } else {
+            showMessage("File " + vbdName + " not found");
+            this->vb->Clear();
+            this->vb->addVarget("Date & Time", meeus, "VarDateTime");
+            this->vb->addVarget("Location", meeus, "VarLocation");
+            this->vb->addVarget("Latitude", meeus, "VarLatitude");
+            this->vb->addVarget("Longitude", meeus, "VarLongitude");
+            this->vb->addVarget("Julian Day", meeus, "VarJD");
+            this->vb->pack();
+            this->vb->Refresh();
+            this->lblFileName->setText("");
+            // FIXME : the previous vb has been deleted, we have to recreate something, otherwise it will crash at next refresh !!!
+        }
     } else {
         showMessage("Cancelling open");
     }
@@ -804,6 +823,7 @@ void MainWindow::on_btnTimeLocked_clicked()
     if (!this->TimeLocked) {
         // Locked => Fixed Time
         this->TimeLocked = true;
+        this->ui->chkAutoRefresh->setEnabled(false);
         ui->txtTime->setReadOnly(false);
         // Stop the timer and set the current time
         this->tTime->stop();
@@ -818,6 +838,7 @@ void MainWindow::on_btnTimeLocked_clicked()
     } else {
         // Unlocked => Real Time
         this->TimeLocked = false;
+        this->ui->chkAutoRefresh->setEnabled(true);
         ui->txtTime->setReadOnly(true);
         // Start the timer
         this->tTime->start();
@@ -1146,23 +1167,23 @@ int Varboard::LoadJSON(QString name, Meeus *m)
     int rc = 0;
     QFile file(name);
 
-    // Add it to MRU
-    bool found = false;
-    for (const auto &i : this->mw->mruFiles) {
-        if (name == i) {
-            found = true;
-        }
-    }
-    if (!found) {
-        this->mw->mruFiles.append(name);
-        if (this->mw->mruFiles.size() > mw->app->appConstants->getInt("MRU_FILES")) {
-            this->mw->mruFiles.removeAt(0);
-        }
-    }
-    this->mw->updateMRUMenu();
-
     // Parse the JSON file
     if (file.open(QIODevice::ReadOnly)) {
+        // Add it to MRU
+        bool found = false;
+        for (const auto &i : this->mw->mruFiles) {
+            if (name == i) {
+                found = true;
+            }
+        }
+        if (!found) {
+            this->mw->mruFiles.append(name);
+            if (this->mw->mruFiles.size() > mw->app->appConstants->getInt("MRU_FILES")) {
+                this->mw->mruFiles.removeAt(0);
+            }
+        }
+        this->mw->updateMRUMenu();
+
         QFileInfo fi1(name);
         QString ext = fi1.suffix();
         QByteArray data;
@@ -1190,14 +1211,11 @@ int Varboard::LoadJSON(QString name, Meeus *m)
             // Locked => Fixed Time
             this->mw->TimeLocked = true;
             ui->txtTime->setReadOnly(false);
+            ui->chkAutoRefresh->setEnabled(false);
             // Stop the timer and set the current time
             this->mw->tTime->stop();
             this->ui->txtTime->setDateTime(
                 QDateTime::fromString(timing.value("time").toString(), "yyyy/MM/dd hh:mm:ss"));
-            // QDateTime date = QDateTime::currentDateTime();
-            // QString formattedTime = date.toString("dd/MM/yyyy hh:mm:ss");
-            // ui->txtTime->setText(formattedTime);
-            // ui->txtTime->setDateTime(date);
             // Set Icon to Locked
             QPixmap pixmap(":/16x16/Lock.png");
             QIcon btnIcon(pixmap);
@@ -1206,6 +1224,7 @@ int Varboard::LoadJSON(QString name, Meeus *m)
             // Unlocked => Real Time
             this->mw->TimeLocked = false;
             ui->txtTime->setReadOnly(true);
+            ui->chkAutoRefresh->setEnabled(true);
             // Start the timer
             this->mw->tTime->start();
             // Set Icon to Unlocked
@@ -1257,4 +1276,13 @@ void clearLayout(QLayout *layout)
 //******************************************************************************
 // on_chkAutoRefresh_stateChanged()
 //******************************************************************************
-void MainWindow::on_chkAutoRefresh_stateChanged(int arg1) {}
+void MainWindow::on_chkAutoRefresh_stateChanged(int arg1)
+{
+    if (arg1 == 0) {
+        // Auto-Refresh Unchecked
+        this->showMessage("Auto Refresh disabled");
+    } else {
+        // Auto-Refresh Checked
+        this->showMessage("Auto Refresh enabled");
+    }
+}

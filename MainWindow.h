@@ -73,13 +73,13 @@ class MainWindow : public QMainWindow {
   QStringList mruFiles;
   void updateMRUMenu();
   QVector<QAction *> actMRUFiles;
+  Varboard *vb;
 
   private:
   QApplication* a;
   void out(QString txt);
   void refresh();
   QSqlDatabase db;
-  Varboard *vb;
   QString appTitle;
   QString vbdFileName;
   QSqlTableModel *modelCities;
