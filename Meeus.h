@@ -1,6 +1,18 @@
+//******************************************************************************
+//             _
+//     ___ ___| |_ ___ _____ ___ ___ _ _ ___
+//    | -_| . |   | -_|     | -_| -_| | |_ -|
+//    |___|  _|_|_|___|_|_|_|___|___|___|___|
+//        |_|
+//                   (C) JPL 2024
+//
+//******************************************************************************
 #ifndef MEEUS_H
 #define MEEUS_H
 
+//******************************************************************************
+// Includes
+//******************************************************************************
 #include <QDateTime>
 #include <QDebug>
 #include <QTimeZone>
@@ -8,79 +20,141 @@
 #include "math.h"
 #include "tuple"
 
-class Meeus {
- public:
-  const static int TIME_MODE_FIXED = 0;
-  const static int TIME_MODE_REAL = 1;
-  const static int TIME_MODE_RUNNING = 2;
-  struct Location {
-      QString Country;
-      QString Name;
-      double Latitude;
-      double Longitude;
-      QString TimeZone;
-  };
-  double JD;
-  int time_mode;
-  Meeus(Location location,
-        QDateTime dt = QDateTime::currentDateTime(),
-        QTimeZone tz = QTimeZone::utc(),
-        int time_mode = TIME_MODE_REAL);
-  ~Meeus();
-  void ComputeJD();
-  void SetDefaultLocation();
-  void SetLocation(Location loc);
-  int getDay();
-  int getMonth();
-  int getYear();
-  int getHour();
-  int getMinute();
-  int getSecond();
-  void init();
-  void refresh(QDateTime dt);
-  QString getDateTime();
-  QString getLocation();
-  double Date2JD(QDateTime dt);
-  QDateTime JD2Date(double JD);
-  int DayOfWeek(double JD);
-  int DaysBetweenDates(QDateTime dt1, QDateTime dt2);
-  QDateTime AddDays2Date(QDateTime dt, int d);
-  // Misc General Purpose
-  QString VarJD();
-  QString VarT();
-  QString VarDayOfWeek();
-  QString VarDateTime();
-  QString VarCountry();
-  QString VarLocation();
-  QString VarLatitude();
-  QString VarLongitude();
-  QString VarTimeZone();
-  // SUN
-  QString VarSunMeanLongitude();
-  QString VarSunMeanAnomaly();
-  QString VarSunCenter();
-  QString VarSunTrueLongitude();
-  QString VarSunTrueAnomaly();
-  QString VarSunApparentLongitude();
-  QString VarSunRadiusVector();
+//******************************************************************************
+// Types definition
+//******************************************************************************
+typedef QVector<double> vCoefs;
 
-  private:
-  QDateTime dt;
-  Location location;
-  QTimeZone tz;
+//******************************************************************************
+// Class Meeus
+//******************************************************************************
+class Meeus
+{
+public:
+    const static int TIME_MODE_FIXED = 0;
+    const static int TIME_MODE_REAL = 1;
+    const static int TIME_MODE_RUNNING = 2;
+    struct Location
+    {
+        QString Country;
+        QString Name;
+        double Latitude;
+        double Longitude;
+        QString TimeZone;
+    };
+    double JD;
+    int time_mode;
+    Meeus(Location location,
+          QDateTime dt = QDateTime::currentDateTime(),
+          QTimeZone tz = QTimeZone::utc(),
+          int time_mode = TIME_MODE_REAL);
+    ~Meeus();
+    void ComputeJD();
+    void SetDefaultLocation();
+    void SetLocation(Location loc);
+    int getDay();
+    int getMonth();
+    int getYear();
+    int getHour();
+    int getMinute();
+    int getSecond();
+    void init();
+    void refresh(QDateTime dt);
+    QString getDateTime();
+    QString getLocation();
+    double Date2JD(QDateTime dt);
+    QDateTime JD2Date(double JD);
+    int DayOfWeek(double JD);
+    int DaysBetweenDates(QDateTime dt1, QDateTime dt2);
+    QDateTime AddDays2Date(QDateTime dt, int d);
+    // Misc General Purpose
+    QString VarJulianDay();
+    QString VarT();
+    QString VarDayOfWeek();
+    QString VarDateTime();
+    QString VarCountry();
+    QString VarLocation();
+    QString VarLatitude();
+    QString VarLongitude();
+    QString VarTimeZone();
+    // EARTH
+    QString VarEarthMeanEccentricity();
+    QString VarEarthNutationLongitude();
+    QString VarEarthNutationObliquity();
+    QString VarEarthMeanObliquity();
+    QString VarEarthTrueObliquity();
+    // SUN
+    QString VarSunMeanLongitude();
+    QString VarSunMeanAnomaly();
+    QString VarSunCenter();
+    QString VarSunTrueLongitude();
+    QString VarSunTrueAnomaly();
+    QString VarSunApparentLongitude();
+    QString VarSunRadiusVector();
+    QString VarSunNutationAberrationCorrection();
+    // MOON
+    QString VarMoonMeanLongitude();
+    QString VarMoonMeanAnomaly();
+    QString VarMoonMeanElongation();
+    QString VarMoonMeanDistanceFromAscendantNode();
+    QString VarMoonMeanLongitudeFromAscendantNode();
+
+private:
+    QDateTime dt;
+    Location location;
+    QTimeZone tz;
 };
 
+//******************************************************************************
+// Class Sun
+//******************************************************************************
 class Sun
 {
 public:
-    static double MeanLongitude;     // L0
-    static double MeanAnomaly;       // M
-    static double Center;            // C
-    static double TrueLongitude;     // Θ
-    static double TrueAnomaly;       // ν
-    static double ApparentLongitude; // λ
-    static double RadiusVector;      // R
-    static void compute(double JD);
+    static double MeanLongitude(double JD);                           // L0
+    static double MeanAnomaly(double JD);                             // M
+    static double Center(double JD, double MeanAnomaly);              // C
+    static double TrueLongitude(double MeanLongitude, double Center); // Θ
+    static double TrueAnomaly(double MeanAnomaly, double Center);     // ν
+    static double ApparentLongitude(double TrueLongitude, double NutationAberrationCorrection); // λ
+    static double RadiusVector(double MeanEccentricity, double TrueAnomaly);                    // R
+    static double NutationAberrationCorrection(double JD); // Ω
+};
+
+//******************************************************************************
+// Class Moon
+//******************************************************************************
+class Moon
+{
+public:
+    static double MeanLongitude(double JD);                  // L'
+    static double MeanAnomaly(double JD);                    // M'
+    static double MeanElongation(double JD);                 // D
+    static double MeanDistanceFromAscendantNode(double JD);  // F
+    static double MeanLongitudeFromAscendantNode(double JD); // Ω
+};
+
+//******************************************************************************
+// Class Earth
+//******************************************************************************
+class Earth
+{
+public:
+    static double MeanEccentricity(double JD); // e
+    static double NutationLongitude(double JD,
+                                    double SunMeanLongitude,
+                                    double MoonMeanLongitude,
+                                    double SunMeanAnomaly,
+                                    double MoonMeanAnomaly,
+                                    double MoonMeanLongitudeFromAscendantNode); // Δψ
+    static double NutationObliquity(double JD,
+                                    double SunMeanLongitude,
+                                    double MoonMeanLongitude,
+                                    double SunMeanAnomaly,
+                                    double MoonMeanAnomaly,
+                                    double MoonMeanLongitudeFromAscendantNode);  // Δε
+    static double MeanObliquity(double JD);                                      // ε0
+    static double TrueObliquity(double MeanObliquity, double NutationObliquity); // ε = ε0 + Δε
 };
 
 //******************************************************************************
@@ -95,5 +169,6 @@ double deg2rad(double d);
 double rad2deg(double r);
 double reduceAngle(double a);
 QString printDMS(double a);
+double Polynomial(double ind, vCoefs coefs);
 
 #endif  // MEEUS_H

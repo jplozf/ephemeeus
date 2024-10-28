@@ -19,6 +19,7 @@
 #include <QtWidgets/QFormLayout>
 #include <QtWidgets/QGridLayout>
 #include <QtWidgets/QHBoxLayout>
+#include <QtWidgets/QHeaderView>
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QLineEdit>
 #include <QtWidgets/QMainWindow>
@@ -33,6 +34,7 @@
 #include <QtWidgets/QTextBrowser>
 #include <QtWidgets/QTextEdit>
 #include <QtWidgets/QToolBar>
+#include <QtWidgets/QTreeWidget>
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QWidget>
 
@@ -55,6 +57,7 @@ public:
     QWidget *verticalLayoutWidget;
     QVBoxLayout *verticalLayout_2;
     QFormLayout *formLayout_2;
+    QLabel *label_8;
     QLabel *label_6;
     QComboBox *cbxCountry;
     QLabel *label;
@@ -73,12 +76,6 @@ public:
     QHBoxLayout *horizontalLayout_4;
     QDateTimeEdit *txtTime;
     QPushButton *btnTimeLocked;
-    QLabel *label_7;
-    QHBoxLayout *horizontalLayout_10;
-    QComboBox *cbxVargets;
-    QLineEdit *txtVargetLabel;
-    QPushButton *btnAddVarget;
-    QLabel *label_8;
     QLabel *label_9;
     QLabel *label_10;
     QHBoxLayout *horizontalLayout_8;
@@ -88,10 +85,15 @@ public:
     QHBoxLayout *horizontalLayout_9;
     QLineEdit *txtVarboardLabel;
     QPushButton *btnAddLabel;
-    QSpacerItem *verticalSpacer;
+    QLabel *label_7;
+    QHBoxLayout *horizontalLayout_10;
+    QLineEdit *txtVargetLabel;
+    QPushButton *btnAddVarget;
+    QTreeWidget *trwVargets;
     QSpacerItem *verticalSpacer_2;
     QHBoxLayout *horizontalLayout_5;
     QVBoxLayout *verticalLayout;
+    QPushButton *btnClearVarboard;
     QSpacerItem *horizontalSpacer_2;
     QCheckBox *chkAutoRefresh;
     QPushButton *btnCompute;
@@ -130,7 +132,7 @@ public:
     {
         if (MainWindow->objectName().isEmpty())
             MainWindow->setObjectName(QString::fromUtf8("MainWindow"));
-        MainWindow->resize(1086, 538);
+        MainWindow->resize(1086, 776);
         actionQuit = new QAction(MainWindow);
         actionQuit->setObjectName(QString::fromUtf8("actionQuit"));
         QIcon icon;
@@ -139,7 +141,7 @@ public:
         actionOpen = new QAction(MainWindow);
         actionOpen->setObjectName(QString::fromUtf8("actionOpen"));
         QIcon icon1;
-        icon1.addFile(QString::fromUtf8(":/16x16/Document Text.png"), QSize(), QIcon::Normal, QIcon::Off);
+        icon1.addFile(QString::fromUtf8(":/16x16/Folder.png"), QSize(), QIcon::Normal, QIcon::Off);
         actionOpen->setIcon(icon1);
         actionRefresh = new QAction(MainWindow);
         actionRefresh->setObjectName(QString::fromUtf8("actionRefresh"));
@@ -185,6 +187,14 @@ public:
         verticalLayout_2->setContentsMargins(0, 0, 0, 0);
         formLayout_2 = new QFormLayout();
         formLayout_2->setObjectName(QString::fromUtf8("formLayout_2"));
+        label_8 = new QLabel(verticalLayoutWidget);
+        label_8->setObjectName(QString::fromUtf8("label_8"));
+        QFont font;
+        font.setBold(true);
+        label_8->setFont(font);
+
+        formLayout_2->setWidget(0, QFormLayout::FieldRole, label_8);
+
         label_6 = new QLabel(verticalLayoutWidget);
         label_6->setObjectName(QString::fromUtf8("label_6"));
 
@@ -288,42 +298,6 @@ public:
 
         formLayout_2->setLayout(6, QFormLayout::FieldRole, horizontalLayout_4);
 
-        label_7 = new QLabel(verticalLayoutWidget);
-        label_7->setObjectName(QString::fromUtf8("label_7"));
-
-        formLayout_2->setWidget(10, QFormLayout::LabelRole, label_7);
-
-        horizontalLayout_10 = new QHBoxLayout();
-        horizontalLayout_10->setObjectName(QString::fromUtf8("horizontalLayout_10"));
-        cbxVargets = new QComboBox(verticalLayoutWidget);
-        cbxVargets->setObjectName(QString::fromUtf8("cbxVargets"));
-
-        horizontalLayout_10->addWidget(cbxVargets);
-
-        txtVargetLabel = new QLineEdit(verticalLayoutWidget);
-        txtVargetLabel->setObjectName(QString::fromUtf8("txtVargetLabel"));
-
-        horizontalLayout_10->addWidget(txtVargetLabel);
-
-        btnAddVarget = new QPushButton(verticalLayoutWidget);
-        btnAddVarget->setObjectName(QString::fromUtf8("btnAddVarget"));
-        QIcon icon8;
-        icon8.addFile(QString::fromUtf8(":/16x16/Plus.png"), QSize(), QIcon::Normal, QIcon::Off);
-        btnAddVarget->setIcon(icon8);
-
-        horizontalLayout_10->addWidget(btnAddVarget);
-
-
-        formLayout_2->setLayout(10, QFormLayout::FieldRole, horizontalLayout_10);
-
-        label_8 = new QLabel(verticalLayoutWidget);
-        label_8->setObjectName(QString::fromUtf8("label_8"));
-        QFont font;
-        font.setBold(true);
-        label_8->setFont(font);
-
-        formLayout_2->setWidget(0, QFormLayout::FieldRole, label_8);
-
         label_9 = new QLabel(verticalLayoutWidget);
         label_9->setObjectName(QString::fromUtf8("label_9"));
         label_9->setFont(font);
@@ -344,6 +318,8 @@ public:
 
         btnAddTitle = new QPushButton(verticalLayoutWidget);
         btnAddTitle->setObjectName(QString::fromUtf8("btnAddTitle"));
+        QIcon icon8;
+        icon8.addFile(QString::fromUtf8(":/16x16/Plus.png"), QSize(), QIcon::Normal, QIcon::Off);
         btnAddTitle->setIcon(icon8);
 
         horizontalLayout_8->addWidget(btnAddTitle);
@@ -372,12 +348,38 @@ public:
 
         formLayout_2->setLayout(9, QFormLayout::FieldRole, horizontalLayout_9);
 
+        label_7 = new QLabel(verticalLayoutWidget);
+        label_7->setObjectName(QString::fromUtf8("label_7"));
+
+        formLayout_2->setWidget(10, QFormLayout::LabelRole, label_7);
+
+        horizontalLayout_10 = new QHBoxLayout();
+        horizontalLayout_10->setObjectName(QString::fromUtf8("horizontalLayout_10"));
+        txtVargetLabel = new QLineEdit(verticalLayoutWidget);
+        txtVargetLabel->setObjectName(QString::fromUtf8("txtVargetLabel"));
+
+        horizontalLayout_10->addWidget(txtVargetLabel);
+
+        btnAddVarget = new QPushButton(verticalLayoutWidget);
+        btnAddVarget->setObjectName(QString::fromUtf8("btnAddVarget"));
+        btnAddVarget->setIcon(icon8);
+
+        horizontalLayout_10->addWidget(btnAddVarget);
+
+
+        formLayout_2->setLayout(12, QFormLayout::FieldRole, horizontalLayout_10);
+
+        trwVargets = new QTreeWidget(verticalLayoutWidget);
+        QTreeWidgetItem *__qtreewidgetitem = new QTreeWidgetItem();
+        __qtreewidgetitem->setText(0, QString::fromUtf8("1"));
+        trwVargets->setHeaderItem(__qtreewidgetitem);
+        trwVargets->setObjectName(QString::fromUtf8("trwVargets"));
+        trwVargets->setHeaderHidden(true);
+
+        formLayout_2->setWidget(10, QFormLayout::FieldRole, trwVargets);
+
 
         verticalLayout_2->addLayout(formLayout_2);
-
-        verticalSpacer = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
-
-        verticalLayout_2->addItem(verticalSpacer);
 
         verticalSpacer_2 = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
 
@@ -389,6 +391,14 @@ public:
         verticalLayout->setObjectName(QString::fromUtf8("verticalLayout"));
 
         horizontalLayout_5->addLayout(verticalLayout);
+
+        btnClearVarboard = new QPushButton(verticalLayoutWidget);
+        btnClearVarboard->setObjectName(QString::fromUtf8("btnClearVarboard"));
+        QIcon icon9;
+        icon9.addFile(QString::fromUtf8(":/16x16/Recycle.png"), QSize(), QIcon::Normal, QIcon::Off);
+        btnClearVarboard->setIcon(icon9);
+
+        horizontalLayout_5->addWidget(btnClearVarboard);
 
         horizontalSpacer_2 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
 
@@ -420,8 +430,6 @@ public:
         horizontalLayout->setObjectName(QString::fromUtf8("horizontalLayout"));
         btnClearConsole = new QPushButton(tabConsole);
         btnClearConsole->setObjectName(QString::fromUtf8("btnClearConsole"));
-        QIcon icon9;
-        icon9.addFile(QString::fromUtf8(":/16x16/Recycle.png"), QSize(), QIcon::Normal, QIcon::Off);
         btnClearConsole->setIcon(icon9);
 
         horizontalLayout->addWidget(btnClearConsole);
@@ -474,7 +482,7 @@ public:
         scrollArea->setWidgetResizable(true);
         scrollAreaWidgetContents = new QWidget();
         scrollAreaWidgetContents->setObjectName(QString::fromUtf8("scrollAreaWidgetContents"));
-        scrollAreaWidgetContents->setGeometry(QRect(0, 0, 487, 68));
+        scrollAreaWidgetContents->setGeometry(QRect(0, 0, 464, 68));
         gridLayout_3 = new QGridLayout(scrollAreaWidgetContents);
         gridLayout_3->setObjectName(QString::fromUtf8("gridLayout_3"));
         boardLayout = new QVBoxLayout();
@@ -503,7 +511,7 @@ public:
         scrollArea_2->setWidgetResizable(true);
         boxSettings = new QWidget();
         boxSettings->setObjectName(QString::fromUtf8("boxSettings"));
-        boxSettings->setGeometry(QRect(0, 0, 487, 386));
+        boxSettings->setGeometry(QRect(0, 0, 464, 624));
         scrollArea_2->setWidget(boxSettings);
 
         gridLayout_7->addWidget(scrollArea_2, 0, 1, 1, 1);
@@ -602,6 +610,7 @@ public:
 #endif // QT_CONFIG(tooltip)
         action_About->setText(QCoreApplication::translate("MainWindow", "&About", nullptr));
         actionSettings->setText(QCoreApplication::translate("MainWindow", "Settings", nullptr));
+        label_8->setText(QCoreApplication::translate("MainWindow", "\342\226\270 Time and Location Input", nullptr));
         label_6->setText(QCoreApplication::translate("MainWindow", "Country", nullptr));
         label->setText(QCoreApplication::translate("MainWindow", "Location", nullptr));
         label_4->setText(QCoreApplication::translate("MainWindow", "Latitude", nullptr));
@@ -610,14 +619,14 @@ public:
         label_3->setText(QCoreApplication::translate("MainWindow", "Time", nullptr));
         txtTime->setDisplayFormat(QCoreApplication::translate("MainWindow", "dd/MM/yyyy HH:mm:ss", nullptr));
         btnTimeLocked->setText(QString());
-        label_7->setText(QCoreApplication::translate("MainWindow", "Varget", nullptr));
-        btnAddVarget->setText(QString());
-        label_8->setText(QCoreApplication::translate("MainWindow", "\342\226\270 Time and Location Input", nullptr));
         label_9->setText(QCoreApplication::translate("MainWindow", "\342\226\270 Ephemerids Output", nullptr));
         label_10->setText(QCoreApplication::translate("MainWindow", "Title", nullptr));
         btnAddTitle->setText(QString());
         label_11->setText(QCoreApplication::translate("MainWindow", "Label", nullptr));
         btnAddLabel->setText(QString());
+        label_7->setText(QCoreApplication::translate("MainWindow", "Varget", nullptr));
+        btnAddVarget->setText(QString());
+        btnClearVarboard->setText(QCoreApplication::translate("MainWindow", "Clear", nullptr));
         chkAutoRefresh->setText(QCoreApplication::translate("MainWindow", "Auto Refresh", nullptr));
         btnCompute->setText(QCoreApplication::translate("MainWindow", "Compute", nullptr));
 #if QT_CONFIG(tooltip)

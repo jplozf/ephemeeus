@@ -1,3 +1,12 @@
+//******************************************************************************
+//             _
+//     ___ ___| |_ ___ _____ ___ ___ _ _ ___
+//    | -_| . |   | -_|     | -_| -_| | |_ -|
+//    |___|  _|_|_|___|_|_|_|___|___|___|___|
+//        |_|
+//                   (C) JPL 2024
+//
+//******************************************************************************
 #include "Meeus.h"
 
 //******************************************************************************
@@ -25,7 +34,7 @@ void Meeus::ComputeJD() {
 //******************************************************************************
 // Meeus::VarJD()
 //******************************************************************************
-QString Meeus::VarJD()
+QString Meeus::VarJulianDay()
 {
     this->ComputeJD();
     return QString::number(this->JD, 'f', 6);
@@ -294,8 +303,8 @@ QString Meeus::getLocation()
 //******************************************************************************
 QString Meeus::VarSunMeanLongitude()
 {
-    Sun::compute(this->JD);
-    return printDMS(Sun::MeanLongitude);
+    // Sun::compute(this->JD);
+    return printDMS(Sun::MeanLongitude(this->JD));
 }
 
 //******************************************************************************
@@ -303,8 +312,8 @@ QString Meeus::VarSunMeanLongitude()
 //******************************************************************************
 QString Meeus::VarSunMeanAnomaly()
 {
-    Sun::compute(this->JD);
-    return printDMS(Sun::MeanAnomaly);
+    // Sun::compute(this->JD);
+    return printDMS(Sun::MeanAnomaly(this->JD));
 }
 
 //******************************************************************************
@@ -312,8 +321,8 @@ QString Meeus::VarSunMeanAnomaly()
 //******************************************************************************
 QString Meeus::VarSunCenter()
 {
-    Sun::compute(this->JD);
-    return printDMS(Sun::Center);
+    // Sun::compute(this->JD);
+    return printDMS(Sun::Center(this->JD, Sun::MeanAnomaly(this->JD)));
 }
 
 //******************************************************************************
@@ -321,8 +330,9 @@ QString Meeus::VarSunCenter()
 //******************************************************************************
 QString Meeus::VarSunTrueLongitude()
 {
-    Sun::compute(this->JD);
-    return printDMS(Sun::TrueLongitude);
+    // Sun::compute(this->JD);
+    return printDMS(Sun::TrueLongitude(Sun::MeanLongitude(this->JD),
+                                       Sun::Center(this->JD, Sun::MeanAnomaly(this->JD))));
 }
 
 //******************************************************************************
@@ -330,8 +340,9 @@ QString Meeus::VarSunTrueLongitude()
 //******************************************************************************
 QString Meeus::VarSunTrueAnomaly()
 {
-    Sun::compute(this->JD);
-    return printDMS(Sun::TrueAnomaly);
+    // Sun::compute(this->JD);
+    return printDMS(Sun::TrueAnomaly(Sun::MeanAnomaly(this->JD),
+                                     Sun::Center(this->JD, Sun::MeanAnomaly(this->JD))));
 }
 
 //******************************************************************************
@@ -339,8 +350,11 @@ QString Meeus::VarSunTrueAnomaly()
 //******************************************************************************
 QString Meeus::VarSunApparentLongitude()
 {
-    Sun::compute(this->JD);
-    return printDMS(Sun::ApparentLongitude);
+    // Sun::compute(this->JD);
+    return printDMS(
+        Sun::ApparentLongitude(Sun::TrueLongitude(Sun::MeanLongitude(this->JD),
+                                                  Sun::Center(this->JD, Sun::MeanAnomaly(this->JD))),
+                               Sun::NutationAberrationCorrection(this->JD)));
 }
 
 //******************************************************************************
@@ -348,45 +362,350 @@ QString Meeus::VarSunApparentLongitude()
 //******************************************************************************
 QString Meeus::VarSunRadiusVector()
 {
-    Sun::compute(this->JD);
-    return QString::number(Sun::RadiusVector);
+    // Sun::compute(this->JD);
+    return QString::number(
+        Sun::RadiusVector(Earth::MeanEccentricity(this->JD),
+                          Sun::TrueAnomaly(Sun::MeanAnomaly(this->JD),
+                                           Sun::Center(this->JD, Sun::MeanAnomaly(this->JD)))));
 }
 
 //******************************************************************************
-// Static variables need to be defined before use
+// Meeus::VarSunNutationAberrationCorrection()
 //******************************************************************************
-double Sun::MeanLongitude = 0;     // L0
-double Sun::MeanAnomaly = 0;       // M
-double Sun::Center = 0;            // C
-double Sun::TrueLongitude = 0;     // Θ
-double Sun::TrueAnomaly = 0;       // ν
-double Sun::ApparentLongitude = 0; // λ
-double Sun::RadiusVector = 0;      // R
+QString Meeus::VarSunNutationAberrationCorrection()
+{
+    // Sun::compute(this->JD);
+    return printDMS(Sun::NutationAberrationCorrection(this->JD));
+}
 
 //******************************************************************************
-// Sun::compute()
+// Sun::MeanLongitude()
 //******************************************************************************
-void Sun::compute(double JD)
+double Sun::MeanLongitude(double JD)
 {
     // Time in Julian Centuries
     double T = (JD - 2451545.0) / 36525.0;
-    // Earth's Eccentricity
-    double e = 0.016708634 - 0.000042037 * T - 0.0000001267 * (T * T);
     // Sun's Mean Longitude
-    Sun::MeanLongitude = reduceAngle(280.46646 + 36000.76983 * T + 0.0003032 * (T * T));
+    return reduceAngle(Polynomial(T, vCoefs{280.46646, 36000.76983, 0.0003032}));
+}
+
+//******************************************************************************
+// Sun::MeanAnomaly()
+//******************************************************************************
+double Sun::MeanAnomaly(double JD)
+{
+    // Time in Julian Centuries
+    double T = (JD - 2451545.0) / 36525.0;
     // Sun's Mean Anomaly
-    Sun::MeanAnomaly = reduceAngle(357.52911 + 35999.05029 * T - 0.0001537 * (T * T));
+    return reduceAngle(Polynomial(T, vCoefs{357.52911, 35999.05029, -0.0001537}));
+}
+
+//******************************************************************************
+// Sun::Center()
+//******************************************************************************
+double Sun::Center(double JD, double MeanAnomaly)
+{
+    // Time in Julian Centuries
+    double T = (JD - 2451545.0) / 36525.0;
     // Sun's Equation of the Center
-    Sun::Center = (1.914602 - 0.004817 * T - 0.000014 * (T * T)) * sin(deg2rad(Sun::MeanAnomaly));
-    Sun::Center += (0.01993 - 0.000101 * T) * sin(deg2rad(2 * Sun::MeanAnomaly));
-    Sun::Center += 0.000289 * sin(deg2rad(3 * Sun::MeanAnomaly));
-    Sun::Center = reduceAngle(Sun::Center);
+    double c;
+    c = (1.914602 - 0.004817 * T - 0.000014 * (T * T)) * sin(deg2rad(MeanAnomaly));
+    c += (0.01993 - 0.000101 * T) * sin(deg2rad(2 * MeanAnomaly));
+    c += 0.000289 * sin(deg2rad(3 * MeanAnomaly));
+    c = reduceAngle(c);
+    return c;
+}
+
+//******************************************************************************
+// Sun::TrueLongitude()
+//******************************************************************************
+double Sun::TrueLongitude(double MeanLongitude, double Center)
+{
     // Sun's True Longitude
-    Sun::TrueLongitude = reduceAngle(Sun::MeanLongitude + Sun::Center);
+    return reduceAngle(MeanLongitude + Center);
+}
+
+//******************************************************************************
+// Sun::TrueAnomaly()
+//******************************************************************************
+double Sun::TrueAnomaly(double MeanAnomaly, double Center)
+{
     // Sun's True Anomaly
-    Sun::TrueAnomaly = reduceAngle(Sun::MeanAnomaly + Sun::Center);
+    return reduceAngle(MeanAnomaly + Center);
+}
+
+//******************************************************************************
+// Sun::RadiusVector()
+//******************************************************************************
+double Sun::RadiusVector(double MeanEccentricity, double TrueAnomaly)
+{
     // Sun's Radius Vector
-    Sun::RadiusVector = (1.000001018 * (1 - (e * e))) / (1 + e * cos(deg2rad(Sun::TrueAnomaly)));
+    return (1.000001018 * (1 - (MeanEccentricity * MeanEccentricity)))
+           / (1 + MeanEccentricity * cos(deg2rad(TrueAnomaly)));
+}
+
+//******************************************************************************
+// Sun::NutationAberrationCorrection()
+//******************************************************************************
+double Sun::NutationAberrationCorrection(double JD)
+{
+    // Time in Julian Centuries
+    double T = (JD - 2451545.0) / 36525.0;
+    // Nutation & Aberration Correction
+    return reduceAngle(125.04 - 1934.136 * T);
+}
+
+//******************************************************************************
+// Sun::ApparentLongitude()
+//******************************************************************************
+double Sun::ApparentLongitude(double TrueLongitude, double NutationAberrationCorrection)
+{
+    // Sun's Apparent Longitude
+    return reduceAngle(TrueLongitude - 0.00569
+                       - 0.00478 * sin(deg2rad(NutationAberrationCorrection)));
+}
+
+//******************************************************************************
+// Moon::MeanLongitude()
+//******************************************************************************
+double Moon::MeanLongitude(double JD)
+{
+    // Time in Julian Centuries
+    double T = (JD - 2451545.0) / 36525.0;
+    // Mean Longitude
+    return reduceAngle(
+        Polynomial(T, vCoefs{218.31644735, 481267.88122838, -0.00159944, 1 / 538841}));
+}
+
+//******************************************************************************
+// Moon::MeanAnomaly()
+//******************************************************************************
+double Moon::MeanAnomaly(double JD)
+{
+    // Time in Julian Centuries
+    double T = (JD - 2451545.0) / 36525.0;
+    // Mean Anomaly
+    return reduceAngle(Polynomial(T, vCoefs{134.96339622, 477198.86750067, 0.00872053, 1 / 69699}));
+}
+
+//******************************************************************************
+// Moon::MeanElongation()
+//******************************************************************************
+double Moon::MeanElongation(double JD)
+{
+    // Time in Julian Centuries
+    double T = (JD - 2451545.0) / 36525.0;
+    // Mean Elongation
+    return reduceAngle(
+        Polynomial(T, vCoefs{297.85019172, 445267.11139756, -0.00190272, 1 / 545868}));
+}
+
+//******************************************************************************
+// Moon::MeanDistanceFromAscendantNode()
+//******************************************************************************
+double Moon::MeanDistanceFromAscendantNode(double JD)
+{
+    // Time in Julian Centuries
+    double T = (JD - 2451545.0) / 36525.0;
+    // Mean Distance from Ascendant Node
+    return reduceAngle(
+        Polynomial(T, vCoefs{93.27209769, 483202.01756053, -0.00367481, -1 / 3525955}));
+}
+
+//******************************************************************************
+// Moon::MeanLongitudeFromAscendantNode()
+//******************************************************************************
+double Moon::MeanLongitudeFromAscendantNode(double JD)
+{
+    // Time in Julian Centuries
+    double T = (JD - 2451545.0) / 36525.0;
+    // Mean Longitude from Ascendant Node of Moon's Orbit on ecliptic
+    return Polynomial(T, vCoefs{125.0443, -1934.1363, 0.002075});
+}
+
+//******************************************************************************
+// Meeus::VarMoonMeanLongitude()
+//******************************************************************************
+QString Meeus::VarMoonMeanLongitude()
+{
+    return printDMS(Moon::MeanLongitude(this->JD));
+}
+
+//******************************************************************************
+// Meeus::VarMoonMeanAnomaly()
+//******************************************************************************
+QString Meeus::VarMoonMeanAnomaly()
+{
+    return printDMS(Moon::MeanAnomaly(this->JD));
+}
+
+//******************************************************************************
+// Meeus::VarMoonMeanElongation()
+//******************************************************************************
+QString Meeus::VarMoonMeanElongation()
+{
+    return printDMS(Moon::MeanElongation(this->JD));
+}
+
+//******************************************************************************
+// Meeus::VarMoonMeanDistanceFromAscendantNode()
+//******************************************************************************
+QString Meeus::VarMoonMeanDistanceFromAscendantNode()
+{
+    return printDMS(Moon::MeanDistanceFromAscendantNode(this->JD));
+}
+
+//******************************************************************************
+// Meeus::VarMoonMeanLongitudeFromAscendantNode()
+//******************************************************************************
+QString Meeus::VarMoonMeanLongitudeFromAscendantNode()
+{
+    return printDMS(Moon::MeanLongitudeFromAscendantNode(this->JD));
+}
+
+//******************************************************************************
+// Earth::MeanEccentricity()
+//******************************************************************************
+double Earth::MeanEccentricity(double JD)
+{
+    // Time in Julian Centuries
+    double T = (JD - 2451545.0) / 36525.0;
+    // Earth's Mean Eccentricity
+    return reduceAngle(Polynomial(T, vCoefs{0.016708634, -0.000042037, -0.0000001267}));
+}
+
+//******************************************************************************
+// Earth::NutationLongitude()
+//******************************************************************************
+double Earth::NutationLongitude(double JD,
+                                double SunMeanLongitude,
+                                double MoonMeanLongitude,
+                                double SunMeanAnomaly,
+                                double MoonMeanAnomaly,
+                                double MoonMeanLongitudeFromAscendantNode)
+{
+    // Time in Julian Centuries
+    double T = (JD - 2451545.0) / 36525.0;
+    // Earth's Nutation in Longitude
+    double dnl = -(17.1996 + 0.01742 * T) * sin(deg2rad(MoonMeanLongitudeFromAscendantNode));
+    dnl -= (1.3187 + 0.00016 * T) * sin(deg2rad(2 * SunMeanLongitude));
+    dnl -= 0.2274 * sin(deg2rad(2 * MoonMeanLongitude));
+    dnl += 0.2062 * sin(deg2rad(2 * MoonMeanLongitudeFromAscendantNode));
+    dnl += (0.1426 - 0.00034 * T) * sin(deg2rad(SunMeanAnomaly));
+    dnl += 0.0712 * sin(deg2rad(MoonMeanAnomaly));
+    dnl -= (0.0517 - 0.00012 * T) * sin(deg2rad(2 * SunMeanLongitude + SunMeanAnomaly));
+    dnl -= 0.0386 * sin(deg2rad(2 * MoonMeanLongitude - MoonMeanLongitudeFromAscendantNode));
+    dnl -= 0.0301 * sin(deg2rad(2 * MoonMeanLongitude + MoonMeanAnomaly));
+    dnl += 0.0217 * sin(deg2rad(2 * SunMeanLongitude - SunMeanAnomaly));
+    dnl -= 0.0158 * sin(deg2rad(2 * SunMeanLongitude - 2 * MoonMeanLongitude + MoonMeanAnomaly));
+    dnl += 0.0129 * sin(deg2rad(2 * SunMeanLongitude - MoonMeanLongitudeFromAscendantNode));
+    dnl += 0.0123 * sin(deg2rad(2 * MoonMeanLongitude - MoonMeanAnomaly));
+
+    return reduceAngle(dnl);
+}
+
+//******************************************************************************
+// Earth::NutationObliquity()
+//******************************************************************************
+double Earth::NutationObliquity(double JD,
+                                double SunMeanLongitude,
+                                double MoonMeanLongitude,
+                                double SunMeanAnomaly,
+                                double MoonMeanAnomaly,
+                                double MoonMeanLongitudeFromAscendantNode)
+{
+    // Time in Julian Centuries
+    double T = (JD - 2451545.0) / 36525.0;
+    // Earth's Nutation in Obliquity
+    double dno = (9.2025 + 0.00089 * T) * cos(deg2rad(MoonMeanLongitudeFromAscendantNode));
+    dno += (0.5736 - 0.00031 * T) * cos(deg2rad(2 * SunMeanLongitude));
+    dno += 0.0977 * cos(deg2rad(2 * MoonMeanLongitude));
+    dno -= 0.0895 * cos(deg2rad(2 * MoonMeanLongitudeFromAscendantNode));
+    dno += 0.0224 * cos(deg2rad(2 * SunMeanLongitude + SunMeanAnomaly));
+    dno += 0.0200 * cos(deg2rad(2 * MoonMeanLongitude - MoonMeanLongitudeFromAscendantNode));
+    dno += 0.0129 * cos(deg2rad(2 * MoonMeanLongitude + MoonMeanAnomaly));
+    dno -= 0.0095 * cos(deg2rad(2 * SunMeanLongitude - SunMeanAnomaly));
+    dno -= 0.0070 * cos(deg2rad(2 * SunMeanLongitude - MoonMeanLongitudeFromAscendantNode));
+
+    return reduceAngle(dno);
+}
+
+//******************************************************************************
+// Earth::MeanObliquity()
+//******************************************************************************
+double Earth::MeanObliquity(double JD)
+{
+    // Time in Julian Centuries
+    double T = (JD - 2451545.0) / 36525.0;
+    // Earth's Mean Obliquity
+    return reduceAngle(Polynomial(T, vCoefs{23.43929111, -0.01300417, -0.00000016, 0.00000050}));
+}
+
+//******************************************************************************
+// Earth::TrueObliquity()
+//******************************************************************************
+double Earth::TrueObliquity(double MeanObliquity, double NutationObliquity)
+{
+    // Earth's True Obliquity ε = ε0 + Δε
+    return reduceAngle(MeanObliquity + NutationObliquity);
+}
+
+//******************************************************************************
+// Meeus::VarEarthMeanEccentricity()
+//******************************************************************************
+QString Meeus::VarEarthMeanEccentricity()
+{
+    return printDMS(Earth::MeanEccentricity(this->JD));
+}
+
+//******************************************************************************
+// Meeus::VarEarthNutationLongitude()
+//******************************************************************************
+QString Meeus::VarEarthNutationLongitude()
+{
+    return printDMS(Earth::NutationLongitude(this->JD,
+                                             Sun::MeanLongitude(this->JD),
+                                             Moon::MeanLongitude(this->JD),
+                                             Sun::MeanAnomaly(this->JD),
+                                             Moon::MeanAnomaly(this->JD),
+                                             Moon::MeanLongitudeFromAscendantNode(this->JD)));
+}
+
+//******************************************************************************
+// Meeus::VarEarthNutationObliquity()
+//******************************************************************************
+QString Meeus::VarEarthNutationObliquity()
+{
+    return printDMS(Earth::NutationObliquity(this->JD,
+                                             Sun::MeanLongitude(this->JD),
+                                             Moon::MeanLongitude(this->JD),
+                                             Sun::MeanAnomaly(this->JD),
+                                             Moon::MeanAnomaly(this->JD),
+                                             Moon::MeanLongitudeFromAscendantNode(this->JD)));
+}
+
+//******************************************************************************
+// Meeus::VarEarthMeanObliquity()
+//******************************************************************************
+QString Meeus::VarEarthMeanObliquity()
+{
+    return printDMS(Earth::MeanObliquity(this->JD));
+}
+
+//******************************************************************************
+// Meeus::VarEarthTrueObliquity()
+//******************************************************************************
+QString Meeus::VarEarthTrueObliquity()
+{
+    return printDMS(
+        Earth::TrueObliquity(Earth::MeanObliquity(this->JD),
+                             Earth::NutationObliquity(this->JD,
+                                                      Sun::MeanLongitude(this->JD),
+                                                      Moon::MeanLongitude(this->JD),
+                                                      Sun::MeanAnomaly(this->JD),
+                                                      Moon::MeanAnomaly(this->JD),
+                                                      Moon::MeanLongitudeFromAscendantNode(
+                                                          this->JD))));
 }
 
 //******************************************************************************
@@ -487,6 +806,9 @@ double rad2deg(double r)
 //******************************************************************************
 double reduceAngle(double a)
 {
+    while (a < 0) {
+        a += 360.0;
+    }
     return fmod(a, 360.0);
 }
 
@@ -501,6 +823,19 @@ QString printDMS(double a)
     return s;
 }
 
+//******************************************************************************
+// Polynomial()
+//******************************************************************************
+double Polynomial(double ind, vCoefs coefs)
+{
+    // ind is the indeterminate
+    // coefs are the coefficients for each power 0..n
+    double value = 0;
+    for (int n = 0; n < coefs.size(); ++n) {
+        value = value + (coefs[n] * pow(ind, n));
+    }
+    return value;
+}
 /*
 --------------------------------------------------------------------------------
 The Greek Alphabet

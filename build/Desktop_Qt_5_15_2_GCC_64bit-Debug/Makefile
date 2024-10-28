@@ -14,7 +14,7 @@ EQ            = =
 
 CC            = gcc
 CXX           = g++
-DEFINES       = -DGIT_HASH=\"d7442eb\" -DGIT_BRANCH=\"main\" -DBUILD_TIMESTAMP=\"2024-10-13T16:06:39UTC\" -DQT_QML_DEBUG -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_SQL_LIB -DQT_CORE_LIB
+DEFINES       = -DGIT_HASH=\"c3ae003\" -DGIT_BRANCH=\"main\" -DBUILD_TIMESTAMP=\"2024-10-18T19:50:06UTC\" -DQT_QML_DEBUG -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_SQL_LIB -DQT_CORE_LIB
 CFLAGS        = -pipe -g -Wall -Wextra -D_REENTRANT -fPIC $(DEFINES)
 CXXFLAGS      = -pipe -g -std=gnu++1z -Wall -Wextra -D_REENTRANT -fPIC $(DEFINES)
 INCPATH       = -I../../../ephemeeus -I. -I/home/jpl/Qt/5.15.2/gcc_64/include -I/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets -I/home/jpl/Qt/5.15.2/gcc_64/include/QtGui -I/home/jpl/Qt/5.15.2/gcc_64/include/QtNetwork -I/home/jpl/Qt/5.15.2/gcc_64/include/QtSql -I/home/jpl/Qt/5.15.2/gcc_64/include/QtCore -I. -I/usr/include/libdrm -I. -I/home/jpl/Qt/5.15.2/gcc_64/mkspecs/linux-g++
@@ -828,6 +828,7 @@ qrc_ephemeeus.cpp: ../../ephemeeus.qrc \
 		../../16x16/Arrow\ Previous.png \
 		../../16x16/Hand.png \
 		../../16x16/Home.png \
+		../../16x16/Moon.png \
 		../../16x16/Download.png \
 		../../16x16/Info2.png \
 		../../16x16/Bubble5.png \
@@ -929,6 +930,7 @@ qrc_ephemeeus.cpp: ../../ephemeeus.qrc \
 		../../16x16/Key.png \
 		../../16x16/Pound.png \
 		../../16x16/Music2.png \
+		../../16x16/Planet.png \
 		../../16x16/Char\ -\ Colon.png \
 		../../16x16/Bubble2.png \
 		../../16x16/Folder\ Up.png \
@@ -1336,46 +1338,6 @@ moc_MainWindow.cpp: ../../MainWindow.h \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/QPair \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/QStandardPaths \
 		ui_MainWindow.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtGui/QIcon \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QApplication \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qapplication.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QCheckBox \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qcheckbox.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QComboBox \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qcombobox.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qabstractitemdelegate.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qstyleoption.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qabstractspinbox.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtGui/qvalidator.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qslider.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qabstractslider.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qstyle.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qtabbar.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qrubberband.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QDateTimeEdit \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qdatetimeedit.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qcalendar.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QGridLayout \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QMenu \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qmenu.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QMenuBar \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qmenubar.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QScrollArea \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qscrollarea.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qabstractscrollarea.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QSplitter \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qsplitter.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QStatusBar \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qstatusbar.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QTabWidget \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QTextBrowser \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qtextbrowser.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qtextedit.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtGui/qtextdocument.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QTextEdit \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QToolBar \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qtoolbar.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QVBoxLayout \
 		moc_predefs.h \
 		/home/jpl/Qt/5.15.2/gcc_64/bin/moc
 	/home/jpl/Qt/5.15.2/gcc_64/bin/moc $(DEFINES) --include '/media/HDD/Documents/Google Drive/Projets/Qt/ephemeeus/build/Desktop_Qt_5_15_2_GCC_64bit-Debug/moc_predefs.h' -I/home/jpl/Qt/5.15.2/gcc_64/mkspecs/linux-g++ -I'/media/HDD/Documents/Google Drive/Projets/Qt/ephemeeus' -I/home/jpl/Qt/5.15.2/gcc_64/include -I/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets -I/home/jpl/Qt/5.15.2/gcc_64/include/QtGui -I/home/jpl/Qt/5.15.2/gcc_64/include/QtNetwork -I/home/jpl/Qt/5.15.2/gcc_64/include/QtSql -I/home/jpl/Qt/5.15.2/gcc_64/include/QtCore -I. -I/usr/include/c++/14 -I/usr/include/c++/14/x86_64-redhat-linux -I/usr/include/c++/14/backward -I/usr/lib/gcc/x86_64-redhat-linux/14/include -I/usr/local/include -I/usr/include ../../MainWindow.h -o moc_MainWindow.cpp
@@ -2436,45 +2398,7 @@ main.o: ../../main.cpp /home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QApplication
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtGui/qtextoption.h \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/QPair \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/QStandardPaths \
-		ui_MainWindow.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtGui/QIcon \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QCheckBox \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qcheckbox.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QComboBox \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qcombobox.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qabstractitemdelegate.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qstyleoption.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qabstractspinbox.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtGui/qvalidator.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qslider.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qabstractslider.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qstyle.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qtabbar.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qrubberband.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QDateTimeEdit \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qdatetimeedit.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qcalendar.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QGridLayout \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QMenu \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qmenu.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QMenuBar \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qmenubar.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QScrollArea \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qscrollarea.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qabstractscrollarea.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QSplitter \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qsplitter.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QStatusBar \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qstatusbar.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QTabWidget \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QTextBrowser \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qtextbrowser.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qtextedit.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtGui/qtextdocument.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QTextEdit \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QToolBar \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qtoolbar.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QVBoxLayout
+		ui_MainWindow.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o ../../main.cpp
 
 MainWindow.o: ../../MainWindow.cpp ../../MainWindow.h \
@@ -2727,47 +2651,7 @@ MainWindow.o: ../../MainWindow.cpp ../../MainWindow.h \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtGui/qtextoption.h \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/QPair \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/QStandardPaths \
-		ui_MainWindow.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtGui/QIcon \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QApplication \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qapplication.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QCheckBox \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qcheckbox.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QComboBox \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qcombobox.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qabstractitemdelegate.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qstyleoption.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qabstractspinbox.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtGui/qvalidator.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qslider.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qabstractslider.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qstyle.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qtabbar.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qrubberband.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QDateTimeEdit \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qdatetimeedit.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qcalendar.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QGridLayout \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QMenu \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qmenu.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QMenuBar \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qmenubar.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QScrollArea \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qscrollarea.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qabstractscrollarea.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QSplitter \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qsplitter.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QStatusBar \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qstatusbar.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QTabWidget \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QTextBrowser \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qtextbrowser.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qtextedit.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtGui/qtextdocument.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QTextEdit \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QToolBar \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qtoolbar.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QVBoxLayout
+		ui_MainWindow.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o MainWindow.o ../../MainWindow.cpp
 
 settings.o: ../../settings.cpp ../../settings.h \
@@ -3020,47 +2904,7 @@ settings.o: ../../settings.cpp ../../settings.h \
 		../../app.h \
 		../../downloader.h \
 		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/QUuid \
-		ui_MainWindow.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtGui/QIcon \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QApplication \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qapplication.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QCheckBox \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qcheckbox.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QComboBox \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qcombobox.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qabstractitemdelegate.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qstyleoption.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qabstractspinbox.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtGui/qvalidator.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qslider.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qabstractslider.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qstyle.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qtabbar.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qrubberband.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QDateTimeEdit \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qdatetimeedit.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtCore/qcalendar.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QGridLayout \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QMenu \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qmenu.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QMenuBar \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qmenubar.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QScrollArea \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qscrollarea.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qabstractscrollarea.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QSplitter \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qsplitter.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QStatusBar \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qstatusbar.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QTabWidget \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QTextBrowser \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qtextbrowser.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qtextedit.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtGui/qtextdocument.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QTextEdit \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QToolBar \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/qtoolbar.h \
-		/home/jpl/Qt/5.15.2/gcc_64/include/QtWidgets/QVBoxLayout
+		ui_MainWindow.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o settings.o ../../settings.cpp
 
 utils.o: ../../utils.cpp ../../utils.h \

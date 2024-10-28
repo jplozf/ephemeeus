@@ -36,7 +36,7 @@ Settings::Settings() {
   defaults["DEFAULT_LOCATION_LATITUDE"] = QVariant(48.778056);
   defaults["DEFAULT_LOCATION_LONGITUDE"] = QVariant(2.68);
 
-  defaults["VARBOARD_COLOR_LINE_1"] = QVariant("#ccdee2");
+  defaults["VARBOARD_COLOR_LINE_1"] = QVariant("#B0C4DE");
   defaults["VARBOARD_COLOR_LINE_2"] = QVariant("#b3b8bf");
   defaults["VARBOARD_SHOW_HELP"] = QVariant(true);
 

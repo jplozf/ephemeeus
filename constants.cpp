@@ -22,6 +22,7 @@ Constants::Constants()
     constants["CITIES_DATABASE"] = QVariant("cities.db");
     constants["CITIES_URL"] = QVariant("http://ligorax.free.fr/cities.db");
     constants["MRU_FILES"] = QVariant(5);
+    constants["BAR_COLOR"] = QVariant("#B0C4DE");
 
     theme["LIGHT"] = QStringList({"#efefef",
                                   "#000000",
@@ -85,7 +86,7 @@ QString Constants::setAbout()
 {
     QString str;
     str = QString(
-              "<h2 id=\"crush\">%1 v%2</h2>" "<em>branch: %3, version: %4, built_at: %5</em>" "<hr>" "<blockquote>" "<table>" "<tbody>")
+              "<center><img src=\":16x16/Moon.png\"></center><h2 id=\"crush\">%1 v%2</h2>" "<em>" "branch:" " %3, " "versi" "on: " "%4, " "built" "_at: " "%5</em>" "<hr>" "<blockq" "uote>" "<table>" "<tbody>")
               .arg(this->getQString("APPLICATION_NAME"), this->getQString("VERSION"))
               .arg(GIT_BRANCH)
               .arg(GIT_HASH)
@@ -103,6 +104,8 @@ QString Constants::setAbout()
                "</tbody></table>" "</blockquote>" "<br>" "<hr>" "<p><center><em>%1</em></" "center>"
                                                                                            "</p>")
                .arg(this->getQString("COPYRIGHT"));
+
+    // str += QString("<img src=\":16x16/Moon.png\">");
 
     return str;
 }

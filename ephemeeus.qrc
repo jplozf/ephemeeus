@@ -175,5 +175,7 @@
         <file>help.html</file>
         <file>dox/Astronomical Algorithms - Jean Meeus.pdf</file>
         <file>16x16/pdf.png</file>
+        <file>16x16/Planet.png</file>
+        <file>16x16/Moon.png</file>
     </qresource>
 </RCC>

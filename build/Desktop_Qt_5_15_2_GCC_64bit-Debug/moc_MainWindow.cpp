@@ -22,8 +22,8 @@ QT_BEGIN_MOC_NAMESPACE
 QT_WARNING_PUSH
 QT_WARNING_DISABLE_DEPRECATED
 struct qt_meta_stringdata_MainWindow_t {
-    QByteArrayData data[24];
-    char stringdata0[523];
+    QByteArrayData data[28];
+    char stringdata0[598];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -42,20 +42,24 @@ QT_MOC_LITERAL(6, 99, 30), // "on_txtLocation_editingFinished"
 QT_MOC_LITERAL(7, 130, 23), // "on_actionOpen_triggered"
 QT_MOC_LITERAL(8, 154, 23), // "on_actionHelp_triggered"
 QT_MOC_LITERAL(9, 178, 23), // "on_btnAddVarget_clicked"
-QT_MOC_LITERAL(10, 202, 33), // "on_cbxVargets_currentIndexCha..."
-QT_MOC_LITERAL(11, 236, 5), // "index"
-QT_MOC_LITERAL(12, 242, 23), // "on_actionSave_triggered"
-QT_MOC_LITERAL(13, 266, 22), // "on_btnAddLabel_clicked"
-QT_MOC_LITERAL(14, 289, 22), // "on_btnAddTitle_clicked"
-QT_MOC_LITERAL(15, 312, 26), // "on_actionSave_as_triggered"
-QT_MOC_LITERAL(16, 339, 23), // "on_btnExportLog_clicked"
-QT_MOC_LITERAL(17, 363, 25), // "on_action_About_triggered"
-QT_MOC_LITERAL(18, 389, 24), // "on_btnTimeLocked_clicked"
-QT_MOC_LITERAL(19, 414, 27), // "on_actionSettings_triggered"
-QT_MOC_LITERAL(20, 442, 32), // "on_cbxCountry_currentTextChanged"
-QT_MOC_LITERAL(21, 475, 4), // "arg1"
-QT_MOC_LITERAL(22, 480, 30), // "on_chkAutoRefresh_stateChanged"
-QT_MOC_LITERAL(23, 511, 11) // "openMRUFile"
+QT_MOC_LITERAL(10, 202, 22), // "on_btnAddLabel_clicked"
+QT_MOC_LITERAL(11, 225, 22), // "on_btnAddTitle_clicked"
+QT_MOC_LITERAL(12, 248, 26), // "on_actionSave_as_triggered"
+QT_MOC_LITERAL(13, 275, 23), // "on_btnExportLog_clicked"
+QT_MOC_LITERAL(14, 299, 25), // "on_action_About_triggered"
+QT_MOC_LITERAL(15, 325, 24), // "on_btnTimeLocked_clicked"
+QT_MOC_LITERAL(16, 350, 27), // "on_actionSettings_triggered"
+QT_MOC_LITERAL(17, 378, 23), // "on_actionSave_triggered"
+QT_MOC_LITERAL(18, 402, 32), // "on_cbxCountry_currentTextChanged"
+QT_MOC_LITERAL(19, 435, 4), // "arg1"
+QT_MOC_LITERAL(20, 440, 30), // "on_chkAutoRefresh_stateChanged"
+QT_MOC_LITERAL(21, 471, 11), // "openMRUFile"
+QT_MOC_LITERAL(22, 483, 25), // "on_trwVargets_itemClicked"
+QT_MOC_LITERAL(23, 509, 16), // "QTreeWidgetItem*"
+QT_MOC_LITERAL(24, 526, 4), // "item"
+QT_MOC_LITERAL(25, 531, 6), // "column"
+QT_MOC_LITERAL(26, 538, 31), // "on_trwVargets_itemDoubleClicked"
+QT_MOC_LITERAL(27, 570, 27) // "on_btnClearVarboard_clicked"
 
     },
     "MainWindow\0slotDoExit\0\0"
@@ -64,18 +68,20 @@ QT_MOC_LITERAL(23, 511, 11) // "openMRUFile"
     "on_btnCompute_clicked\0"
     "on_txtLocation_editingFinished\0"
     "on_actionOpen_triggered\0on_actionHelp_triggered\0"
-    "on_btnAddVarget_clicked\0"
-    "on_cbxVargets_currentIndexChanged\0"
-    "index\0on_actionSave_triggered\0"
-    "on_btnAddLabel_clicked\0on_btnAddTitle_clicked\0"
+    "on_btnAddVarget_clicked\0on_btnAddLabel_clicked\0"
+    "on_btnAddTitle_clicked\0"
     "on_actionSave_as_triggered\0"
     "on_btnExportLog_clicked\0"
     "on_action_About_triggered\0"
     "on_btnTimeLocked_clicked\0"
     "on_actionSettings_triggered\0"
+    "on_actionSave_triggered\0"
     "on_cbxCountry_currentTextChanged\0arg1\0"
     "on_chkAutoRefresh_stateChanged\0"
-    "openMRUFile"
+    "openMRUFile\0on_trwVargets_itemClicked\0"
+    "QTreeWidgetItem*\0item\0column\0"
+    "on_trwVargets_itemDoubleClicked\0"
+    "on_btnClearVarboard_clicked"
 };
 #undef QT_MOC_LITERAL
 
@@ -85,7 +91,7 @@ static const uint qt_meta_data_MainWindow[] = {
        8,       // revision
        0,       // classname
        0,    0, // classinfo
-      20,   14, // methods
+      22,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -93,26 +99,28 @@ static const uint qt_meta_data_MainWindow[] = {
        0,       // signalCount
 
  // slots: name, argc, parameters, tag, flags
-       1,    0,  114,    2, 0x08 /* Private */,
-       3,    0,  115,    2, 0x08 /* Private */,
-       4,    0,  116,    2, 0x08 /* Private */,
-       5,    0,  117,    2, 0x08 /* Private */,
-       6,    0,  118,    2, 0x08 /* Private */,
-       7,    0,  119,    2, 0x08 /* Private */,
-       8,    0,  120,    2, 0x08 /* Private */,
-       9,    0,  121,    2, 0x08 /* Private */,
-      10,    1,  122,    2, 0x08 /* Private */,
-      12,    0,  125,    2, 0x08 /* Private */,
-      13,    0,  126,    2, 0x08 /* Private */,
-      14,    0,  127,    2, 0x08 /* Private */,
-      15,    0,  128,    2, 0x08 /* Private */,
-      16,    0,  129,    2, 0x08 /* Private */,
-      17,    0,  130,    2, 0x08 /* Private */,
-      18,    0,  131,    2, 0x08 /* Private */,
-      19,    0,  132,    2, 0x08 /* Private */,
-      20,    1,  133,    2, 0x08 /* Private */,
-      22,    1,  136,    2, 0x08 /* Private */,
-      23,    0,  139,    2, 0x08 /* Private */,
+       1,    0,  124,    2, 0x08 /* Private */,
+       3,    0,  125,    2, 0x08 /* Private */,
+       4,    0,  126,    2, 0x08 /* Private */,
+       5,    0,  127,    2, 0x08 /* Private */,
+       6,    0,  128,    2, 0x08 /* Private */,
+       7,    0,  129,    2, 0x08 /* Private */,
+       8,    0,  130,    2, 0x08 /* Private */,
+       9,    0,  131,    2, 0x08 /* Private */,
+      10,    0,  132,    2, 0x08 /* Private */,
+      11,    0,  133,    2, 0x08 /* Private */,
+      12,    0,  134,    2, 0x08 /* Private */,
+      13,    0,  135,    2, 0x08 /* Private */,
+      14,    0,  136,    2, 0x08 /* Private */,
+      15,    0,  137,    2, 0x08 /* Private */,
+      16,    0,  138,    2, 0x08 /* Private */,
+      17,    0,  139,    2, 0x08 /* Private */,
+      18,    1,  140,    2, 0x08 /* Private */,
+      20,    1,  143,    2, 0x08 /* Private */,
+      21,    0,  146,    2, 0x08 /* Private */,
+      22,    2,  147,    2, 0x08 /* Private */,
+      26,    2,  152,    2, 0x08 /* Private */,
+      27,    0,  157,    2, 0x08 /* Private */,
 
  // slots: parameters
     QMetaType::Void,
@@ -123,7 +131,6 @@ static const uint qt_meta_data_MainWindow[] = {
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
-    QMetaType::Void, QMetaType::Int,   11,
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
@@ -132,8 +139,11 @@ static const uint qt_meta_data_MainWindow[] = {
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
-    QMetaType::Void, QMetaType::QString,   21,
-    QMetaType::Void, QMetaType::Int,   21,
+    QMetaType::Void, QMetaType::QString,   19,
+    QMetaType::Void, QMetaType::Int,   19,
+    QMetaType::Void,
+    QMetaType::Void, 0x80000000 | 23, QMetaType::Int,   24,   25,
+    QMetaType::Void, 0x80000000 | 23, QMetaType::Int,   24,   25,
     QMetaType::Void,
 
        0        // eod
@@ -153,18 +163,20 @@ void MainWindow::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
         case 5: _t->on_actionOpen_triggered(); break;
         case 6: _t->on_actionHelp_triggered(); break;
         case 7: _t->on_btnAddVarget_clicked(); break;
-        case 8: _t->on_cbxVargets_currentIndexChanged((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 9: _t->on_actionSave_triggered(); break;
-        case 10: _t->on_btnAddLabel_clicked(); break;
-        case 11: _t->on_btnAddTitle_clicked(); break;
-        case 12: _t->on_actionSave_as_triggered(); break;
-        case 13: _t->on_btnExportLog_clicked(); break;
-        case 14: _t->on_action_About_triggered(); break;
-        case 15: _t->on_btnTimeLocked_clicked(); break;
-        case 16: _t->on_actionSettings_triggered(); break;
-        case 17: _t->on_cbxCountry_currentTextChanged((*reinterpret_cast< const QString(*)>(_a[1]))); break;
-        case 18: _t->on_chkAutoRefresh_stateChanged((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 19: _t->openMRUFile(); break;
+        case 8: _t->on_btnAddLabel_clicked(); break;
+        case 9: _t->on_btnAddTitle_clicked(); break;
+        case 10: _t->on_actionSave_as_triggered(); break;
+        case 11: _t->on_btnExportLog_clicked(); break;
+        case 12: _t->on_action_About_triggered(); break;
+        case 13: _t->on_btnTimeLocked_clicked(); break;
+        case 14: _t->on_actionSettings_triggered(); break;
+        case 15: _t->on_actionSave_triggered(); break;
+        case 16: _t->on_cbxCountry_currentTextChanged((*reinterpret_cast< const QString(*)>(_a[1]))); break;
+        case 17: _t->on_chkAutoRefresh_stateChanged((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 18: _t->openMRUFile(); break;
+        case 19: _t->on_trwVargets_itemClicked((*reinterpret_cast< QTreeWidgetItem*(*)>(_a[1])),(*reinterpret_cast< int(*)>(_a[2]))); break;
+        case 20: _t->on_trwVargets_itemDoubleClicked((*reinterpret_cast< QTreeWidgetItem*(*)>(_a[1])),(*reinterpret_cast< int(*)>(_a[2]))); break;
+        case 21: _t->on_btnClearVarboard_clicked(); break;
         default: ;
         }
     }
@@ -199,13 +211,13 @@ int MainWindow::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 20)
+        if (_id < 22)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 20;
+        _id -= 22;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 20)
+        if (_id < 22)
             *reinterpret_cast<int*>(_a[0]) = -1;
-        _id -= 20;
+        _id -= 22;
     }
     return _id;
 }

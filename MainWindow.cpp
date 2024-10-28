@@ -18,9 +18,9 @@ MainWindow::MainWindow(QApplication* a, QWidget* parent)
 
   connect(ui->actionQuit, SIGNAL(triggered()), this, SLOT(slotDoExit()));
 
-  initUI();
   this->appTitle = QString("%1 %2").arg(app->appConstants->getQString("APPLICATION_NAME"),
                                         app->appConstants->getQString("VERSION"));
+  initUI();
   this->setWindowTitle(this->appTitle);
   showMessage("Welcome");
 
@@ -88,16 +88,26 @@ MainWindow::MainWindow(QApplication* a, QWidget* parent)
       // Load default Varboard if it exists...
       this->vb->LoadJSON(fName, meeus);
       showMessage("Default varboard open");
+      QFileInfo fi(fName);
+      this->lblFileName->setText("File : " + fi.fileName());
+      this->vbdFileName = fName;
+      this->vbdModified = false;
+      this->displayFileName();
   } else {
       // ...Or create it otherwise
       this->vb->addVarget("Date & Time", meeus, "VarDateTime");
       this->vb->addVarget("Location", meeus, "VarLocation");
       this->vb->addVarget("Latitude", meeus, "VarLatitude");
       this->vb->addVarget("Longitude", meeus, "VarLongitude");
-      this->vb->addVarget("Julian Day", meeus, "VarJD");
+      this->vb->addVarget("Julian Day", meeus, "VarJulianDay");
       this->vb->pack();
       this->vb->SaveJSON(fName);
       showMessage("Creating default varboard");
+      QFileInfo fi(fName);
+      this->lblFileName->setText("File : " + fi.fileName());
+      this->vbdFileName = fName;
+      this->vbdModified = false;
+      this->displayFileName();
   }
 
   // And the Show must go on !
@@ -127,8 +137,25 @@ void MainWindow::initUI() {
   //**************************************************************************
   // Status Bar
   //**************************************************************************
+  QString css = QString("background-color: %1;").arg(app->appConstants->getQString("BAR_COLOR"));
+  ui->statusBar->setStyleSheet(css);
   this->lblFileName = new QLabel();
+  this->lblFileName->setIndent(10);
   ui->statusBar->addPermanentWidget(this->lblFileName);
+  this->lblNumberVargets = new QLabel("0");
+  this->lblNumberVargets->setIndent(10);
+  //**************************************************************************
+  // Menu Bar & Tool Bar
+  //**************************************************************************
+  ui->menuBar->setStyleSheet(css);
+  ui->toolBar->setStyleSheet(css);
+  ui->statusBar->addPermanentWidget(this->lblNumberVargets);
+  QWidget *spacer = new QWidget();
+  spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+  ui->toolBar->addWidget(spacer);
+  this->lblTitle = new QLabel(this->appTitle);
+  this->lblTitle->setStyleSheet("font-weight: bold; font-style: italic;");
+  ui->toolBar->addWidget(this->lblTitle);
 
   //**************************************************************************
   // MRU Menu
@@ -169,10 +196,18 @@ void MainWindow::initUI() {
   //**************************************************************************
   // Populate Vargets List
   //**************************************************************************
-  for (auto it = Varboard::aFunc.keyValueBegin(); it != Varboard::aFunc.keyValueEnd(); ++it) {
-      qDebug() << it->first << it->second;
-      ui->cbxVargets->addItem(it->first);
+  for (auto it = Varboard::aKeywords.keyValueBegin(); it != Varboard::aKeywords.keyValueEnd();
+       ++it) {
+      QTreeWidgetItem *topItem = new QTreeWidgetItem(ui->trwVargets);
+      ui->trwVargets->addTopLevelItem(topItem);
+      topItem->setText(0, it->first);
+      topItem->setExpanded(true);
+      for (const auto &i : it->second) {
+          QTreeWidgetItem *item = new QTreeWidgetItem(topItem);
+          item->setText(0, i);
+      }
   }
+  ui->trwVargets->setItemsExpandable(false);
 
   //**************************************************************************
   // Show Doc Viewer or not
@@ -300,24 +335,61 @@ void MainWindow::slotDoExit() {
 // closeEvent()
 //******************************************************************************
 void MainWindow::closeEvent(QCloseEvent* event) {
-  if (app->appSettings->get("APPLICATION_CONFIRM_EXIT").toBool() == true) {
-    QMessageBox::StandardButton rc;
-    rc = QMessageBox::question(
-        this, app->appConstants->getQString("APPLICATION_NAME"),
-        QString("Really quit ?\n"), QMessageBox::Yes | QMessageBox::No);
-    if (rc == QMessageBox::Yes) {
-        showMessage("Exiting");
-        saveSettings();
-        event->accept();
+    if (this->vbdModified) {
+        QMessageBox::StandardButton rc;
+        rc = QMessageBox::question(
+            this,
+            app->appConstants->getQString("APPLICATION_NAME"),
+            QString("Current Varboard has been modified.\nDo you want to save it ?\n"),
+            QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
+        if (rc == QMessageBox::Cancel) {
+            showMessage("Cancel exit");
+            event->ignore();
+        } else {
+            if (rc == QMessageBox::Yes) {
+                this->on_actionSave_triggered();
+            }
+            if (app->appSettings->get("APPLICATION_CONFIRM_EXIT").toBool() == true) {
+                QMessageBox::StandardButton rc;
+                rc = QMessageBox::question(this,
+                                           app->appConstants->getQString("APPLICATION_NAME"),
+                                           QString("Really quit ?\n"),
+                                           QMessageBox::Yes | QMessageBox::No);
+                if (rc == QMessageBox::Yes) {
+                    showMessage("Exiting");
+                    saveSettings();
+                    event->accept();
+                } else {
+                    showMessage("Cancel exit");
+                    event->ignore();
+                }
+            } else {
+                showMessage("Exiting");
+                saveSettings();
+                event->accept();
+            }
+        }
     } else {
-        showMessage("Cancel exit");
-        event->ignore();
+        if (app->appSettings->get("APPLICATION_CONFIRM_EXIT").toBool() == true) {
+            QMessageBox::StandardButton rc;
+            rc = QMessageBox::question(this,
+                                       app->appConstants->getQString("APPLICATION_NAME"),
+                                       QString("Really quit ?\n"),
+                                       QMessageBox::Yes | QMessageBox::No);
+            if (rc == QMessageBox::Yes) {
+                showMessage("Exiting");
+                saveSettings();
+                event->accept();
+            } else {
+                showMessage("Cancel exit");
+                event->ignore();
+            }
+        } else {
+            showMessage("Exiting");
+            saveSettings();
+            event->accept();
+        }
     }
-  } else {
-      showMessage("Exiting");
-      saveSettings();
-      event->accept();
-  }
 }
 
 //******************************************************************************
@@ -375,57 +447,48 @@ void MainWindow::readSettings() {
         restoreGeometry(geometry);
     }
 
-  const QByteArray windowState =
-      registry.value("windowState", QByteArray()).toByteArray();
-  if (!windowState.isEmpty()) {
-    restoreState(registry.value("windowState").toByteArray());
-  }
+    const QByteArray windowState = registry.value("windowState", QByteArray()).toByteArray();
+    if (!windowState.isEmpty()) {
+        restoreState(registry.value("windowState").toByteArray());
+    }
 
-  const QByteArray splitter =
-      registry.value("splitter", QByteArray()).toByteArray();
-  if (!splitter.isEmpty()) {
-    ui->splitter->restoreState(registry.value("splitter").toByteArray());
-  }
+    const QByteArray splitter = registry.value("splitter", QByteArray()).toByteArray();
+    if (!splitter.isEmpty()) {
+        ui->splitter->restoreState(registry.value("splitter").toByteArray());
+    }
 
-  const QByteArray splitterHelp = registry.value("splitterHelp", QByteArray()).toByteArray();
-  if (!splitterHelp.isEmpty()) {
-      ui->splitterHelp->restoreState(registry.value("splitterHelp").toByteArray());
-  }
+    const QByteArray splitterHelp = registry.value("splitterHelp", QByteArray()).toByteArray();
+    if (!splitterHelp.isEmpty()) {
+        ui->splitterHelp->restoreState(registry.value("splitterHelp").toByteArray());
+    }
 
-  const int tabIndex = registry.value("tab", 0).toInt();
-  ui->tabWidget->setCurrentIndex(tabIndex);
+    const int tabIndex = registry.value("tab", 0).toInt();
+    ui->tabWidget->setCurrentIndex(tabIndex);
 
-  // TODO : Read the previous stored location
-  const QString country = registry.value("country", "").toString();
-  qDebug() << country;
-  ui->cbxCountry->setCurrentText(country);
-  /*
-  int index = ui->cbxCountry->findText(country);
-  if (index != -1) { // -1 for not found
-      ui->cbxCountry->setCurrentIndex(index);
-      qDebug() << index;
-  }
- */
-  const QString location = registry.value("location", "").toString();
-  ui->txtLocation->setText(location);
-  qDebug() << location;
-  const QString latitude = registry.value("latitude", "").toString();
-  ui->txtLatitude->setText(latitude);
-  qDebug() << latitude;
-  const QString longitude = registry.value("longitude", "").toString();
-  ui->txtLongitude->setText(longitude);
-  qDebug() << longitude;
-  const QString timezone = registry.value("timezone", "").toString();
-  qDebug() << timezone;
-  ui->cbxTimeZone->setCurrentText(timezone);
+    // TODO : Read the previous stored location
+    const QString country = registry.value("country", "").toString();
+    qDebug() << country;
+    ui->cbxCountry->setCurrentText(country);
+    const QString location = registry.value("location", "").toString();
+    ui->txtLocation->setText(location);
+    qDebug() << location;
+    const QString latitude = registry.value("latitude", "").toString();
+    ui->txtLatitude->setText(latitude);
+    qDebug() << latitude;
+    const QString longitude = registry.value("longitude", "").toString();
+    ui->txtLongitude->setText(longitude);
+    qDebug() << longitude;
+    const QString timezone = registry.value("timezone", "").toString();
+    qDebug() << timezone;
+    ui->cbxTimeZone->setCurrentText(timezone);
 
-  int size = registry.beginReadArray("MRUFiles");
-  for (int i = 0; i < size; ++i) {
-      registry.setArrayIndex(i);
-      this->mruFiles.append(registry.value("MRUFiles").toString());
-  }
-  registry.endArray();
-  this->updateMRUMenu();
+    int size = registry.beginReadArray("MRUFiles");
+    for (int i = 0; i < size; ++i) {
+        registry.setArrayIndex(i);
+        this->mruFiles.append(registry.value("MRUFiles").toString());
+    }
+    registry.endArray();
+    this->updateMRUMenu();
 }
 
 //******************************************************************************
@@ -619,7 +682,23 @@ void MainWindow::SetLocation()
 //******************************************************************************
 void MainWindow::openMRUFile()
 {
-    qDebug() << "OpenMRUFile()";
+    if (this->vbdModified) {
+        QMessageBox::StandardButton rc;
+        rc = QMessageBox::question(
+            this,
+            app->appConstants->getQString("APPLICATION_NAME"),
+            QString("Current Varboard has been modified.\nDo you want to save it ?\n"),
+            QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
+        if (rc == QMessageBox::Cancel) {
+            showMessage("Cancel open");
+            return;
+        } else {
+            if (rc == QMessageBox::Yes) {
+                this->on_actionSave_triggered();
+            }
+        }
+    }
+
     QAction *action = qobject_cast<QAction *>(sender());
     if (action) {
         QString vbdName = action->data().toString();
@@ -628,19 +707,25 @@ void MainWindow::openMRUFile()
         this->vb = new Varboard(app, this, ui);
         if (this->vb->LoadJSON(vbdName, meeus) == 0) {
             QFileInfo fi(vbdName);
-            this->lblFileName->setText(fi.fileName());
+            // this->lblFileName->setText("File : " + fi.fileName());
             this->vbdFileName = vbdName;
+            this->vbdModified = false;
+            this->displayFileName();
         } else {
             showMessage("File " + vbdName + " not found");
+            // We have to recreate a board since the previous one was deleted
             this->vb->Clear();
             this->vb->addVarget("Date & Time", meeus, "VarDateTime");
             this->vb->addVarget("Location", meeus, "VarLocation");
             this->vb->addVarget("Latitude", meeus, "VarLatitude");
             this->vb->addVarget("Longitude", meeus, "VarLongitude");
-            this->vb->addVarget("Julian Day", meeus, "VarJD");
+            this->vb->addVarget("Julian Day", meeus, "VarJulianDay");
             this->vb->pack();
             this->vb->Refresh();
-            this->lblFileName->setText("");
+            this->lblFileName->setText("File : NEW");
+            this->vbdFileName = "";
+            this->vbdModified = true;
+            this->displayFileName();
         }
     }
 }
@@ -650,6 +735,23 @@ void MainWindow::openMRUFile()
 //******************************************************************************
 void MainWindow::on_actionOpen_triggered()
 {
+    if (this->vbdModified) {
+        QMessageBox::StandardButton rc;
+        rc = QMessageBox::question(
+            this,
+            app->appConstants->getQString("APPLICATION_NAME"),
+            QString("Current Varboard has been modified.\nDo you want to save it ?\n"),
+            QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
+        if (rc == QMessageBox::Cancel) {
+            showMessage("Cancel open");
+            return;
+        } else {
+            if (rc == QMessageBox::Yes) {
+                this->on_actionSave_triggered();
+            }
+        }
+    }
+
     QString vbdName = QFileDialog::getOpenFileName(this,
                                                    "Open a varboard...",
                                                    QDir::homePath(),
@@ -660,20 +762,25 @@ void MainWindow::on_actionOpen_triggered()
         this->vb = new Varboard(app, this, ui);
         if (this->vb->LoadJSON(vbdName, meeus) == 0) {
             QFileInfo fi(vbdName);
-            this->lblFileName->setText(fi.fileName());
+            this->lblFileName->setText("File : " + fi.fileName());
             this->vbdFileName = vbdName;
+            this->vbdModified = false;
+            this->displayFileName();
         } else {
             showMessage("File " + vbdName + " not found");
+            // We have to recreate a board since the previous one was deleted
             this->vb->Clear();
             this->vb->addVarget("Date & Time", meeus, "VarDateTime");
             this->vb->addVarget("Location", meeus, "VarLocation");
             this->vb->addVarget("Latitude", meeus, "VarLatitude");
             this->vb->addVarget("Longitude", meeus, "VarLongitude");
-            this->vb->addVarget("Julian Day", meeus, "VarJD");
+            this->vb->addVarget("Julian Day", meeus, "VarJulianDay");
             this->vb->pack();
             this->vb->Refresh();
-            this->lblFileName->setText("");
-            // FIXME : the previous vb has been deleted, we have to recreate something, otherwise it will crash at next refresh !!!
+            this->lblFileName->setText("File : NEW");
+            this->vbdFileName = "";
+            this->vbdModified = true;
+            this->displayFileName();
         }
     } else {
         showMessage("Cancelling open");
@@ -685,28 +792,120 @@ void MainWindow::on_actionOpen_triggered()
 //******************************************************************************
 void MainWindow::on_btnAddVarget_clicked()
 {
-    this->showMessage("Adding Varget [" + ui->cbxVargets->currentText() + "] with label \""
-                      + ui->txtVargetLabel->text() + "\"");
-    this->vb->addVarget(ui->txtVargetLabel->text(), meeus, ui->cbxVargets->currentText());
-    this->vb->Refresh();
+    QTreeWidgetItem *item = ui->trwVargets->currentItem();
+    if (item != NULL) {
+        if (item->parent()) {
+            this->showMessage("Adding Varget [" + item->text(0) + "] with label \""
+                              + ui->txtVargetLabel->text() + "\"");
+            this->vb->addVarget(ui->txtVargetLabel->text(), meeus, item->text(0));
+            this->vb->Refresh();
+            this->vbdModified = true;
+            this->displayFileName();
+        } else {
+            this->showMessage("No Varget selected");
+        }
+    } else {
+        this->showMessage("No Varget selected");
+    }
 }
 
 //******************************************************************************
-// on_cbxVargets_currentIndexChanged()
+// on_trwVargets_itemClicked()
 //******************************************************************************
-void MainWindow::on_cbxVargets_currentIndexChanged(int index)
+void MainWindow::on_trwVargets_itemClicked(QTreeWidgetItem *item, int column)
 {
-    QString lblRaw = ui->cbxVargets->currentText();
-    if (lblRaw.left(3) == "Var") {
-        lblRaw.remove(0, 3);
-    }
-    QString lblNice;
-    QStringList sl = lblRaw.split(QRegExp("(?=[A-Z])"), QString::SkipEmptyParts);
-    lblNice = sl.join(" ");
+    if (item->parent()) {
+        // It's not a top-level item
+        // ui->txtVargetLabel->setText(item->text(0));
+        QString lblRaw = item->text(0);
+        if (lblRaw.left(3) == "Var") {
+            lblRaw.remove(0, 3);
+        }
+        QString lblNice;
+        QStringList sl = lblRaw.split(QRegExp("(?=[A-Z])"), QString::SkipEmptyParts);
+        lblNice = sl.join(" ");
 
-    ui->txtVargetLabel->setText(lblNice);
-    ui->txtVargetLabel->selectAll();
-    QTimer::singleShot(0, ui->txtVargetLabel, SLOT(setFocus()));
+        ui->txtVargetLabel->setText(lblNice);
+        ui->txtVargetLabel->selectAll();
+        QTimer::singleShot(0, ui->txtVargetLabel, SLOT(setFocus()));
+    }
+}
+
+//******************************************************************************
+// on_trwVargets_itemDoubleClicked()
+//******************************************************************************
+void MainWindow::on_trwVargets_itemDoubleClicked(QTreeWidgetItem *item, int column)
+{
+    if (item->parent()) {
+        // Varget selected
+        QString lblRaw = item->text(0);
+        if (lblRaw.left(3) == "Var") {
+            lblRaw.remove(0, 3);
+        }
+        QString lblNice;
+        QStringList sl = lblRaw.split(QRegExp("(?=[A-Z])"), QString::SkipEmptyParts);
+        lblNice = sl.join(" ");
+        ui->txtVargetLabel->setText(lblNice);
+
+        this->showMessage("Adding Varget [" + item->text(0) + "] with label \""
+                          + ui->txtVargetLabel->text() + "\"");
+        this->vb->addVarget(ui->txtVargetLabel->text(), meeus, item->text(0));
+        this->vb->Refresh();
+        ui->txtVargetLabel->setText("");
+        this->vbdModified = true;
+        this->displayFileName();
+    } else {
+        // Keyword selected
+        QString keyword = item->text(0);
+        qDebug() << keyword;
+        for (auto it = Varboard::aKeywords.keyValueBegin(); it != Varboard::aKeywords.keyValueEnd();
+             ++it) {
+            if (it->first == keyword) {
+                // Add a label with the keyword's name
+                this->vb->addVarget(keyword, meeus, NULL);
+                this->vb->Refresh();
+                // ui->txtVarboardLabel->setText("");
+                showMessage("Label \"" + keyword + "\" added");
+
+                // Loop the vargets list for this keyword
+                for (const auto &i : it->second) {
+                    QString lblRaw = i;
+                    qDebug() << i;
+                    if (lblRaw.left(3) == "Var") {
+                        lblRaw.remove(0, 3);
+                    }
+                    QString lblNice;
+                    QStringList sl = lblRaw.split(QRegExp("(?=[A-Z])"), QString::SkipEmptyParts);
+                    lblNice = sl.join(" ");
+                    qDebug() << lblNice;
+
+                    this->showMessage("Adding Varget [" + i + "] with label \"" + lblNice + "\"");
+                    this->vb->addVarget(lblNice, meeus, i);
+                    this->vb->Refresh();
+                }
+                this->vbdModified = true;
+                this->displayFileName();
+            }
+        }
+        ui->txtVargetLabel->setText("");
+    }
+}
+
+//******************************************************************************
+// on_btnClearVarboard_clicked()
+//******************************************************************************
+void MainWindow::on_btnClearVarboard_clicked()
+{
+    // First, we have to disable the auto-refresh, if any
+    ui->chkAutoRefresh->setCheckState(Qt::Unchecked);
+    // Clear, delete and create a new one empty varboard
+    this->vb->Clear();
+    delete this->vb;
+    this->vb = new Varboard(app, this, ui);
+    this->lblNumberVargets->setText("Vargets : 0");
+    this->vbdModified = true;
+    this->displayFileName();
+    showMessage("Varboard cleared");
 }
 
 //******************************************************************************
@@ -719,8 +918,10 @@ void MainWindow::on_actionSave_triggered()
         QFileInfo fi2(vbdFileName);
         // this->setWindowTitle(this->appTitle + " - " + fi2.fileName());
         // this->vb->SaveFile(vbdFileName);
-        this->lblFileName->setText(fi2.fileName());
+        this->lblFileName->setText("File : " + fi2.fileName());
         this->vb->SaveJSON(vbdFileName);
+        this->vbdModified = false;
+        this->displayFileName();
     } else {
         this->on_actionSave_as_triggered();
     }
@@ -746,10 +947,12 @@ void MainWindow::on_actionSave_as_triggered()
         showMessage("Saving " + vbdName);
         QFileInfo fi2(vbdName);
         // this->setWindowTitle(this->appTitle + " - " + fi2.fileName());
-        this->lblFileName->setText(fi2.fileName());
+        this->lblFileName->setText("File : " + fi2.fileName());
         // this->vb->SaveFile(vbdName);
         this->vb->SaveJSON(vbdName);
         this->vbdFileName = vbdName;
+        this->vbdModified = false;
+        this->displayFileName();
     } else {
         showMessage("Cancelling save");
     }
@@ -766,6 +969,8 @@ void MainWindow::on_btnAddLabel_clicked()
         this->vb->Refresh();
         ui->txtVarboardLabel->setText("");
         showMessage("Label \"" + label + "\" added");
+        this->vbdModified = true;
+        this->displayFileName();
     } else {
         showMessage("Cannot add an empty label");
     }
@@ -781,8 +986,25 @@ void MainWindow::on_btnAddTitle_clicked()
         ui->txtTitle->setText(title);
         ui->txtVarboardTitle->setText("");
         showMessage("Title set to \"" + title + "\"");
+        this->vbdModified = true;
+        this->displayFileName();
     } else {
         showMessage("Cannot set an empty title");
+    }
+}
+
+//******************************************************************************
+// displayFileName()
+//******************************************************************************
+void MainWindow::displayFileName()
+{
+    QFileInfo fi(this->vbdFileName);
+    QString vbdName = fi.fileName();
+
+    if (vbdModified) {
+        this->lblFileName->setText("File : " + vbdName + " *modified*");
+    } else {
+        this->lblFileName->setText("File : " + vbdName);
     }
 }
 
@@ -849,9 +1071,25 @@ void MainWindow::on_btnTimeLocked_clicked()
     }
 }
 
+//******************************************************************************
+// on_chkAutoRefresh_stateChanged()
+//******************************************************************************
+void MainWindow::on_chkAutoRefresh_stateChanged(int arg1)
+{
+    if (arg1 == 0) {
+        // Auto-Refresh Unchecked
+        this->showMessage("Auto Refresh disabled");
+        this->lblTitle->setStyleSheet("font-weight: bold; color: black; font-style: italic;");
+    } else {
+        // Auto-Refresh Checked
+        this->showMessage("Auto Refresh enabled");
+        this->lblTitle->setStyleSheet("font-weight: bold; color: #008000; font-style: italic;");
+    }
+}
+
 QMap<QString, callback_function> Varboard::aFunc
     = {{"VarDateTime", &Meeus::VarDateTime},
-       {"VarJD", &Meeus::VarJD},
+       {"VarJulianDay", &Meeus::VarJulianDay},
        {"VarT", &Meeus::VarT},
        {"VarDayOfWeek", &Meeus::VarDayOfWeek},
        {"VarLatitude", &Meeus::VarLatitude},
@@ -865,7 +1103,43 @@ QMap<QString, callback_function> Varboard::aFunc
        {"VarSunTrueLongitude", &Meeus::VarSunTrueLongitude},
        {"VarSunTrueAnomaly", &Meeus::VarSunTrueAnomaly},
        {"VarSunApparentLongitude", &Meeus::VarSunApparentLongitude},
-       {"VarSunRadiusVector", &Meeus::VarSunRadiusVector}};
+       {"VarSunRadiusVector", &Meeus::VarSunRadiusVector},
+       {"VarSunNutationAberrationCorrection", &Meeus::VarSunNutationAberrationCorrection},
+       {"VarMoonMeanLongitude", &Meeus::VarMoonMeanLongitude},
+       {"VarMoonMeanAnomaly", &Meeus::VarMoonMeanAnomaly},
+       {"VarMoonMeanElongation", &Meeus::VarMoonMeanElongation},
+       {"VarMoonMeanDistanceFromAscendantNode", &Meeus::VarMoonMeanDistanceFromAscendantNode},
+       {"VarMoonMeanLongitudeFromAscendantNode", &Meeus::VarMoonMeanLongitudeFromAscendantNode},
+       {"VarEarthMeanEccentricity", &Meeus::VarEarthMeanEccentricity},
+       {"VarEarthNutationLongitude", &Meeus::VarEarthNutationLongitude},
+       {"VarEarthNutationObliquity", &Meeus::VarEarthNutationObliquity},
+       {"VarEarthMeanObliquity", &Meeus::VarEarthMeanObliquity},
+       {"VarEarthTrueObliquity", &Meeus::VarEarthTrueObliquity}};
+
+QMap<QString, QStringList> Varboard::aKeywords
+    = {{"Time", {"VarDateTime", "VarJulianDay", "VarT", "VarDayOfWeek"}},
+       {"Location", {"VarLatitude", "VarLongitude", "VarLocation", "VarCountry", "VarTimeZone"}},
+       {"Sun",
+        {"VarSunMeanLongitude",
+         "VarSunMeanAnomaly",
+         "VarSunCenter",
+         "VarSunTrueLongitude",
+         "VarSunTrueAnomaly",
+         "VarSunApparentLongitude",
+         "VarSunRadiusVector",
+         "VarSunNutationAberrationCorrection"}},
+       {"Moon",
+        {"VarMoonMeanLongitude",
+         "VarMoonMeanAnomaly",
+         "VarMoonMeanElongation",
+         "VarMoonMeanDistanceFromAscendantNode",
+         "VarMoonMeanLongitudeFromAscendantNode"}},
+       {"Earth",
+        {"VarEarthMeanEccentricity",
+         "VarEarthNutationLongitude",
+         "VarEarthNutationObliquity",
+         "VarEarthMeanObliquity",
+         "VarEarthTrueObliquity"}}};
 
 //******************************************************************************
 // Varget()
@@ -884,23 +1158,31 @@ Varget::Varget(
     hbox->setContentsMargins(0, 0, 0, 0);
     QString o = QString::asprintf("%05d", Order);
     this->lblOrder = new QLabel(o);
-    QLabel *lbl = new QLabel(Label + " ");
+    this->lblLabel = new QLabel(Label + " ");
     QFont *f = new QFont();
     f->setBold(true);
-    lbl->setFont(*f);
-    lbl->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
+    this->lblLabel->setFont(*f);
+    this->lblLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
     hbox->addWidget(this->lblOrder);
     if (this->Function == NULL) { // Function is NULL for Labels
         // Add a dummy filler for Label's Vargets
-        hbox->addWidget(new QLabel(""));
+        this->lblFiller = new QLabel("");
+        hbox->addWidget(this->lblFiller);
     }
-    hbox->addWidget(lbl);
+    hbox->addWidget(this->lblLabel);
+
+    // Set CSS for highlighting and not highlighting
+    // Did you know ? #FADA5E is called "Naples Yellow"
+    this->cssHighlighted = "background-color : #FADA5E; color : black;";
+    this->cssValueHighlighted
+        = "background-color : #FFFDD0; color : black; border: 2px solid grey; font-weight: bold;";
+    this->cssValue
+        = "background-color : #F5F5F4; color : black; border: 2px solid grey; font-weight: normal;";
 
     if (this->Function != NULL) { // Function is NULL for Labels
         txtValue = new QLineEdit();
         txtValue->setReadOnly(true);
-        txtValue->setStyleSheet(
-            "background-color : #f5f5f4; color : black; border: 2px solid grey;");
+        txtValue->setStyleSheet(this->cssValue);
         txtValue->setFixedWidth(this->lblOrder->frameGeometry().width() / 2);
         hbox->addWidget(txtValue);
     }
@@ -943,6 +1225,34 @@ Varget::Varget(
 }
 
 //******************************************************************************
+// enterEvent()
+//******************************************************************************
+void Varget::enterEvent(QEvent *event)
+{
+    this->lblOrder->setStyleSheet(this->cssHighlighted);
+    this->lblLabel->setStyleSheet(this->cssHighlighted);
+    if (this->Function == NULL) {
+        this->lblFiller->setStyleSheet(this->cssHighlighted);
+    } else {
+        this->txtValue->setStyleSheet(this->cssValueHighlighted);
+    }
+}
+
+//******************************************************************************
+// leaveEvent()
+//******************************************************************************
+void Varget::leaveEvent(QEvent *event)
+{
+    this->lblOrder->setStyleSheet(this->css);
+    this->lblLabel->setStyleSheet(this->css);
+    if (this->Function == NULL) {
+        this->lblFiller->setStyleSheet(this->css);
+    } else {
+        this->txtValue->setStyleSheet(this->cssValue);
+    }
+}
+
+//******************************************************************************
 // Refresh()
 //******************************************************************************
 void Varget::Refresh()
@@ -980,6 +1290,8 @@ void Varget::on_clicked_button_down()
     std::swap(vb->vargets[current], vb->vargets[current + 1]);
 
     vb->Refresh();
+    vb->mw->vbdModified = true;
+    vb->mw->displayFileName();
 }
 
 //******************************************************************************
@@ -997,6 +1309,8 @@ void Varget::on_clicked_button_up()
     std::swap(vb->vargets[current], vb->vargets[current - 1]);
 
     vb->Refresh();
+    vb->mw->vbdModified = true;
+    vb->mw->displayFileName();
 }
 
 //******************************************************************************
@@ -1022,8 +1336,14 @@ void Varget::on_clicked_button_delete()
     vb->vargets.removeAt(current);
     // and don't forget to delete it
     delete vg;
-    // Redisplay the modified Varboard
-    vb->Refresh();
+    // Redisplay the modified Varboard, if not empty
+    if (vb->vargets.size() != 0) {
+        vb->Refresh();
+    } else {
+        vb->mw->lblNumberVargets->setText("Vargets : 0");
+    }
+    vb->mw->vbdModified = true;
+    vb->mw->displayFileName();
 }
 
 //******************************************************************************
@@ -1098,6 +1418,9 @@ void Varboard::Refresh()
     } else {
         this->ui->txtHelp->hide();
     }
+    //
+    QString s = QString::asprintf("Vargets : %d", this->vargets.size());
+    this->mw->lblNumberVargets->setText(s);
     // Set the focus on the dashboard tab
     this->ui->tabWidget->setCurrentWidget(this->ui->tabDashboard);
 }
@@ -1141,8 +1464,7 @@ int Varboard::SaveJSON(QString name)
     jsonDoc.setObject(root);
 
     QFile fJSON(name);
-    if (fJSON.open(QFile::ReadWrite)) {
-        fJSON.open(QIODevice::WriteOnly);
+    if (fJSON.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
         QByteArray uncompressedData = jsonDoc.toJson();
         QByteArray compressedData = qCompress(uncompressedData, 9);
         QFileInfo fi1(name);
@@ -1167,6 +1489,7 @@ int Varboard::LoadJSON(QString name, Meeus *m)
     int rc = 0;
     QFile file(name);
 
+    // Do we need to save the previous Varboard
     // Parse the JSON file
     if (file.open(QIODevice::ReadOnly)) {
         // Add it to MRU
@@ -1243,6 +1566,7 @@ int Varboard::LoadJSON(QString name, Meeus *m)
         file.close();
         this->mw->meeus->refresh(ui->txtTime->dateTime());
         this->Refresh();
+        this->mw->lblFileName->setToolTip(name);
     } else {
         rc = 1;
     }
@@ -1270,19 +1594,5 @@ void clearLayout(QLayout *layout)
             delete child->widget();
 
         delete child;
-    }
-}
-
-//******************************************************************************
-// on_chkAutoRefresh_stateChanged()
-//******************************************************************************
-void MainWindow::on_chkAutoRefresh_stateChanged(int arg1)
-{
-    if (arg1 == 0) {
-        // Auto-Refresh Unchecked
-        this->showMessage("Auto Refresh disabled");
-    } else {
-        // Auto-Refresh Checked
-        this->showMessage("Auto Refresh enabled");
     }
 }

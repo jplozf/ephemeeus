@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1086</width>
-    <height>538</height>
+    <height>776</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -24,6 +24,18 @@
        <layout class="QVBoxLayout" name="verticalLayout_2">
         <item>
          <layout class="QFormLayout" name="formLayout_2">
+          <item row="0" column="1">
+           <widget class="QLabel" name="label_8">
+            <property name="font">
+             <font>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>▸ Time and Location Input</string>
+            </property>
+           </widget>
+          </item>
           <item row="1" column="0">
            <widget class="QLabel" name="label_6">
             <property name="text">
@@ -142,46 +154,6 @@
             </item>
            </layout>
           </item>
-          <item row="10" column="0">
-           <widget class="QLabel" name="label_7">
-            <property name="text">
-             <string>Varget</string>
-            </property>
-           </widget>
-          </item>
-          <item row="10" column="1">
-           <layout class="QHBoxLayout" name="horizontalLayout_10">
-            <item>
-             <widget class="QComboBox" name="cbxVargets"/>
-            </item>
-            <item>
-             <widget class="QLineEdit" name="txtVargetLabel"/>
-            </item>
-            <item>
-             <widget class="QPushButton" name="btnAddVarget">
-              <property name="text">
-               <string/>
-              </property>
-              <property name="icon">
-               <iconset resource="ephemeeus.qrc">
-                <normaloff>:/16x16/Plus.png</normaloff>:/16x16/Plus.png</iconset>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item row="0" column="1">
-           <widget class="QLabel" name="label_8">
-            <property name="font">
-             <font>
-              <bold>true</bold>
-             </font>
-            </property>
-            <property name="text">
-             <string>▸ Time and Location Input</string>
-            </property>
-           </widget>
-          </item>
           <item row="7" column="1">
            <widget class="QLabel" name="label_9">
             <property name="font">
@@ -244,20 +216,44 @@
             </item>
            </layout>
           </item>
+          <item row="10" column="0">
+           <widget class="QLabel" name="label_7">
+            <property name="text">
+             <string>Varget</string>
+            </property>
+           </widget>
+          </item>
+          <item row="12" column="1">
+           <layout class="QHBoxLayout" name="horizontalLayout_10">
+            <item>
+             <widget class="QLineEdit" name="txtVargetLabel"/>
+            </item>
+            <item>
+             <widget class="QPushButton" name="btnAddVarget">
+              <property name="text">
+               <string/>
+              </property>
+              <property name="icon">
+               <iconset resource="ephemeeus.qrc">
+                <normaloff>:/16x16/Plus.png</normaloff>:/16x16/Plus.png</iconset>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item row="10" column="1">
+           <widget class="QTreeWidget" name="trwVargets">
+            <property name="headerHidden">
+             <bool>true</bool>
+            </property>
+            <column>
+             <property name="text">
+              <string notr="true">1</string>
+             </property>
+            </column>
+           </widget>
+          </item>
          </layout>
-        </item>
-        <item>
-         <spacer name="verticalSpacer">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>40</height>
-           </size>
-          </property>
-         </spacer>
         </item>
         <item>
          <spacer name="verticalSpacer_2">
@@ -276,6 +272,17 @@
          <layout class="QHBoxLayout" name="horizontalLayout_5">
           <item>
            <layout class="QVBoxLayout" name="verticalLayout"/>
+          </item>
+          <item>
+           <widget class="QPushButton" name="btnClearVarboard">
+            <property name="text">
+             <string>Clear</string>
+            </property>
+            <property name="icon">
+             <iconset resource="ephemeeus.qrc">
+              <normaloff>:/16x16/Recycle.png</normaloff>:/16x16/Recycle.png</iconset>
+            </property>
+           </widget>
           </item>
           <item>
            <spacer name="horizontalSpacer_2">
@@ -429,7 +436,7 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>487</width>
+               <width>464</width>
                <height>68</height>
               </rect>
              </property>
@@ -468,8 +475,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>487</width>
-              <height>386</height>
+              <width>464</width>
+              <height>624</height>
              </rect>
             </property>
            </widget>
@@ -584,7 +591,7 @@
   <action name="actionOpen">
    <property name="icon">
     <iconset resource="ephemeeus.qrc">
-     <normaloff>:/16x16/Document Text.png</normaloff>:/16x16/Document Text.png</iconset>
+     <normaloff>:/16x16/Folder.png</normaloff>:/16x16/Folder.png</iconset>
    </property>
    <property name="text">
     <string>&amp;Open</string>

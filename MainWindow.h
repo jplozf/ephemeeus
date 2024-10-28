@@ -74,6 +74,11 @@ class MainWindow : public QMainWindow {
   void updateMRUMenu();
   QVector<QAction *> actMRUFiles;
   Varboard *vb;
+  QLabel *lblNumberVargets;
+  bool vbdModified;
+  void displayFileName();
+  QLabel *lblFileName;
+  QLabel *lblTitle;
 
   private:
   QApplication* a;
@@ -82,8 +87,8 @@ class MainWindow : public QMainWindow {
   QSqlDatabase db;
   QString appTitle;
   QString vbdFileName;
+
   QSqlTableModel *modelCities;
-  QLabel *lblFileName;
 
   private slots:
   void slotDoExit();
@@ -94,8 +99,6 @@ class MainWindow : public QMainWindow {
   void on_actionOpen_triggered();
   void on_actionHelp_triggered();
   void on_btnAddVarget_clicked();
-  void on_cbxVargets_currentIndexChanged(int index);
-  void on_actionSave_triggered();
   void on_btnAddLabel_clicked();
   void on_btnAddTitle_clicked();
   void on_actionSave_as_triggered();
@@ -103,9 +106,13 @@ class MainWindow : public QMainWindow {
   void on_action_About_triggered();
   void on_btnTimeLocked_clicked();
   void on_actionSettings_triggered();
+  void on_actionSave_triggered();
   void on_cbxCountry_currentTextChanged(const QString &arg1);
   void on_chkAutoRefresh_stateChanged(int arg1);
   void openMRUFile();
+  void on_trwVargets_itemClicked(QTreeWidgetItem *item, int column);
+  void on_trwVargets_itemDoubleClicked(QTreeWidgetItem *item, int column);
+  void on_btnClearVarboard_clicked();
 };
 
 class MainWindow;
@@ -126,6 +133,8 @@ public:
                     QString Function,
                     Varboard *vb,
                     QWidget *parent = nullptr);
+    void enterEvent(QEvent *event);
+    void leaveEvent(QEvent *event);
     void Refresh();
     int Order;
     QString Label;
@@ -138,7 +147,12 @@ public:
     QPushButton *btnDelete;
     Varboard *vb;
     QString css;
+    QString cssHighlighted;
+    QString cssValue;
+    QString cssValueHighlighted;
     QLabel *lblOrder;
+    QLabel *lblLabel;
+    QLabel *lblFiller;
 
 private:
     void compute();
@@ -159,6 +173,7 @@ class Varboard
 public:
     QVector<Varget *> vargets;
     static QMap<QString, callback_function> aFunc;
+    static QMap<QString, QStringList> aKeywords;
     int addVarget(QString Label, Meeus *m, QString Function, QWidget *parent = nullptr);
     void pack();
     explicit Varboard(App *a, MainWindow *mw, Ui::MainWindow *ui);
