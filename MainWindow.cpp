@@ -9,6 +9,7 @@ MainWindow::MainWindow(QApplication* a, QWidget* parent)
   this->TimeLocked = false;
   ui->setupUi(this);
   app = new App();
+  this->nPreviousMessage = 1;
 
   // APP_FOLDER
   QDir appDir = QDir(QDir::homePath()).filePath(app->appConstants->getQString("APP_FOLDER"));
@@ -319,7 +320,23 @@ void MainWindow::showMessage(const QString& message, int timeout) {
           ui->statusBar->showMessage(i, timeout);
           QDateTime date = QDateTime::currentDateTime();
           QString formattedTime = date.toString("yyyyMMdd-hhmmss");
-          ui->txtConsole->append(formattedTime + " : " + i);
+          if (i == this->previousMessage) {
+              this->nPreviousMessage++;
+              ui->txtConsole->setFocus();
+              QTextCursor storeCursorPos = ui->txtConsole->textCursor();
+              ui->txtConsole->moveCursor(QTextCursor::End, QTextCursor::MoveAnchor);
+              ui->txtConsole->moveCursor(QTextCursor::StartOfLine, QTextCursor::MoveAnchor);
+              ui->txtConsole->moveCursor(QTextCursor::End, QTextCursor::KeepAnchor);
+              ui->txtConsole->textCursor().removeSelectedText();
+              ui->txtConsole->textCursor().deletePreviousChar();
+              ui->txtConsole->setTextCursor(storeCursorPos);
+              ui->txtConsole->append(formattedTime + " : " + i
+                                     + QString(" (x%1)").arg(this->nPreviousMessage));
+          } else {
+              ui->txtConsole->append(formattedTime + " : " + i);
+              this->previousMessage = i;
+              this->nPreviousMessage = 1;
+          }
       }
   }
 }
@@ -1057,6 +1074,7 @@ void MainWindow::on_btnTimeLocked_clicked()
         QPixmap pixmap(":/16x16/Lock.png");
         QIcon btnIcon(pixmap);
         ui->btnTimeLocked->setIcon(btnIcon);
+        showMessage("Locking time to fixed time");
     } else {
         // Unlocked => Real Time
         this->TimeLocked = false;
@@ -1068,6 +1086,7 @@ void MainWindow::on_btnTimeLocked_clicked()
         QPixmap pixmap(":/16x16/Lock Open.png");
         QIcon btnIcon(pixmap);
         ui->btnTimeLocked->setIcon(btnIcon);
+        showMessage("Unlocking time to real time");
     }
 }
 

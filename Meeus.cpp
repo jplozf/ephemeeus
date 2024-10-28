@@ -514,7 +514,7 @@ double Moon::MeanLongitudeFromAscendantNode(double JD)
     // Time in Julian Centuries
     double T = (JD - 2451545.0) / 36525.0;
     // Mean Longitude from Ascendant Node of Moon's Orbit on ecliptic
-    return (Polynomial(T, vCoefs{125.0443, -1934.1363, 0.002075}));
+    return reduceAngle(Polynomial(T, vCoefs{125.0443, -1934.1363, 0.002075}));
 }
 
 //******************************************************************************
@@ -763,7 +763,6 @@ double DMS2DD(int d, int m, int s)
 // DD2DMS() => tuple{ d, m, s }
 // Warning : This is a conversion from DECIMAL DEGREES to DEGREES, MINUTES, SECONDS
 //******************************************************************************
-
 std::tuple<int, int, int, int> DD2DMS(double dd)
 {
     double sign = 1;
@@ -818,9 +817,7 @@ QString printDMS(double a)
 {
     auto dms = DD2DMS(a);
     QString s;
-    // QString s
-    //        = QString("%1°%2'%3\"").arg(std::get<0>(dms)).arg(std::get<1>(dms)).arg(std::get<2>(dms));
-    s.sprintf("%+4d°%02d′%02d″.%d",
+    s.sprintf("%+4d°%02d′%02d″.%03d",
               std::get<0>(dms),
               std::get<1>(dms),
               std::get<2>(dms),

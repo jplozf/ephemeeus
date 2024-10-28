@@ -87,6 +87,8 @@ class MainWindow : public QMainWindow {
   QSqlDatabase db;
   QString appTitle;
   QString vbdFileName;
+  QString previousMessage;
+  int nPreviousMessage;
 
   QSqlTableModel *modelCities;
 
