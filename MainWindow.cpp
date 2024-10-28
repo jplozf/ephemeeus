@@ -1180,7 +1180,9 @@ Varget::Varget(
         = "background-color : #F5F5F4; color : black; border: 2px solid grey; font-weight: normal;";
 
     if (this->Function != NULL) { // Function is NULL for Labels
+        QFont font("Monospace");
         txtValue = new QLineEdit();
+        txtValue->setFont(font);
         txtValue->setReadOnly(true);
         txtValue->setStyleSheet(this->cssValue);
         txtValue->setFixedWidth(this->lblOrder->frameGeometry().width() / 2);

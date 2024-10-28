@@ -164,7 +164,7 @@ double frac(double d);
 double DHMS2DD(int d, int h, int m, int s);
 std::tuple<int, int, int, int> DD2DHMS(double dd);
 double DMS2DD(int d, int m, int s);
-std::tuple<int, int, int> DD2DMS(double dd);
+std::tuple<int, int, int, int> DD2DMS(double dd);
 double deg2rad(double d);
 double rad2deg(double r);
 double reduceAngle(double a);

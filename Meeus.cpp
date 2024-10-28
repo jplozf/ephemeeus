@@ -97,10 +97,7 @@ QString Meeus::VarTimeZone()
 //******************************************************************************
 QString Meeus::VarLatitude()
 {
-    auto dms = DD2DMS(this->location.Latitude);
-    QString lat
-        = QString("%1°%2'%3\"").arg(std::get<0>(dms)).arg(std::get<1>(dms)).arg(std::get<2>(dms));
-    return lat;
+    return printDMS(this->location.Latitude);
 }
 
 //******************************************************************************
@@ -108,10 +105,7 @@ QString Meeus::VarLatitude()
 //******************************************************************************
 QString Meeus::VarLongitude()
 {
-    auto dms = DD2DMS(this->location.Longitude);
-    QString lon
-        = QString("%1°%2'%3\"").arg(std::get<0>(dms)).arg(std::get<1>(dms)).arg(std::get<2>(dms));
-    return lon;
+    return printDMS(this->location.Longitude);
 }
 
 //******************************************************************************
@@ -520,7 +514,7 @@ double Moon::MeanLongitudeFromAscendantNode(double JD)
     // Time in Julian Centuries
     double T = (JD - 2451545.0) / 36525.0;
     // Mean Longitude from Ascendant Node of Moon's Orbit on ecliptic
-    return Polynomial(T, vCoefs{125.0443, -1934.1363, 0.002075});
+    return (Polynomial(T, vCoefs{125.0443, -1934.1363, 0.002075}));
 }
 
 //******************************************************************************
@@ -601,7 +595,7 @@ double Earth::NutationLongitude(double JD,
     dnl += 0.0129 * sin(deg2rad(2 * SunMeanLongitude - MoonMeanLongitudeFromAscendantNode));
     dnl += 0.0123 * sin(deg2rad(2 * MoonMeanLongitude - MoonMeanAnomaly));
 
-    return reduceAngle(dnl);
+    return reduceAngle(dnl / 3600.0);
 }
 
 //******************************************************************************
@@ -627,7 +621,7 @@ double Earth::NutationObliquity(double JD,
     dno -= 0.0095 * cos(deg2rad(2 * SunMeanLongitude - SunMeanAnomaly));
     dno -= 0.0070 * cos(deg2rad(2 * SunMeanLongitude - MoonMeanLongitudeFromAscendantNode));
 
-    return reduceAngle(dno);
+    return reduceAngle(dno / 3600.0);
 }
 
 //******************************************************************************
@@ -769,7 +763,8 @@ double DMS2DD(int d, int m, int s)
 // DD2DMS() => tuple{ d, m, s }
 // Warning : This is a conversion from DECIMAL DEGREES to DEGREES, MINUTES, SECONDS
 //******************************************************************************
-std::tuple<int, int, int> DD2DMS(double dd)
+
+std::tuple<int, int, int, int> DD2DMS(double dd)
 {
     double sign = 1;
     if (dd < 0) {
@@ -782,7 +777,9 @@ std::tuple<int, int, int> DD2DMS(double dd)
     double fm = floor(dm);      // Full Minute
     double ds = (dm - fm) * 60; // Double Second
     double fs = floor(ds);      // Full Second
-    return std::make_tuple((int) (fd * sign), (int) fm, (int) fs);
+    double ss = (ds - fs) * 1000; // Decimal Second
+
+    return std::make_tuple((int) (fd * sign), (int) fm, (int) fs, (int) ss);
 }
 
 //******************************************************************************
@@ -809,7 +806,9 @@ double reduceAngle(double a)
     while (a < 0) {
         a += 360.0;
     }
-    return fmod(a, 360.0);
+    // return fmod(a, 360.0);
+    a = a - 360.0 * int(a / 360.0);
+    return (a);
 }
 
 //******************************************************************************
@@ -817,9 +816,15 @@ double reduceAngle(double a)
 //******************************************************************************
 QString printDMS(double a)
 {
-    auto dms = DD2DMS(reduceAngle(a));
-    QString s
-        = QString("%1°%2'%3\"").arg(std::get<0>(dms)).arg(std::get<1>(dms)).arg(std::get<2>(dms));
+    auto dms = DD2DMS(a);
+    QString s;
+    // QString s
+    //        = QString("%1°%2'%3\"").arg(std::get<0>(dms)).arg(std::get<1>(dms)).arg(std::get<2>(dms));
+    s.sprintf("%+4d°%02d′%02d″.%d",
+              std::get<0>(dms),
+              std::get<1>(dms),
+              std::get<2>(dms),
+              std::get<3>(dms));
     return s;
 }
 
