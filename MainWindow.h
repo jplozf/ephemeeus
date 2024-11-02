@@ -115,13 +115,14 @@ class MainWindow : public QMainWindow {
   void on_trwVargets_itemClicked(QTreeWidgetItem *item, int column);
   void on_trwVargets_itemDoubleClicked(QTreeWidgetItem *item, int column);
   void on_btnClearVarboard_clicked();
+  void on_chkShowHelp_stateChanged(int arg1);
 };
 
 class MainWindow;
 class Varboard;
 // class MainWindow;
 
-typedef QString (Meeus::*callback_function)(void);
+typedef mVarget (Meeus::*callback_function)(void);
 void clearLayout(QLayout *layout);
 
 class Varget : public QWidget
@@ -137,11 +138,13 @@ public:
                     QWidget *parent = nullptr);
     void enterEvent(QEvent *event);
     void leaveEvent(QEvent *event);
+    void mousePressEvent(QMouseEvent *event);
     void Refresh();
+    void ShowHelp();
     int Order;
     QString Label;
     QString Help;
-    QString Value;
+    mVarget Value;
     QString Function;
     Meeus *m;
     QPushButton *btnUp;
@@ -152,9 +155,13 @@ public:
     QString cssHighlighted;
     QString cssValue;
     QString cssValueHighlighted;
+    QString cssOrder;
+    QString cssOrderHighlighted;
+    QString cssOrderLockedHighlighted;
     QLabel *lblOrder;
     QLabel *lblLabel;
     QLabel *lblFiller;
+    bool locked;
 
 private:
     void compute();
@@ -184,10 +191,10 @@ public:
     int LoadJSON(QString name, Meeus *m);
     void Clear();
     MainWindow *mw;
+    Ui::MainWindow *ui;
 
 private:
     App *a;
-    Ui::MainWindow *ui;
 };
 
 #endif  // MAINWINDOW_H

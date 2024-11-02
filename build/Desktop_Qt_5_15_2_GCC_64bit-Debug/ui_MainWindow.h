@@ -95,6 +95,7 @@ public:
     QVBoxLayout *verticalLayout;
     QPushButton *btnClearVarboard;
     QSpacerItem *horizontalSpacer_2;
+    QCheckBox *chkShowHelp;
     QCheckBox *chkAutoRefresh;
     QPushButton *btnCompute;
     QTabWidget *tabWidget;
@@ -404,6 +405,11 @@ public:
 
         horizontalLayout_5->addItem(horizontalSpacer_2);
 
+        chkShowHelp = new QCheckBox(verticalLayoutWidget);
+        chkShowHelp->setObjectName(QString::fromUtf8("chkShowHelp"));
+
+        horizontalLayout_5->addWidget(chkShowHelp);
+
         chkAutoRefresh = new QCheckBox(verticalLayoutWidget);
         chkAutoRefresh->setObjectName(QString::fromUtf8("chkAutoRefresh"));
 
@@ -627,6 +633,7 @@ public:
         label_7->setText(QCoreApplication::translate("MainWindow", "Varget", nullptr));
         btnAddVarget->setText(QString());
         btnClearVarboard->setText(QCoreApplication::translate("MainWindow", "Clear", nullptr));
+        chkShowHelp->setText(QCoreApplication::translate("MainWindow", "Show Help", nullptr));
         chkAutoRefresh->setText(QCoreApplication::translate("MainWindow", "Auto Refresh", nullptr));
         btnCompute->setText(QCoreApplication::translate("MainWindow", "Compute", nullptr));
 #if QT_CONFIG(tooltip)

@@ -45,4 +45,5 @@ RESOURCES += \
     ephemeeus.qrc
 
 DISTFILES += \
-    db/cities.db
+    db/cities.db \
+    dox/en/sun-true-longitude.md

@@ -24,6 +24,7 @@
 // Types definition
 //******************************************************************************
 typedef QVector<double> vCoefs;
+typedef QMap<QString, QVariant> mVarget;
 
 //******************************************************************************
 // Class Meeus
@@ -68,36 +69,36 @@ public:
     int DaysBetweenDates(QDateTime dt1, QDateTime dt2);
     QDateTime AddDays2Date(QDateTime dt, int d);
     // Misc General Purpose
-    QString VarJulianDay();
-    QString VarT();
-    QString VarDayOfWeek();
-    QString VarDateTime();
-    QString VarCountry();
-    QString VarLocation();
-    QString VarLatitude();
-    QString VarLongitude();
-    QString VarTimeZone();
+    mVarget VarJulianDay();
+    mVarget VarT();
+    mVarget VarDayOfWeek();
+    mVarget VarDateTime();
+    mVarget VarCountry();
+    mVarget VarLocation();
+    mVarget VarLatitude();
+    mVarget VarLongitude();
+    mVarget VarTimeZone();
     // EARTH
-    QString VarEarthMeanEccentricity();
-    QString VarEarthNutationLongitude();
-    QString VarEarthNutationObliquity();
-    QString VarEarthMeanObliquity();
-    QString VarEarthTrueObliquity();
+    mVarget VarEarthMeanEccentricity();
+    mVarget VarEarthNutationLongitude();
+    mVarget VarEarthNutationObliquity();
+    mVarget VarEarthMeanObliquity();
+    mVarget VarEarthTrueObliquity();
     // SUN
-    QString VarSunMeanLongitude();
-    QString VarSunMeanAnomaly();
-    QString VarSunCenter();
-    QString VarSunTrueLongitude();
-    QString VarSunTrueAnomaly();
-    QString VarSunApparentLongitude();
-    QString VarSunRadiusVector();
-    QString VarSunNutationAberrationCorrection();
+    mVarget VarSunMeanLongitude();
+    mVarget VarSunMeanAnomaly();
+    mVarget VarSunCenter();
+    mVarget VarSunTrueLongitude();
+    mVarget VarSunTrueAnomaly();
+    mVarget VarSunApparentLongitude();
+    mVarget VarSunRadiusVector();
+    mVarget VarSunNutationAberrationCorrection();
     // MOON
-    QString VarMoonMeanLongitude();
-    QString VarMoonMeanAnomaly();
-    QString VarMoonMeanElongation();
-    QString VarMoonMeanDistanceFromAscendantNode();
-    QString VarMoonMeanLongitudeFromAscendantNode();
+    mVarget VarMoonMeanLongitude();
+    mVarget VarMoonMeanAnomaly();
+    mVarget VarMoonMeanElongation();
+    mVarget VarMoonMeanDistanceFromAscendantNode();
+    mVarget VarMoonMeanLongitudeFromAscendantNode();
 
 private:
     QDateTime dt;

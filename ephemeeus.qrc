@@ -177,5 +177,6 @@
         <file>16x16/pdf.png</file>
         <file>16x16/Planet.png</file>
         <file>16x16/Moon.png</file>
+        <file>dox/en/sun-true-longitude.md</file>
     </qresource>
 </RCC>

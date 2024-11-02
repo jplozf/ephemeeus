@@ -298,6 +298,13 @@
            </spacer>
           </item>
           <item>
+           <widget class="QCheckBox" name="chkShowHelp">
+            <property name="text">
+             <string>Show Help</string>
+            </property>
+           </widget>
+          </item>
+          <item>
            <widget class="QCheckBox" name="chkAutoRefresh">
             <property name="text">
              <string>Auto Refresh</string>

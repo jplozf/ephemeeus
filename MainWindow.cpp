@@ -167,7 +167,7 @@ void MainWindow::initUI() {
       actMRUFiles[i]->setVisible(false);
       connect(actMRUFiles[i], SIGNAL(triggered()), this, SLOT(openMRUFile()));
       ui->menuRecent->addAction(actMRUFiles[i]);
-      qDebug() << i;
+      // qDebug() << i;
   }
 
   //**************************************************************************
@@ -440,6 +440,9 @@ void MainWindow::saveSettings() {
     }
     registry.endArray();
 
+    // Show Help Panel or not
+    registry.setValue("showHelp", ui->chkShowHelp->isChecked());
+
     //**************************************************************************
     // Settings saving
     //**************************************************************************
@@ -484,21 +487,22 @@ void MainWindow::readSettings() {
 
     // TODO : Read the previous stored location
     const QString country = registry.value("country", "").toString();
-    qDebug() << country;
+    // qDebug() << country;
     ui->cbxCountry->setCurrentText(country);
     const QString location = registry.value("location", "").toString();
     ui->txtLocation->setText(location);
-    qDebug() << location;
+    // qDebug() << location;
     const QString latitude = registry.value("latitude", "").toString();
     ui->txtLatitude->setText(latitude);
-    qDebug() << latitude;
+    // qDebug() << latitude;
     const QString longitude = registry.value("longitude", "").toString();
     ui->txtLongitude->setText(longitude);
-    qDebug() << longitude;
+    // qDebug() << longitude;
     const QString timezone = registry.value("timezone", "").toString();
-    qDebug() << timezone;
+    // qDebug() << timezone;
     ui->cbxTimeZone->setCurrentText(timezone);
 
+    // MRU Files
     int size = registry.beginReadArray("MRUFiles");
     for (int i = 0; i < size; ++i) {
         registry.setArrayIndex(i);
@@ -506,6 +510,18 @@ void MainWindow::readSettings() {
     }
     registry.endArray();
     this->updateMRUMenu();
+
+    // Show Help Panel or not
+    ui->chkShowHelp->setChecked(registry.value("showHelp").toBool());
+    if (ui->chkShowHelp->isChecked()) {
+        // Show Help
+        this->showMessage("Help panel visible");
+        this->ui->txtHelp->show();
+    } else {
+        // Hide Help
+        this->showMessage("Help panel hidden");
+        this->ui->txtHelp->hide();
+    }
 }
 
 //******************************************************************************
@@ -544,7 +560,7 @@ void MainWindow::notify(QString message, QString title)
     if (title == "*DEFAULT") {
         title = this->app->appConstants->getQString("APPLICATION_NAME");
     }
-    qDebug() << "NOTIFICATION";
+    // qDebug() << "NOTIFICATION";
 #ifdef Q_OS_LINUX
     if (this->app->appSettings->get("APPLICATION_NOTIFICATION_SYSTEM").toBool() == true) {
         system(QString("notify-send \"%1\" \"%2\"").arg(title).arg(message).toStdString().c_str());
@@ -630,14 +646,14 @@ void MainWindow::on_cbxCountry_currentTextChanged(const QString &arg1)
     QSqlQuery query;
     query.prepare("SELECT country_idx FROM countries WHERE country = :country");
     query.bindValue(":country", arg1);
-    qDebug() << arg1;
+    // qDebug() << arg1;
     if (!query.exec()) {
         showMessage("Query failed!");
     } else {
         if (query.first()) { // get the first record in the result,
             country_idx = query.value("country_idx").toString();
             this->modelCities->setFilter("country_idx='" + country_idx + "'");
-            qDebug() << country_idx;
+            // qDebug() << country_idx;
         } else {
             showMessage("Data not found");
         }
@@ -874,7 +890,7 @@ void MainWindow::on_trwVargets_itemDoubleClicked(QTreeWidgetItem *item, int colu
     } else {
         // Keyword selected
         QString keyword = item->text(0);
-        qDebug() << keyword;
+        // qDebug() << keyword;
         for (auto it = Varboard::aKeywords.keyValueBegin(); it != Varboard::aKeywords.keyValueEnd();
              ++it) {
             if (it->first == keyword) {
@@ -887,14 +903,14 @@ void MainWindow::on_trwVargets_itemDoubleClicked(QTreeWidgetItem *item, int colu
                 // Loop the vargets list for this keyword
                 for (const auto &i : it->second) {
                     QString lblRaw = i;
-                    qDebug() << i;
+                    // qDebug() << i;
                     if (lblRaw.left(3) == "Var") {
                         lblRaw.remove(0, 3);
                     }
                     QString lblNice;
                     QStringList sl = lblRaw.split(QRegExp("(?=[A-Z])"), QString::SkipEmptyParts);
                     lblNice = sl.join(" ");
-                    qDebug() << lblNice;
+                    // qDebug() << lblNice;
 
                     this->showMessage("Adding Varget [" + i + "] with label \"" + lblNice + "\"");
                     this->vb->addVarget(lblNice, meeus, i);
@@ -1106,6 +1122,22 @@ void MainWindow::on_chkAutoRefresh_stateChanged(int arg1)
     }
 }
 
+//******************************************************************************
+// on_chkShowHelp_stateChanged()
+//******************************************************************************
+void MainWindow::on_chkShowHelp_stateChanged(int arg1)
+{
+    if (arg1 == 0) {
+        // Hide Help
+        this->showMessage("Help panel hidden");
+        this->ui->txtHelp->hide();
+    } else {
+        // Show Help
+        this->showMessage("Help panel visible");
+        this->ui->txtHelp->show();
+    }
+}
+
 QMap<QString, callback_function> Varboard::aFunc
     = {{"VarDateTime", &Meeus::VarDateTime},
        {"VarJulianDay", &Meeus::VarJulianDay},
@@ -1167,6 +1199,7 @@ Varget::Varget(
     App *a, int Order, QString Label, Meeus *m, QString Function, Varboard *vb, QWidget *parent)
     : QWidget{parent}
 {
+    this->locked = false;
     this->Order = Order;
     this->Label = Label;
     this->Function = Function;
@@ -1197,6 +1230,10 @@ Varget::Varget(
         = "background-color : #FFFDD0; color : black; border: 2px solid grey; font-weight: bold;";
     this->cssValue
         = "background-color : #F5F5F4; color : black; border: 2px solid grey; font-weight: normal;";
+
+    this->cssOrderHighlighted = "background-color : #FADA5E; color : black; font-weight: normal;";
+    this->cssOrderLockedHighlighted
+        = "background-color : #FADA5E; color : black; font-weight: bold;";
 
     if (this->Function != NULL) { // Function is NULL for Labels
         QFont font("Monospace");
@@ -1250,12 +1287,25 @@ Varget::Varget(
 //******************************************************************************
 void Varget::enterEvent(QEvent *event)
 {
-    this->lblOrder->setStyleSheet(this->cssHighlighted);
+    if (this->locked) {
+        this->lblOrder->setStyleSheet(this->cssOrderLockedHighlighted);
+    } else {
+        this->lblOrder->setStyleSheet(this->cssOrderHighlighted);
+    }
     this->lblLabel->setStyleSheet(this->cssHighlighted);
     if (this->Function == NULL) {
         this->lblFiller->setStyleSheet(this->cssHighlighted);
     } else {
         this->txtValue->setStyleSheet(this->cssValueHighlighted);
+        bool gLocked(false);
+        bool pLocked = this->locked;
+        this->locked = false;
+        for (int i = 0; i < this->vb->vargets.size(); ++i) {
+            gLocked = gLocked || this->vb->vargets[i]->locked;
+        }
+        this->locked = pLocked;
+        if (!gLocked)
+            this->ShowHelp();
     }
 }
 
@@ -1264,12 +1314,41 @@ void Varget::enterEvent(QEvent *event)
 //******************************************************************************
 void Varget::leaveEvent(QEvent *event)
 {
-    this->lblOrder->setStyleSheet(this->css);
     this->lblLabel->setStyleSheet(this->css);
+    this->lblOrder->setStyleSheet(this->cssOrder);
+    // qDebug() << this->cssOrder;
     if (this->Function == NULL) {
         this->lblFiller->setStyleSheet(this->css);
     } else {
         this->txtValue->setStyleSheet(this->cssValue);
+    }
+}
+
+//******************************************************************************
+// mousePressEvent()
+//******************************************************************************
+void Varget::mousePressEvent(QMouseEvent *event)
+{
+    if (event->button() == Qt::LeftButton) {
+        this->locked = !this->locked;
+        if (this->locked) {
+            // we have to unlock all the other Vargets, because we can have only one Varget locked at a time
+            for (int i = 0; i < this->vb->vargets.size(); ++i) {
+                this->vb->vargets[i]->locked = false;
+                this->vb->vargets[i]->cssOrder.replace("bold", "normal");
+                this->vb->vargets[i]->lblOrder->setStyleSheet(this->vb->vargets[i]->cssOrder);
+            }
+            // don't forget to relock this Varget
+            this->locked = true;
+            this->ShowHelp();
+        }
+    }
+    if (this->locked) {
+        this->cssOrder.replace("normal", "bold");
+        this->lblOrder->setStyleSheet(this->cssOrderLockedHighlighted);
+    } else {
+        this->cssOrder.replace("bold", "normal");
+        this->lblOrder->setStyleSheet(this->cssOrderHighlighted);
     }
 }
 
@@ -1280,10 +1359,46 @@ void Varget::Refresh()
 {
     if (this->Function != NULL) { // Function is NULL for Labels
         this->compute();
-        this->txtValue->setText(this->Value);
+        this->txtValue->setText(this->Value.value("FormattedValue").toString());
+        this->txtValue->setToolTip(this->Value.value("Value").toString());
+        // this->ShowHelp();
     }
     QString o = QString::asprintf("%05d", this->Order);
     this->lblOrder->setText(o);
+}
+
+//******************************************************************************
+// ShowHelp()
+//******************************************************************************
+void Varget::ShowHelp()
+{
+    QString mdHelp;
+    if (this->Value.value("Text").toString() != "") {
+        mdHelp = "# " + this->Value.value("Text").toString() + "\n";
+        /*
+    mdHelp += "|  **Key**  |  **Value**  |\n";
+    mdHelp += "|:---------:|:------------|\n";
+    mdHelp += "| Varget | " + this->Value.value("Name").toString() + " |\n";
+    mdHelp += "| Raw Value | " + this->Value.value("Value").toString() + " |\n";
+    mdHelp += "| Formatted Value | " + this->Value.value("FormattedValue").toString() + " |\n\n";
+    */
+        mdHelp += "* Varget : **" + this->Value.value("Name").toString() + "**\n";
+        mdHelp += "* Raw Value : **" + this->Value.value("Value").toString() + "**\n";
+        mdHelp += "* Formatted Value : **"
+                  + this->Value.value("FormattedValue").toString().trimmed() + "**\n\n";
+
+        QFile mdf(this->Value.value("HelpFile").toString());
+        if (mdf.open(QFile::ReadOnly | QFile::Text)) {
+            QTextStream in(&mdf);
+            QString txt = in.readAll();
+            mdHelp += txt;
+            mdf.close();
+        }
+    } else {
+        mdHelp = "*None*";
+    }
+
+    this->vb->ui->txtHelp->setMarkdown(mdHelp);
 }
 
 //******************************************************************************
@@ -1412,33 +1527,46 @@ void Varboard::pack()
 //******************************************************************************
 void Varboard::Refresh()
 {
-    qDebug() << this->vargets.size();
+    // qDebug() << this->vargets.size();
     for (int i = 0; i < this->vargets.size(); ++i) {
         this->ui->boardLayout->addWidget(vargets[i]);
         if (i % 2 == 0) {
             this->vargets[i]->css = "background-color : "
                                     + a->appSettings->get("VARBOARD_COLOR_LINE_1").toString()
                                     + "; color : black;";
+            if (this->vargets[i]->locked) {
+                this->vargets[i]->cssOrder = "background-color : "
+                                             + a->appSettings->get("VARBOARD_COLOR_LINE_1").toString()
+                                             + "; color : black; font-weight: bold;";
+            } else {
+                this->vargets[i]->cssOrder = "background-color : "
+                                             + a->appSettings->get("VARBOARD_COLOR_LINE_1").toString()
+                                             + "; color : black; font-weight: normal;";
+            }
         } else {
             this->vargets[i]->css = "background-color : "
                                     + a->appSettings->get("VARBOARD_COLOR_LINE_2").toString()
                                     + "; color : black;";
+            if (this->vargets[i]->locked) {
+                this->vargets[i]->cssOrder = "background-color : "
+                                             + a->appSettings->get("VARBOARD_COLOR_LINE_2").toString()
+                                             + "; color : black; font-weight: bold;";
+            } else {
+                this->vargets[i]->cssOrder = "background-color : "
+                                             + a->appSettings->get("VARBOARD_COLOR_LINE_2").toString()
+                                             + "; color : black; font-weight: normal;";
+            }
         }
         this->vargets[i]->btnUp->setEnabled(true);
         this->vargets[i]->btnDown->setEnabled(true);
         this->vargets[i]->setStyleSheet(this->vargets[i]->css);
+        this->vargets[i]->lblOrder->setStyleSheet(this->vargets[i]->cssOrder);
         this->vargets[i]->Refresh();
     }
     this->pack();
     // Disable the first UP button and the last DOWN button
     this->vargets[0]->btnUp->setEnabled(false);
     this->vargets[this->vargets.size() - 1]->btnDown->setEnabled(false);
-    // Hide or Show Help panel according to settings
-    if (a->appSettings->get("VARBOARD_SHOW_HELP").toBool() == true) {
-        this->ui->txtHelp->show();
-    } else {
-        this->ui->txtHelp->hide();
-    }
     //
     QString s = QString::asprintf("Vargets : %d", this->vargets.size());
     this->mw->lblNumberVargets->setText(s);

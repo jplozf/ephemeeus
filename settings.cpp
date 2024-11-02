@@ -38,7 +38,6 @@ Settings::Settings() {
 
   defaults["VARBOARD_COLOR_LINE_1"] = QVariant("#B0C4DE");
   defaults["VARBOARD_COLOR_LINE_2"] = QVariant("#b3b8bf");
-  defaults["VARBOARD_SHOW_HELP"] = QVariant(true);
 
   // Read the settings from user's settings
   read();
