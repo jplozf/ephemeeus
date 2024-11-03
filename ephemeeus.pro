@@ -46,4 +46,25 @@ RESOURCES += \
 
 DISTFILES += \
     db/cities.db \
-    dox/en/sun-true-longitude.md
+    dox/en/country.md \
+    dox/en/date-time.md \
+    dox/en/day-of-week.md \
+    dox/en/julian-day.md \
+    dox/en/latitude.md \
+    dox/en/location.md \
+    dox/en/longitude.md \
+    dox/en/moon-distance-from-ascendant-node.md \
+    dox/en/moon-mean-anomaly.md \
+    dox/en/moon-mean-elongation.md \
+    dox/en/moon-mean-longitude-from-ascendant-node.md \
+    dox/en/moon-mean-longitude.md \
+    dox/en/sun-apparent-longitude.md \
+    dox/en/sun-center.md \
+    dox/en/sun-mean-anomaly.md \
+    dox/en/sun-mean-longitude.md \
+    dox/en/sun-nutation-aberration-correction.md \
+    dox/en/sun-radius-vector.md \
+    dox/en/sun-true-anomaly.md \
+    dox/en/sun-true-longitude.md \
+    dox/en/t2000.md \
+    dox/en/time-zone.md

@@ -29,6 +29,8 @@ Meeus::~Meeus() {}
 //******************************************************************************
 void Meeus::ComputeJD() {
     this->JD = this->Date2JD(this->dt);
+    qDebug() << this->dt;
+    qDebug() << QString::number(this->JD, 'f', 12);
 }
 
 //******************************************************************************
@@ -37,12 +39,14 @@ void Meeus::ComputeJD() {
 mVarget Meeus::VarJulianDay()
 {
     this->ComputeJD();
-    static mVarget rc{{"Name", "VarJulianDay"},
-                      {"Text", "Julian Day"},
-                      {"Value", this->JD},
-                      {"FormattedValue", QString::number(this->JD, 'f', 6)},
-                      {"Page", 67},
-                      {"HelpFile", ":/dox/en/julian-day.md"}};
+    mVarget rc{{"Name", "VarJulianDay"},
+               {"Text", "Julian Day"},
+               {"Value", this->JD},
+               {"FormattedValue", QString::number(this->JD, 'f', 6)},
+               {"Page", 67},
+               {"HelpFile", ":/dox/en/julian-day.md"}};
+    qDebug() << rc;
+    qDebug() << "VARJULIANDAY";
     return rc;
 }
 
@@ -53,12 +57,12 @@ mVarget Meeus::VarT()
 {
     this->ComputeJD();
     double T = (JD - 2451545.0) / 36525.0;
-    static mVarget rc{{"Name", "VarT"},
-                      {"Text", "Julian Centuries T"},
-                      {"Value", T},
-                      {"FormattedValue", QString::number(T, 'f', 9)},
-                      {"Page", 95},
-                      {"HelpFile", ":/dox/en/t2000.md"}};
+    mVarget rc{{"Name", "VarT"},
+               {"Text", "Julian Centuries T"},
+               {"Value", T},
+               {"FormattedValue", QString::number(T, 'f', 9)},
+               {"Page", 95},
+               {"HelpFile", ":/dox/en/t2000.md"}};
     return rc;
 }
 
@@ -69,12 +73,12 @@ mVarget Meeus::VarDayOfWeek()
 {
     int dow = this->DayOfWeek(this->JD);
     QString days[7] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
-    static mVarget rc{{"Name", "VarDayOfWeek"},
-                      {"Text", "Day of Week"},
-                      {"Value", dow},
-                      {"FormattedValue", days[dow]},
-                      {"Page", 73},
-                      {"HelpFile", ":/dox/en/day-of-week.md"}};
+    mVarget rc{{"Name", "VarDayOfWeek"},
+               {"Text", "Day of Week"},
+               {"Value", dow},
+               {"FormattedValue", days[dow]},
+               {"Page", 73},
+               {"HelpFile", ":/dox/en/day-of-week.md"}};
     return rc;
 }
 
@@ -83,11 +87,11 @@ mVarget Meeus::VarDayOfWeek()
 //******************************************************************************
 mVarget Meeus::VarDateTime()
 {
-    static mVarget rc{{"Name", "VarDateTime"},
-                      {"Text", "Date and Time"},
-                      {"Value", this->dt.toString()},
-                      {"FormattedValue", this->dt.toString()},
-                      {"HelpFile", ":/dox/en/date-time.md"}};
+    mVarget rc{{"Name", "VarDateTime"},
+               {"Text", "Date and Time"},
+               {"Value", this->dt.toString()},
+               {"FormattedValue", this->dt.toString()},
+               {"HelpFile", ":/dox/en/date-time.md"}};
     return rc;
 }
 
@@ -96,11 +100,11 @@ mVarget Meeus::VarDateTime()
 //******************************************************************************
 mVarget Meeus::VarCountry()
 {
-    static mVarget rc{{"Name", "VarCountry"},
-                      {"Text", "Country"},
-                      {"Value", this->location.Country},
-                      {"FormattedValue", this->location.Country},
-                      {"HelpFile", ":/dox/en/country.md"}};
+    mVarget rc{{"Name", "VarCountry"},
+               {"Text", "Country"},
+               {"Value", this->location.Country},
+               {"FormattedValue", this->location.Country},
+               {"HelpFile", ":/dox/en/country.md"}};
     return rc;
 }
 
@@ -109,11 +113,11 @@ mVarget Meeus::VarCountry()
 //******************************************************************************
 mVarget Meeus::VarLocation()
 {
-    static mVarget rc{{"Name", "VarLocation"},
-                      {"Text", "Location"},
-                      {"Value", this->location.Name},
-                      {"FormattedValue", this->location.Name},
-                      {"HelpFile", ":/dox/en/location.md"}};
+    mVarget rc{{"Name", "VarLocation"},
+               {"Text", "Location"},
+               {"Value", this->location.Name},
+               {"FormattedValue", this->location.Name},
+               {"HelpFile", ":/dox/en/location.md"}};
     return rc;
 }
 
@@ -122,11 +126,11 @@ mVarget Meeus::VarLocation()
 //******************************************************************************
 mVarget Meeus::VarTimeZone()
 {
-    static mVarget rc{{"Name", "VarTimeZone"},
-                      {"Text", "Time Zone"},
-                      {"Value", this->location.TimeZone},
-                      {"FormattedValue", this->location.TimeZone},
-                      {"HelpFile", ":/dox/en/time-zone.md"}};
+    mVarget rc{{"Name", "VarTimeZone"},
+               {"Text", "Time Zone"},
+               {"Value", this->location.TimeZone},
+               {"FormattedValue", this->location.TimeZone},
+               {"HelpFile", ":/dox/en/time-zone.md"}};
     return rc;
 }
 
@@ -135,11 +139,11 @@ mVarget Meeus::VarTimeZone()
 //******************************************************************************
 mVarget Meeus::VarLatitude()
 {
-    static mVarget rc{{"Name", "VarLatitude"},
-                      {"Text", "Latitude"},
-                      {"Value", this->location.Latitude},
-                      {"FormattedValue", printDMS(this->location.Latitude)},
-                      {"HelpFile", ":/dox/en/latitude.md"}};
+    mVarget rc{{"Name", "VarLatitude"},
+               {"Text", "Latitude"},
+               {"Value", this->location.Latitude},
+               {"FormattedValue", printDMS(this->location.Latitude)},
+               {"HelpFile", ":/dox/en/latitude.md"}};
     return rc;
 }
 
@@ -148,11 +152,11 @@ mVarget Meeus::VarLatitude()
 //******************************************************************************
 mVarget Meeus::VarLongitude()
 {
-    static mVarget rc{{"Name", "VarLongitude"},
-                      {"Text", "Longitude"},
-                      {"Value", this->location.Longitude},
-                      {"FormattedValue", printDMS(this->location.Longitude)},
-                      {"HelpFile", ":/dox/en/longitude.md"}};
+    mVarget rc{{"Name", "VarLongitude"},
+               {"Text", "Longitude"},
+               {"Value", this->location.Longitude},
+               {"FormattedValue", printDMS(this->location.Longitude)},
+               {"HelpFile", ":/dox/en/longitude.md"}};
     return rc;
 }
 
@@ -346,12 +350,12 @@ QString Meeus::getLocation()
 mVarget Meeus::VarSunMeanLongitude()
 {
     double sml = Sun::MeanLongitude(this->JD);
-    static mVarget rc{{"Name", "VarSunMeanLongitude"},
-                      {"Text", "Sun's Mean Longitude"},
-                      {"Value", sml},
-                      {"FormattedValue", printDMS(sml)},
-                      {"Page", 171},
-                      {"HelpFile", ":/dox/en/sun-mean-longitude.md"}};
+    mVarget rc{{"Name", "VarSunMeanLongitude"},
+               {"Text", "Sun's Mean Longitude"},
+               {"Value", sml},
+               {"FormattedValue", printDMS(sml)},
+               {"Page", 171},
+               {"HelpFile", ":/dox/en/sun-mean-longitude.md"}};
     return rc;
 }
 
@@ -361,12 +365,12 @@ mVarget Meeus::VarSunMeanLongitude()
 mVarget Meeus::VarSunMeanAnomaly()
 {
     double sma = Sun::MeanAnomaly(this->JD);
-    static mVarget rc{{"Name", "VarSunMeanAnomaly"},
-                      {"Text", "Sun's Mean Anomaly"},
-                      {"Value", sma},
-                      {"FormattedValue", printDMS(sma)},
-                      {"Page", 171},
-                      {"HelpFile", ":/dox/en/sun-mean-anomaly.md"}};
+    mVarget rc{{"Name", "VarSunMeanAnomaly"},
+               {"Text", "Sun's Mean Anomaly"},
+               {"Value", sma},
+               {"FormattedValue", printDMS(sma)},
+               {"Page", 171},
+               {"HelpFile", ":/dox/en/sun-mean-anomaly.md"}};
     return rc;
 }
 
@@ -376,12 +380,12 @@ mVarget Meeus::VarSunMeanAnomaly()
 mVarget Meeus::VarSunCenter()
 {
     double sc = Sun::Center(this->JD, Sun::MeanAnomaly(this->JD));
-    static mVarget rc{{"Name", "VarSunCenter"},
-                      {"Text", "Sun's Center"},
-                      {"Value", sc},
-                      {"FormattedValue", printDMS(sc)},
-                      {"Page", 172},
-                      {"HelpFile", ":/dox/en/sun-center.md"}};
+    mVarget rc{{"Name", "VarSunCenter"},
+               {"Text", "Sun's Center"},
+               {"Value", sc},
+               {"FormattedValue", printDMS(sc)},
+               {"Page", 172},
+               {"HelpFile", ":/dox/en/sun-center.md"}};
     return rc;
 }
 
@@ -392,12 +396,12 @@ mVarget Meeus::VarSunTrueLongitude()
 {
     double stl = Sun::TrueLongitude(Sun::MeanLongitude(this->JD),
                                     Sun::Center(this->JD, Sun::MeanAnomaly(this->JD)));
-    static mVarget rc{{"Name", "VarSunTrueLongitude"},
-                      {"Text", "Sun's True Longitude"},
-                      {"Value", stl},
-                      {"FormattedValue", printDMS(stl)},
-                      {"Page", 173},
-                      {"HelpFile", ":/dox/en/sun-true-longitude.md"}};
+    mVarget rc{{"Name", "VarSunTrueLongitude"},
+               {"Text", "Sun's True Longitude"},
+               {"Value", stl},
+               {"FormattedValue", printDMS(stl)},
+               {"Page", 173},
+               {"HelpFile", ":/dox/en/sun-true-longitude.md"}};
     return rc;
 }
 
@@ -408,12 +412,12 @@ mVarget Meeus::VarSunTrueAnomaly()
 {
     double sta = Sun::TrueAnomaly(Sun::MeanAnomaly(this->JD),
                                   Sun::Center(this->JD, Sun::MeanAnomaly(this->JD)));
-    static mVarget rc{{"Name", "VarSunTrueAnomaly"},
-                      {"Text", "Sun's True Anomaly"},
-                      {"Value", sta},
-                      {"FormattedValue", printDMS(sta)},
-                      {"Page", 172},
-                      {"HelpFile", ":/dox/en/sun-true-anomaly.md"}};
+    mVarget rc{{"Name", "VarSunTrueAnomaly"},
+               {"Text", "Sun's True Anomaly"},
+               {"Value", sta},
+               {"FormattedValue", printDMS(sta)},
+               {"Page", 172},
+               {"HelpFile", ":/dox/en/sun-true-anomaly.md"}};
     return rc;
 }
 
@@ -426,12 +430,12 @@ mVarget Meeus::VarSunApparentLongitude()
                                                            Sun::Center(this->JD,
                                                                        Sun::MeanAnomaly(this->JD))),
                                         Sun::NutationAberrationCorrection(this->JD));
-    static mVarget rc{{"Name", "VarSunApparentLongitude"},
-                      {"Text", "Sun's Apparent Longitude"},
-                      {"Value", sal},
-                      {"FormattedValue", printDMS(sal)},
-                      {"Page", 172},
-                      {"HelpFile", ":/dox/en/sun-apparent-longitude.md"}};
+    mVarget rc{{"Name", "VarSunApparentLongitude"},
+               {"Text", "Sun's Apparent Longitude"},
+               {"Value", sal},
+               {"FormattedValue", printDMS(sal)},
+               {"Page", 172},
+               {"HelpFile", ":/dox/en/sun-apparent-longitude.md"}};
     return rc;
 }
 
@@ -444,12 +448,12 @@ mVarget Meeus::VarSunRadiusVector()
                                    Sun::TrueAnomaly(Sun::MeanAnomaly(this->JD),
                                                     Sun::Center(this->JD,
                                                                 Sun::MeanAnomaly(this->JD))));
-    static mVarget rc{{"Name", "VarSunRadiusVector"},
-                      {"Text", "Sun's Radius Vector"},
-                      {"Value", srv},
-                      {"FormattedValue", printDMS(srv)},
-                      {"Page", 172},
-                      {"HelpFile", ":/dox/en/sun-radius-vector.md"}};
+    mVarget rc{{"Name", "VarSunRadiusVector"},
+               {"Text", "Sun's Radius Vector"},
+               {"Value", srv},
+               {"FormattedValue", printDMS(srv)},
+               {"Page", 172},
+               {"HelpFile", ":/dox/en/sun-radius-vector.md"}};
     return rc;
 }
 
@@ -460,12 +464,12 @@ mVarget Meeus::VarSunNutationAberrationCorrection()
 {
     // Sun::compute(this->JD);
     double snac = Sun::NutationAberrationCorrection(this->JD);
-    static mVarget rc{{"Name", "VarSunNutationAberrationCorrection"},
-                      {"Text", "Sun's Nutation Aberration Correction"},
-                      {"Value", snac},
-                      {"FormattedValue", printDMS(snac)},
-                      {"Page", 172},
-                      {"HelpFile", ":/dox/en/sun-nutation-aberration-correction.md"}};
+    mVarget rc{{"Name", "VarSunNutationAberrationCorrection"},
+               {"Text", "Sun's Nutation Aberration Correction"},
+               {"Value", snac},
+               {"FormattedValue", printDMS(snac)},
+               {"Page", 172},
+               {"HelpFile", ":/dox/en/sun-nutation-aberration-correction.md"}};
     return rc;
 }
 
@@ -620,12 +624,12 @@ double Moon::MeanLongitudeFromAscendantNode(double JD)
 mVarget Meeus::VarMoonMeanLongitude()
 {
     double mml = Moon::MeanLongitude(this->JD);
-    static mVarget rc{{"Name", "VarMoonMeanLongitude"},
-                      {"Text", "Moon's Mean Longitude"},
-                      {"Value", mml},
-                      {"FormattedValue", printDMS(mml)},
-                      {"Page", 171},
-                      {"HelpFile", ":/dox/en/moon-mean-longitude.md"}};
+    mVarget rc{{"Name", "VarMoonMeanLongitude"},
+               {"Text", "Moon's Mean Longitude"},
+               {"Value", mml},
+               {"FormattedValue", printDMS(mml)},
+               {"Page", 171},
+               {"HelpFile", ":/dox/en/moon-mean-longitude.md"}};
     return rc;
 }
 
@@ -635,12 +639,12 @@ mVarget Meeus::VarMoonMeanLongitude()
 mVarget Meeus::VarMoonMeanAnomaly()
 {
     double mma = Moon::MeanAnomaly(this->JD);
-    static mVarget rc{{"Name", "VarMoonMeanAnomaly"},
-                      {"Text", "Moon's Mean Anomaly"},
-                      {"Value", mma},
-                      {"FormattedValue", printDMS(mma)},
-                      {"Page", 171},
-                      {"HelpFile", ":/dox/en/moon-mean-anomaly.md"}};
+    mVarget rc{{"Name", "VarMoonMeanAnomaly"},
+               {"Text", "Moon's Mean Anomaly"},
+               {"Value", mma},
+               {"FormattedValue", printDMS(mma)},
+               {"Page", 171},
+               {"HelpFile", ":/dox/en/moon-mean-anomaly.md"}};
     return rc;
 }
 
@@ -650,12 +654,12 @@ mVarget Meeus::VarMoonMeanAnomaly()
 mVarget Meeus::VarMoonMeanElongation()
 {
     double mme = Moon::MeanAnomaly(this->JD);
-    static mVarget rc{{"Name", "VarMoonMeanElongation"},
-                      {"Text", "Moon's Mean Elongation"},
-                      {"Value", mme},
-                      {"FormattedValue", printDMS(mme)},
-                      {"Page", 171},
-                      {"HelpFile", ":/dox/en/moon-mean-elongation.md"}};
+    mVarget rc{{"Name", "VarMoonMeanElongation"},
+               {"Text", "Moon's Mean Elongation"},
+               {"Value", mme},
+               {"FormattedValue", printDMS(mme)},
+               {"Page", 171},
+               {"HelpFile", ":/dox/en/moon-mean-elongation.md"}};
     return rc;
 }
 
@@ -665,12 +669,12 @@ mVarget Meeus::VarMoonMeanElongation()
 mVarget Meeus::VarMoonMeanDistanceFromAscendantNode()
 {
     double mdfan = Moon::MeanDistanceFromAscendantNode(this->JD);
-    static mVarget rc{{"Name", "VarMoonMeanDistanceFromAscendantNode"},
-                      {"Text", "Moon's Distance from Ascendant Node"},
-                      {"Value", mdfan},
-                      {"FormattedValue", printDMS(mdfan)},
-                      {"Page", 171},
-                      {"HelpFile", ":/dox/en/moon-distance-from-ascendant-node.md"}};
+    mVarget rc{{"Name", "VarMoonMeanDistanceFromAscendantNode"},
+               {"Text", "Moon's Distance from Ascendant Node"},
+               {"Value", mdfan},
+               {"FormattedValue", printDMS(mdfan)},
+               {"Page", 171},
+               {"HelpFile", ":/dox/en/moon-distance-from-ascendant-node.md"}};
     return rc;
 }
 
@@ -680,12 +684,12 @@ mVarget Meeus::VarMoonMeanDistanceFromAscendantNode()
 mVarget Meeus::VarMoonMeanLongitudeFromAscendantNode()
 {
     double mmlfan = Moon::MeanLongitudeFromAscendantNode(this->JD);
-    static mVarget rc{{"Name", "VarMoonMeanLongitudeFromAscendantNode"},
-                      {"Text", "Moon's Mean Longitude from Ascendant Node"},
-                      {"Value", mmlfan},
-                      {"FormattedValue", printDMS(mmlfan)},
-                      {"Page", 171},
-                      {"HelpFile", ":/dox/en/moon-mean-longitude-from-ascendant-node.md"}};
+    mVarget rc{{"Name", "VarMoonMeanLongitudeFromAscendantNode"},
+               {"Text", "Moon's Mean Longitude from Ascendant Node"},
+               {"Value", mmlfan},
+               {"FormattedValue", printDMS(mmlfan)},
+               {"Page", 171},
+               {"HelpFile", ":/dox/en/moon-mean-longitude-from-ascendant-node.md"}};
     return rc;
 }
 
@@ -782,12 +786,12 @@ double Earth::TrueObliquity(double MeanObliquity, double NutationObliquity)
 mVarget Meeus::VarEarthMeanEccentricity()
 {
     double eme = Earth::MeanEccentricity(this->JD);
-    static mVarget rc{{"Name", "VarEarthMeanEccentricity"},
-                      {"Text", "Earth's Mean Eccentricity"},
-                      {"Value", eme},
-                      {"FormattedValue", printDMS(eme)},
-                      {"Page", 171},
-                      {"HelpFile", ":/dox/en/earth-mean-eccentricity.md"}};
+    mVarget rc{{"Name", "VarEarthMeanEccentricity"},
+               {"Text", "Earth's Mean Eccentricity"},
+               {"Value", eme},
+               {"FormattedValue", printDMS(eme)},
+               {"Page", 171},
+               {"HelpFile", ":/dox/en/earth-mean-eccentricity.md"}};
     return rc;
 }
 
@@ -802,12 +806,12 @@ mVarget Meeus::VarEarthNutationLongitude()
                                           Sun::MeanAnomaly(this->JD),
                                           Moon::MeanAnomaly(this->JD),
                                           Moon::MeanLongitudeFromAscendantNode(this->JD));
-    static mVarget rc{{"Name", "VarEarthNutationLongitude"},
-                      {"Text", "Earth's Nutation in Longitude"},
-                      {"Value", var},
-                      {"FormattedValue", printDMS(var)},
-                      {"Page", 171},
-                      {"HelpFile", ":/dox/en/earth-nutation-longitude.md"}};
+    mVarget rc{{"Name", "VarEarthNutationLongitude"},
+               {"Text", "Earth's Nutation in Longitude"},
+               {"Value", var},
+               {"FormattedValue", printDMS(var)},
+               {"Page", 171},
+               {"HelpFile", ":/dox/en/earth-nutation-longitude.md"}};
     return rc;
 }
 
@@ -822,12 +826,12 @@ mVarget Meeus::VarEarthNutationObliquity()
                                           Sun::MeanAnomaly(this->JD),
                                           Moon::MeanAnomaly(this->JD),
                                           Moon::MeanLongitudeFromAscendantNode(this->JD));
-    static mVarget rc{{"Name", "VarEarthNutationObliquity"},
-                      {"Text", "Earth's Nutation in Obliquity"},
-                      {"Value", var},
-                      {"FormattedValue", printDMS(var)},
-                      {"Page", 171},
-                      {"HelpFile", ":/dox/en/earth-nutation-obliquity.md"}};
+    mVarget rc{{"Name", "VarEarthNutationObliquity"},
+               {"Text", "Earth's Nutation in Obliquity"},
+               {"Value", var},
+               {"FormattedValue", printDMS(var)},
+               {"Page", 171},
+               {"HelpFile", ":/dox/en/earth-nutation-obliquity.md"}};
     return rc;
 }
 
@@ -837,12 +841,12 @@ mVarget Meeus::VarEarthNutationObliquity()
 mVarget Meeus::VarEarthMeanObliquity()
 {
     double var = Earth::MeanObliquity(this->JD);
-    static mVarget rc{{"Name", "VarEarthMeanObliquity"},
-                      {"Text", "Earth's Mean Obliquity"},
-                      {"Value", var},
-                      {"FormattedValue", printDMS(var)},
-                      {"Page", 171},
-                      {"HelpFile", ":/dox/en/earth-mean-obliquity.md"}};
+    mVarget rc{{"Name", "VarEarthMeanObliquity"},
+               {"Text", "Earth's Mean Obliquity"},
+               {"Value", var},
+               {"FormattedValue", printDMS(var)},
+               {"Page", 171},
+               {"HelpFile", ":/dox/en/earth-mean-obliquity.md"}};
     return rc;
 }
 
@@ -859,12 +863,12 @@ mVarget Meeus::VarEarthTrueObliquity()
                                                                Moon::MeanAnomaly(this->JD),
                                                                Moon::MeanLongitudeFromAscendantNode(
                                                                    this->JD)));
-    static mVarget rc{{"Name", "TrueObliquity"},
-                      {"Text", "Earth's True Obliquity"},
-                      {"Value", var},
-                      {"FormattedValue", printDMS(var)},
-                      {"Page", 171},
-                      {"HelpFile", ":/dox/en/earth-true-obliquity.md"}};
+    mVarget rc{{"Name", "TrueObliquity"},
+               {"Text", "Earth's True Obliquity"},
+               {"Value", var},
+               {"FormattedValue", printDMS(var)},
+               {"Page", 171},
+               {"HelpFile", ":/dox/en/earth-true-obliquity.md"}};
     return rc;
 }
 

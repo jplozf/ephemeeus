@@ -178,5 +178,26 @@
         <file>16x16/Planet.png</file>
         <file>16x16/Moon.png</file>
         <file>dox/en/sun-true-longitude.md</file>
+        <file>dox/en/sun-center.md</file>
+        <file>dox/en/country.md</file>
+        <file>dox/en/date-time.md</file>
+        <file>dox/en/day-of-week.md</file>
+        <file>dox/en/julian-day.md</file>
+        <file>dox/en/latitude.md</file>
+        <file>dox/en/location.md</file>
+        <file>dox/en/longitude.md</file>
+        <file>dox/en/moon-distance-from-ascendant-node.md</file>
+        <file>dox/en/moon-mean-anomaly.md</file>
+        <file>dox/en/moon-mean-elongation.md</file>
+        <file>dox/en/moon-mean-longitude.md</file>
+        <file>dox/en/moon-mean-longitude-from-ascendant-node.md</file>
+        <file>dox/en/sun-apparent-longitude.md</file>
+        <file>dox/en/sun-mean-anomaly.md</file>
+        <file>dox/en/sun-mean-longitude.md</file>
+        <file>dox/en/sun-nutation-aberration-correction.md</file>
+        <file>dox/en/sun-radius-vector.md</file>
+        <file>dox/en/sun-true-anomaly.md</file>
+        <file>dox/en/t2000.md</file>
+        <file>dox/en/time-zone.md</file>
     </qresource>
 </RCC>

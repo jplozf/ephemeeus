@@ -1359,12 +1359,11 @@ void Varget::Refresh()
 {
     if (this->Function != NULL) { // Function is NULL for Labels
         this->compute();
+        qDebug() << "Refresh Varget : " + this->Value.value("FormattedValue").toString();
         this->txtValue->setText(this->Value.value("FormattedValue").toString());
         this->txtValue->setToolTip(this->Value.value("Value").toString());
-        // this->ShowHelp();
     }
-    QString o = QString::asprintf("%05d", this->Order);
-    this->lblOrder->setText(o);
+    this->lblOrder->setText(QString::asprintf("%05d", this->Order));
 }
 
 //******************************************************************************
@@ -1374,19 +1373,15 @@ void Varget::ShowHelp()
 {
     QString mdHelp;
     if (this->Value.value("Text").toString() != "") {
-        mdHelp = "# " + this->Value.value("Text").toString() + "\n";
-        /*
-    mdHelp += "|  **Key**  |  **Value**  |\n";
-    mdHelp += "|:---------:|:------------|\n";
-    mdHelp += "| Varget | " + this->Value.value("Name").toString() + " |\n";
-    mdHelp += "| Raw Value | " + this->Value.value("Value").toString() + " |\n";
-    mdHelp += "| Formatted Value | " + this->Value.value("FormattedValue").toString() + " |\n\n";
-    */
-        mdHelp += "* Varget : **" + this->Value.value("Name").toString() + "**\n";
-        mdHelp += "* Raw Value : **" + this->Value.value("Value").toString() + "**\n";
-        mdHelp += "* Formatted Value : **"
-                  + this->Value.value("FormattedValue").toString().trimmed() + "**\n\n";
+        mdHelp = "# " + this->Value.value("Name").toString()
+                 + " :: " + this->Value.value("Text").toString() + "\n";
+        mdHelp += "---\n";
+        mdHelp += "- Raw Value : **" + this->Value.value("Value").toString() + "**\n";
+        mdHelp += "- Formatted Value : **"
+                  + this->Value.value("FormattedValue").toString().trimmed() + "**\n";
+        mdHelp += "---\n\n";
 
+        // Try to open the Help file embedded into the resource file
         QFile mdf(this->Value.value("HelpFile").toString());
         if (mdf.open(QFile::ReadOnly | QFile::Text)) {
             QTextStream in(&mdf);
@@ -1397,7 +1392,6 @@ void Varget::ShowHelp()
     } else {
         mdHelp = "*None*";
     }
-
     this->vb->ui->txtHelp->setMarkdown(mdHelp);
 }
 
@@ -1409,6 +1403,7 @@ void Varget::compute()
     callback_function pFunc;
     pFunc = Varboard::aFunc[this->Function];
     this->Value = (m->*pFunc)();
+    qDebug() << this->Value;
 }
 
 //******************************************************************************
