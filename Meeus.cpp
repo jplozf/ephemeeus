@@ -29,8 +29,6 @@ Meeus::~Meeus() {}
 //******************************************************************************
 void Meeus::ComputeJD() {
     this->JD = this->Date2JD(this->dt);
-    qDebug() << this->dt;
-    qDebug() << QString::number(this->JD, 'f', 12);
 }
 
 //******************************************************************************
@@ -45,8 +43,6 @@ mVarget Meeus::VarJulianDay()
                {"FormattedValue", QString::number(this->JD, 'f', 6)},
                {"Page", 67},
                {"HelpFile", ":/dox/en/julian-day.md"}};
-    qDebug() << rc;
-    qDebug() << "VARJULIANDAY";
     return rc;
 }
 

@@ -1403,7 +1403,6 @@ void Varget::compute()
     callback_function pFunc;
     pFunc = Varboard::aFunc[this->Function];
     this->Value = (m->*pFunc)();
-    qDebug() << this->Value;
 }
 
 //******************************************************************************
