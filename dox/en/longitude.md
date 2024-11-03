@@ -1,51 +1,7 @@
-# First Level Heading
-
-Paragraph.
-
-## Second Level Heading
-
-Paragraph.
-
-- bullet
-+ other bullet
-* another bullet
-    * child bullet
-
-1. ordered
-2. next ordered
-
-### Third Level Heading
-
-Some *italic* and **bold** text and `inline code`.
-
-An empty line starts a new paragraph.
-
-Use two spaces at the end  
-to force a line break.
-
-A horizontal ruler follows:
-
+## Longitude
 ---
+This is the longitude of the current location used to compute events.
 
-Add links inline like [this link to the Qt homepage](https://www.qt.io),
-or with a reference like [this other link to the Qt homepage][1].
+Longitude is a geographic coordinate that specifies the east–west position of a point on the surface of the Earth, or another celestial body. It is an angular measurement, usually expressed in degrees and denoted by the Greek letter lambda (λ). 
 
-    Add code blocks with
-    four spaces at the front.
-
-> A blockquote
-> starts with >
->
-> and has the same paragraph rules as normal text.
-
-First Level Heading in Alternate Style
-======================================
-
-Paragraph.
-
-Second Level Heading in Alternate Style
----------------------------------------
-
-Paragraph.
-
-[1]: https://www.qt.io
+Meridians are imaginary semicircular lines running from pole to pole that connect points with the same longitude. The prime meridian defines 0° longitude; by convention the International Reference Meridian for the Earth passes near the Royal Observatory in Greenwich, south-east London on the island of Great Britain. Positive longitudes are east of the prime meridian, and negative ones are west. 
