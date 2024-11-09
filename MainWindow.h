@@ -50,72 +50,73 @@ class MainWindow;
 }
 QT_END_NAMESPACE
 
-class MainWindow : public QMainWindow {
-  Q_OBJECT
+class MainWindow : public QMainWindow
+{
+    Q_OBJECT
 
- public:
-  MainWindow(QApplication* a, QWidget* parent = nullptr);
-  ~MainWindow();
-  App* app;
-  QDir appDir;
-  void closeEvent(QCloseEvent*);
-  void saveSettings();
-  void readSettings();
-  void initUI();
-  Ui::MainWindow* ui;
-  void setTheme();
-  void showMessage(const QString &message, int timeout = -1);
-  void notify(QString message, QString title = "*DEFAULT");
-  bool TimeLocked;
-  QTimer *tTime;
-  void SetLocation();
-  Meeus *meeus;
-  QStringList mruFiles;
-  void updateMRUMenu();
-  QVector<QAction *> actMRUFiles;
-  Varboard *vb;
-  QLabel *lblNumberVargets;
-  bool vbdModified;
-  void displayFileName();
-  QLabel *lblFileName;
-  QLabel *lblTitle;
+public:
+    MainWindow(QApplication *a, QWidget *parent = nullptr);
+    ~MainWindow();
+    App *app;
+    QDir appDir;
+    void closeEvent(QCloseEvent *);
+    void saveSettings();
+    void readSettings();
+    void initUI();
+    Ui::MainWindow *ui;
+    void setTheme();
+    void showMessage(const QString &message, int timeout = -1);
+    void notify(QString message, QString title = "*DEFAULT");
+    bool TimeLocked;
+    QTimer *tTime;
+    void SetLocation();
+    Meeus *meeus;
+    QStringList mruFiles;
+    void updateMRUMenu();
+    QVector<QAction *> actMRUFiles;
+    Varboard *vb;
+    QLabel *lblNumberVargets;
+    bool vbdModified;
+    void displayFileName();
+    QLabel *lblFileName;
+    QLabel *lblTitle;
 
-  private:
-  QApplication* a;
-  void out(QString txt);
-  void refresh();
-  QSqlDatabase db;
-  QString appTitle;
-  QString vbdFileName;
-  QString previousMessage;
-  int nPreviousMessage;
+private:
+    QApplication *a;
+    void out(QString txt);
+    void refresh();
+    QSqlDatabase db;
+    QString appTitle;
+    QString vbdFileName;
+    QString previousMessage;
+    int nPreviousMessage;
 
-  QSqlTableModel *modelCities;
+    QSqlTableModel *modelCities;
 
-  private slots:
-  void slotDoExit();
-  void on_actionRefresh_triggered();
-  void on_btnClearConsole_clicked();
-  void on_btnCompute_clicked();
-  void on_txtLocation_editingFinished();
-  void on_actionOpen_triggered();
-  void on_actionHelp_triggered();
-  void on_btnAddVarget_clicked();
-  void on_btnAddLabel_clicked();
-  void on_btnAddTitle_clicked();
-  void on_actionSave_as_triggered();
-  void on_btnExportLog_clicked();
-  void on_action_About_triggered();
-  void on_btnTimeLocked_clicked();
-  void on_actionSettings_triggered();
-  void on_actionSave_triggered();
-  void on_cbxCountry_currentTextChanged(const QString &arg1);
-  void on_chkAutoRefresh_stateChanged(int arg1);
-  void openMRUFile();
-  void on_trwVargets_itemClicked(QTreeWidgetItem *item, int column);
-  void on_trwVargets_itemDoubleClicked(QTreeWidgetItem *item, int column);
-  void on_btnClearVarboard_clicked();
-  void on_chkShowHelp_stateChanged(int arg1);
+private slots:
+    void slotDoExit();
+    void on_actionRefresh_triggered();
+    void on_btnClearConsole_clicked();
+    void on_btnCompute_clicked();
+    void on_txtLocation_editingFinished();
+    void on_actionOpen_triggered();
+    void on_actionHelp_triggered();
+    void on_btnAddVarget_clicked();
+    void on_btnAddLabel_clicked();
+    void on_btnAddTitle_clicked();
+    void on_actionSave_as_triggered();
+    void on_btnExportLog_clicked();
+    void on_action_About_triggered();
+    void on_btnTimeLocked_clicked();
+    void on_actionSettings_triggered();
+    void on_actionSave_triggered();
+    void on_cbxCountry_currentTextChanged(const QString &arg1);
+    void on_chkAutoRefresh_stateChanged(int arg1);
+    void openMRUFile();
+    void on_trwVargets_itemClicked(QTreeWidgetItem *item, int column);
+    void on_trwVargets_itemDoubleClicked(QTreeWidgetItem *item, int column);
+    void on_btnClearVarboard_clicked();
+    void on_chkShowHelp_stateChanged(int arg1);
 };
 
 class MainWindow;
@@ -162,6 +163,7 @@ public:
     QLabel *lblLabel;
     QLabel *lblFiller;
     bool locked;
+    bool highlighted;
 
 private:
     void compute();
@@ -197,4 +199,4 @@ private:
     App *a;
 };
 
-#endif  // MAINWINDOW_H
+#endif // MAINWINDOW_H

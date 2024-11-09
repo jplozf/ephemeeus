@@ -3,355 +3,335 @@
 //******************************************************************************
 // MainWindow()
 //******************************************************************************
-MainWindow::MainWindow(QApplication* a, QWidget* parent)
-    : QMainWindow(parent), ui(new Ui::MainWindow) {
-  this->a = a;
-  this->TimeLocked = false;
-  ui->setupUi(this);
-  app = new App();
-  this->nPreviousMessage = 1;
+MainWindow::MainWindow(QApplication *a, QWidget *parent)
+    : QMainWindow(parent)
+    , ui(new Ui::MainWindow)
+{
+    this->a = a;
+    this->TimeLocked = false;
+    ui->setupUi(this);
+    app = new App();
+    this->nPreviousMessage = 1;
 
-  // APP_FOLDER
-  QDir appDir = QDir(QDir::homePath()).filePath(app->appConstants->getQString("APP_FOLDER"));
-  if (!appDir.exists())
-      appDir.mkpath(".");
-  this->appDir = appDir;
+    // APP_FOLDER
+    QDir appDir = QDir(QDir::homePath()).filePath(app->appConstants->getQString("APP_FOLDER"));
+    if (!appDir.exists())
+        appDir.mkpath(".");
+    this->appDir = appDir;
 
-  connect(ui->actionQuit, SIGNAL(triggered()), this, SLOT(slotDoExit()));
+    connect(ui->actionQuit, SIGNAL(triggered()), this, SLOT(slotDoExit()));
 
-  this->appTitle = QString("%1 %2").arg(app->appConstants->getQString("APPLICATION_NAME"),
-                                        app->appConstants->getQString("VERSION"));
-  initUI();
-  this->setWindowTitle(this->appTitle);
-  showMessage("Welcome");
+    this->appTitle = QString("%1 %2").arg(app->appConstants->getQString("APPLICATION_NAME"),
+                                          app->appConstants->getQString("VERSION"));
+    initUI();
+    this->setWindowTitle(this->appTitle);
+    showMessage("Welcome");
 
-  db = QSqlDatabase::addDatabase("QSQLITE");
-  // Try to open the local database otherwise download it from ligorax.free.fr
-  QString dbName = QDir(appDir).filePath(app->appConstants->getQString("CITIES_DATABASE"));
-  if (!QFile::exists(dbName)) {
-      showMessage("Downloading cities database from internet");
-      Downloader::downloadFile(app->appConstants->getQString("CITIES_URL"), dbName);
-  }
+    db = QSqlDatabase::addDatabase("QSQLITE");
+    // Try to open the local database otherwise download it from ligorax.free.fr
+    QString dbName = QDir(appDir).filePath(app->appConstants->getQString("CITIES_DATABASE"));
+    if (!QFile::exists(dbName)) {
+        showMessage("Downloading cities database from internet");
+        Downloader::downloadFile(app->appConstants->getQString("CITIES_URL"), dbName);
+    }
 
-  db.setDatabaseName(dbName);
-  if (!db.open()) {
-      showMessage("Can't open cities database");
-  } else {
-      showMessage("Cities database open");
-      modelCities = new QSqlTableModel(this, db);
-      modelCities->setTable("cities");
-      // modelCities->setFilter("country_idx='be'");
-      modelCities->select();
+    db.setDatabaseName(dbName);
+    if (!db.open()) {
+        showMessage("Can't open cities database");
+    } else {
+        showMessage("Cities database open");
+        modelCities = new QSqlTableModel(this, db);
+        modelCities->setTable("cities");
+        // modelCities->setFilter("country_idx='be'");
+        modelCities->select();
 
-      QCompleter *cityCompleter = new QCompleter(modelCities, this);
-      cityCompleter->setCompletionColumn(2); // "City" Column
-      ui->txtLocation->setCompleter(cityCompleter);
+        QCompleter *cityCompleter = new QCompleter(modelCities, this);
+        cityCompleter->setCompletionColumn(2); // "City" Column
+        ui->txtLocation->setCompleter(cityCompleter);
 
-      QSqlTableModel *modelCountries = new QSqlTableModel(this, db);
-      modelCountries->setTable("countries");
-      modelCountries->select();
-      ui->cbxCountry->setModel(modelCountries);
-      ui->cbxCountry->setModelColumn(modelCountries->fieldIndex("country"));
-  }
+        QSqlTableModel *modelCountries = new QSqlTableModel(this, db);
+        modelCountries->setTable("countries");
+        modelCountries->select();
+        ui->cbxCountry->setModel(modelCountries);
+        ui->cbxCountry->setModelColumn(modelCountries->fieldIndex("country"));
+    }
 
-  readSettings();
+    readSettings();
 
-  // TODO : Read the previous location from the readSettings()
-  Meeus::Location defaultLocation;
-  defaultLocation.Country = app->appSettings->get("DEFAULT_LOCATION_COUNTRY").toString();
-  defaultLocation.Name = app->appSettings->get("DEFAULT_LOCATION_NAME").toString();
-  defaultLocation.Latitude =
-      app->appSettings->get("DEFAULT_LOCATION_LATITUDE").toDouble();
-  defaultLocation.Longitude =
-      app->appSettings->get("DEFAULT_LOCATION_LONGITUDE").toDouble();
+    // TODO : Read the previous location from the readSettings()
+    Meeus::Location defaultLocation;
+    defaultLocation.Country = app->appSettings->get("DEFAULT_LOCATION_COUNTRY").toString();
+    defaultLocation.Name = app->appSettings->get("DEFAULT_LOCATION_NAME").toString();
+    defaultLocation.Latitude = app->appSettings->get("DEFAULT_LOCATION_LATITUDE").toDouble();
+    defaultLocation.Longitude = app->appSettings->get("DEFAULT_LOCATION_LONGITUDE").toDouble();
 
-  meeus = new Meeus(defaultLocation);
-  meeus->init();
+    meeus = new Meeus(defaultLocation);
+    meeus->init();
 
-  //****************************************************************************
-  // Real Time or not
-  //****************************************************************************
-  this->tTime = new QTimer(this);
-  this->tTime->setInterval(1000);
-  connect(this->tTime, &QTimer::timeout, [&]() {
-      QString time1 = QDateTime::currentDateTime().toString("dd/MM/yyyy hh:mm:ss");
-      ui->txtTime->setDateTime(QDateTime::currentDateTime());
-      if (this->ui->chkAutoRefresh->isChecked()) {
-          this->refresh();
-      }
-  });
-  this->tTime->start();
+    //****************************************************************************
+    // Real Time or not
+    //****************************************************************************
+    this->tTime = new QTimer(this);
+    this->tTime->setInterval(1000);
+    connect(this->tTime, &QTimer::timeout, [&]() {
+        QString time1 = QDateTime::currentDateTime().toString("dd/MM/yyyy hh:mm:ss");
+        ui->txtTime->setDateTime(QDateTime::currentDateTime());
+        if (this->ui->chkAutoRefresh->isChecked()) {
+            this->refresh();
+        }
+    });
+    this->tTime->start();
 
-  // Display the default Varboard
-  this->vb = new Varboard(app, this, ui);
-  QString fName = QDir(appDir).filePath(app->appConstants->getQString("DEFAULT_VARBOARD"));
-  if (QFile::exists(fName)) {
-      // Load default Varboard if it exists...
-      this->vb->LoadJSON(fName, meeus);
-      showMessage("Default varboard open");
-      QFileInfo fi(fName);
-      this->lblFileName->setText("File : " + fi.fileName());
-      this->vbdFileName = fName;
-      this->vbdModified = false;
-      this->displayFileName();
-  } else {
-      // ...Or create it otherwise
-      this->vb->addVarget("Date & Time", meeus, "VarDateTime");
-      this->vb->addVarget("Location", meeus, "VarLocation");
-      this->vb->addVarget("Latitude", meeus, "VarLatitude");
-      this->vb->addVarget("Longitude", meeus, "VarLongitude");
-      this->vb->addVarget("Julian Day", meeus, "VarJulianDay");
-      this->vb->pack();
-      this->vb->SaveJSON(fName);
-      showMessage("Creating default varboard");
-      QFileInfo fi(fName);
-      this->lblFileName->setText("File : " + fi.fileName());
-      this->vbdFileName = fName;
-      this->vbdModified = false;
-      this->displayFileName();
-  }
+    // Display the default Varboard
+    this->vb = new Varboard(app, this, ui);
+    QString fName = QDir(appDir).filePath(app->appConstants->getQString("DEFAULT_VARBOARD"));
+    if (QFile::exists(fName)) {
+        // Load default Varboard if it exists...
+        this->vb->LoadJSON(fName, meeus);
+        showMessage("Default varboard open");
+        QFileInfo fi(fName);
+        this->lblFileName->setText("File : " + fi.fileName());
+        this->vbdFileName = fName;
+        this->vbdModified = false;
+        this->displayFileName();
+    } else {
+        // ...Or create it otherwise
+        this->vb->addVarget("Date & Time", meeus, "VarDateTime");
+        this->vb->addVarget("Location", meeus, "VarLocation");
+        this->vb->addVarget("Latitude", meeus, "VarLatitude");
+        this->vb->addVarget("Longitude", meeus, "VarLongitude");
+        this->vb->addVarget("Julian Day", meeus, "VarJulianDay");
+        this->vb->pack();
+        this->vb->SaveJSON(fName);
+        showMessage("Creating default varboard");
+        QFileInfo fi(fName);
+        this->lblFileName->setText("File : " + fi.fileName());
+        this->vbdFileName = fName;
+        this->vbdModified = false;
+        this->displayFileName();
+    }
 
-  // And the Show must go on !
-  // We have to specify manually the current datetime,
-  // because the timer is not yet triggered at this time
-  this->meeus->refresh(QDateTime::currentDateTime());
-  this->vb->Refresh();
+    // And the Show must go on !
+    // We have to specify manually the current datetime,
+    // because the timer is not yet triggered at this time
+    this->meeus->refresh(QDateTime::currentDateTime());
+    this->vb->Refresh();
 }
 
 //******************************************************************************
 // ~MainWindow()
 //******************************************************************************
-MainWindow::~MainWindow() {
-  db.close();
-  delete ui;
+MainWindow::~MainWindow()
+{
+    db.close();
+    delete ui;
 }
 
 //******************************************************************************
 // initUI()
 //******************************************************************************
-void MainWindow::initUI() {
-  //**************************************************************************
-  // Theme
-  //**************************************************************************
-  setTheme();
+void MainWindow::initUI()
+{
+    //**************************************************************************
+    // Theme
+    //**************************************************************************
+    setTheme();
 
-  //**************************************************************************
-  // Status Bar
-  //**************************************************************************
-  QString css = QString("background-color: %1;").arg(app->appConstants->getQString("BAR_COLOR"));
-  ui->statusBar->setStyleSheet(css);
-  this->lblFileName = new QLabel();
-  this->lblFileName->setIndent(10);
-  ui->statusBar->addPermanentWidget(this->lblFileName);
-  this->lblNumberVargets = new QLabel("0");
-  this->lblNumberVargets->setIndent(10);
-  //**************************************************************************
-  // Menu Bar & Tool Bar
-  //**************************************************************************
-  ui->menuBar->setStyleSheet(css);
-  ui->toolBar->setStyleSheet(css);
-  ui->statusBar->addPermanentWidget(this->lblNumberVargets);
-  QWidget *spacer = new QWidget();
-  spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-  ui->toolBar->addWidget(spacer);
-  this->lblTitle = new QLabel(this->appTitle);
-  this->lblTitle->setStyleSheet("font-weight: bold; font-style: italic;");
-  ui->toolBar->addWidget(this->lblTitle);
+    //**************************************************************************
+    // Status Bar
+    //**************************************************************************
+    QString css = QString("background-color: %1;").arg(app->appConstants->getQString("BAR_COLOR"));
+    ui->statusBar->setStyleSheet(css);
+    this->lblFileName = new QLabel();
+    this->lblFileName->setIndent(10);
+    ui->statusBar->addPermanentWidget(this->lblFileName);
+    this->lblNumberVargets = new QLabel("0");
+    this->lblNumberVargets->setIndent(10);
+    //**************************************************************************
+    // Menu Bar & Tool Bar
+    //**************************************************************************
+    ui->menuBar->setStyleSheet(css);
+    ui->toolBar->setStyleSheet(css);
+    ui->statusBar->addPermanentWidget(this->lblNumberVargets);
+    QWidget *spacer = new QWidget();
+    spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    ui->toolBar->addWidget(spacer);
+    this->lblTitle = new QLabel(this->appTitle);
+    this->lblTitle->setStyleSheet("font-weight: bold; font-style: italic;");
+    ui->toolBar->addWidget(this->lblTitle);
 
-  //**************************************************************************
-  // MRU Menu
-  //**************************************************************************
-  for (int i = 0; i < this->app->appConstants->getInt("MRU_FILES"); i++) {
-      actMRUFiles.resize(i + 1);
-      actMRUFiles[i] = new QAction(this);
-      actMRUFiles[i]->setVisible(false);
-      connect(actMRUFiles[i], SIGNAL(triggered()), this, SLOT(openMRUFile()));
-      ui->menuRecent->addAction(actMRUFiles[i]);
-      // qDebug() << i;
-  }
+    //**************************************************************************
+    // MRU Menu
+    //**************************************************************************
+    for (int i = 0; i < this->app->appConstants->getInt("MRU_FILES"); i++) {
+        actMRUFiles.resize(i + 1);
+        actMRUFiles[i] = new QAction(this);
+        actMRUFiles[i]->setVisible(false);
+        connect(actMRUFiles[i], SIGNAL(triggered()), this, SLOT(openMRUFile()));
+        ui->menuRecent->addAction(actMRUFiles[i]);
+        // qDebug() << i;
+    }
 
-  //**************************************************************************
-  // Settings Form
-  //**************************************************************************
-  app->appSettings->form(this);
+    //**************************************************************************
+    // Settings Form
+    //**************************************************************************
+    app->appSettings->form(this);
 
-  //**************************************************************************
-  // About tab
-  //**************************************************************************
-  QFile file(":/help.html");
-  file.open(QFile::ReadOnly | QFile::Text);
-  QTextStream stream(&file);
-  QString html = app->appConstants->aboutText;
-  html += stream.readAll();
-  ui->txtAbout->setHtml(html);
-  showMessage(app->appConstants->consoleText);
+    //**************************************************************************
+    // About tab
+    //**************************************************************************
+    QFile file(":/help.html");
+    file.open(QFile::ReadOnly | QFile::Text);
+    QTextStream stream(&file);
+    QString html = app->appConstants->aboutText;
+    html += stream.readAll();
+    ui->txtAbout->setHtml(html);
+    showMessage(app->appConstants->consoleText);
 
-  //**************************************************************************
-  // Populate Time Zone List
-  //**************************************************************************
-  QList<QByteArray> ids = QTimeZone::availableTimeZoneIds();
-  foreach (QByteArray id, ids) {
-      ui->cbxTimeZone->addItem(id);
-  }
+    //**************************************************************************
+    // Populate Time Zone List
+    //**************************************************************************
+    QList<QByteArray> ids = QTimeZone::availableTimeZoneIds();
+    foreach (QByteArray id, ids) {
+        ui->cbxTimeZone->addItem(id);
+    }
 
-  //**************************************************************************
-  // Populate Vargets List
-  //**************************************************************************
-  for (auto it = Varboard::aKeywords.keyValueBegin(); it != Varboard::aKeywords.keyValueEnd();
-       ++it) {
-      QTreeWidgetItem *topItem = new QTreeWidgetItem(ui->trwVargets);
-      ui->trwVargets->addTopLevelItem(topItem);
-      topItem->setText(0, it->first);
-      topItem->setExpanded(true);
-      for (const auto &i : it->second) {
-          QTreeWidgetItem *item = new QTreeWidgetItem(topItem);
-          item->setText(0, i);
-      }
-  }
-  ui->trwVargets->setItemsExpandable(false);
+    //**************************************************************************
+    // Populate Vargets List
+    //**************************************************************************
+    for (auto it = Varboard::aKeywords.keyValueBegin(); it != Varboard::aKeywords.keyValueEnd();
+         ++it) {
+        QTreeWidgetItem *topItem = new QTreeWidgetItem(ui->trwVargets);
+        ui->trwVargets->addTopLevelItem(topItem);
+        topItem->setText(0, it->first);
+        topItem->setExpanded(true);
+        for (const auto &i : it->second) {
+            QTreeWidgetItem *item = new QTreeWidgetItem(topItem);
+            item->setText(0, i);
+        }
+    }
+    ui->trwVargets->setItemsExpandable(false);
 
-  //**************************************************************************
-  // Show Doc Viewer or not
-  //**************************************************************************
-  if (app->appSettings->get("APPLICATION_SHOW_DOC").toBool() == false) {
-      ui->actionHelp->setEnabled(false);
-  }
+    //**************************************************************************
+    // Show Doc Viewer or not
+    //**************************************************************************
+    if (app->appSettings->get("APPLICATION_SHOW_DOC").toBool() == false) {
+        ui->actionHelp->setEnabled(false);
+    }
 
-  //**************************************************************************
-  // Show Time !!!
-  //**************************************************************************
-  ui->txtTime->setReadOnly(true);
-  // this->tTime->start();
-  QPixmap pixmap(":/16x16/Lock Open.png");
-  QIcon btnIcon(pixmap);
-  ui->btnTimeLocked->setIcon(btnIcon);
+    //**************************************************************************
+    // Show Time !!!
+    //**************************************************************************
+    ui->txtTime->setReadOnly(true);
+    // this->tTime->start();
+    QPixmap pixmap(":/16x16/Lock Open.png");
+    QIcon btnIcon(pixmap);
+    ui->btnTimeLocked->setIcon(btnIcon);
 }
 
 //******************************************************************************
 // setTheme()
 //******************************************************************************
-void MainWindow::setTheme() {
-  QString tName = app->appSettings->get("APPLICATION_THEME").toString();
-  if (tName != "DARK" && tName != "LIGHT" && tName != "ALTERNATE") {
-    tName = "ALTERNATE";
-  }
-  if (tName == "ALTERNATE") {
-    this->a->setStyle("Fusion");
-    QPalette palette = QPalette();
-    palette.setColor(QPalette::Window,
-                     QColor(app->appSettings->get("THEME_WINDOW").toString()));
-    palette.setColor(
-        QPalette::WindowText,
-        QColor(app->appSettings->get("THEME_WINDOW_TEXT").toString()));
-    palette.setColor(QPalette::Base,
-                     QColor(app->appSettings->get("THEME_BASE").toString()));
-    palette.setColor(
-        QPalette::AlternateBase,
-        QColor(app->appSettings->get("THEME_ALTERNATE_BASE").toString()));
-    palette.setColor(
-        QPalette::ToolTipBase,
-        QColor(app->appSettings->get("THEME_TOOLTIP_BASE").toString()));
-    palette.setColor(
-        QPalette::ToolTipText,
-        QColor(app->appSettings->get("THEME_TOOLTIP_TEXT").toString()));
-    palette.setColor(QPalette::Text,
-                     QColor(app->appSettings->get("THEME_TEXT").toString()));
-    palette.setColor(QPalette::Button,
-                     QColor(app->appSettings->get("THEME_BUTTON").toString()));
-    palette.setColor(
-        QPalette::ButtonText,
-        QColor(app->appSettings->get("THEME_BUTTON_TEXT").toString()));
-    palette.setColor(
-        QPalette::BrightText,
-        QColor(app->appSettings->get("THEME_BRIGHT_TEXT").toString()));
-    palette.setColor(QPalette::Link,
-                     QColor(app->appSettings->get("THEME_LINK").toString()));
-    palette.setColor(
-        QPalette::Highlight,
-        QColor(app->appSettings->get("THEME_HIGHLIGHT").toString()));
-    palette.setColor(
-        QPalette::HighlightedText,
-        QColor(app->appSettings->get("THEME_HIGHLIGHTED_TEXT").toString()));
-    a->setPalette(palette);
-  } else {
-    this->a->setStyle("Fusion");
-    QPalette palette = QPalette();
-    palette.setColor(QPalette::Window,
-                     QColor(app->appConstants->theme[tName][0]));
-    palette.setColor(QPalette::WindowText,
-                     QColor(app->appConstants->theme[tName][1]));
-    palette.setColor(QPalette::Base,
-                     QColor(app->appConstants->theme[tName][2]));
-    palette.setColor(QPalette::AlternateBase,
-                     QColor(app->appConstants->theme[tName][3]));
-    palette.setColor(QPalette::ToolTipBase,
-                     QColor(app->appConstants->theme[tName][4]));
-    palette.setColor(QPalette::ToolTipText,
-                     QColor(app->appConstants->theme[tName][5]));
-    palette.setColor(QPalette::Text,
-                     QColor(app->appConstants->theme[tName][6]));
-    palette.setColor(QPalette::Button,
-                     QColor(app->appConstants->theme[tName][7]));
-    palette.setColor(QPalette::ButtonText,
-                     QColor(app->appConstants->theme[tName][8]));
-    palette.setColor(QPalette::BrightText,
-                     QColor(app->appConstants->theme[tName][9]));
-    palette.setColor(QPalette::Link,
-                     QColor(app->appConstants->theme[tName][10]));
-    palette.setColor(QPalette::Highlight,
-                     QColor(app->appConstants->theme[tName][11]));
-    palette.setColor(QPalette::HighlightedText,
-                     QColor(app->appConstants->theme[tName][12]));
-    a->setPalette(palette);
-  }
+void MainWindow::setTheme()
+{
+    QString tName = app->appSettings->get("APPLICATION_THEME").toString();
+    if (tName != "DARK" && tName != "LIGHT" && tName != "ALTERNATE") {
+        tName = "ALTERNATE";
+    }
+    if (tName == "ALTERNATE") {
+        this->a->setStyle("Fusion");
+        QPalette palette = QPalette();
+        palette.setColor(QPalette::Window, QColor(app->appSettings->get("THEME_WINDOW").toString()));
+        palette.setColor(QPalette::WindowText,
+                         QColor(app->appSettings->get("THEME_WINDOW_TEXT").toString()));
+        palette.setColor(QPalette::Base, QColor(app->appSettings->get("THEME_BASE").toString()));
+        palette.setColor(QPalette::AlternateBase,
+                         QColor(app->appSettings->get("THEME_ALTERNATE_BASE").toString()));
+        palette.setColor(QPalette::ToolTipBase,
+                         QColor(app->appSettings->get("THEME_TOOLTIP_BASE").toString()));
+        palette.setColor(QPalette::ToolTipText,
+                         QColor(app->appSettings->get("THEME_TOOLTIP_TEXT").toString()));
+        palette.setColor(QPalette::Text, QColor(app->appSettings->get("THEME_TEXT").toString()));
+        palette.setColor(QPalette::Button, QColor(app->appSettings->get("THEME_BUTTON").toString()));
+        palette.setColor(QPalette::ButtonText,
+                         QColor(app->appSettings->get("THEME_BUTTON_TEXT").toString()));
+        palette.setColor(QPalette::BrightText,
+                         QColor(app->appSettings->get("THEME_BRIGHT_TEXT").toString()));
+        palette.setColor(QPalette::Link, QColor(app->appSettings->get("THEME_LINK").toString()));
+        palette.setColor(QPalette::Highlight,
+                         QColor(app->appSettings->get("THEME_HIGHLIGHT").toString()));
+        palette.setColor(QPalette::HighlightedText,
+                         QColor(app->appSettings->get("THEME_HIGHLIGHTED_TEXT").toString()));
+        a->setPalette(palette);
+    } else {
+        this->a->setStyle("Fusion");
+        QPalette palette = QPalette();
+        palette.setColor(QPalette::Window, QColor(app->appConstants->theme[tName][0]));
+        palette.setColor(QPalette::WindowText, QColor(app->appConstants->theme[tName][1]));
+        palette.setColor(QPalette::Base, QColor(app->appConstants->theme[tName][2]));
+        palette.setColor(QPalette::AlternateBase, QColor(app->appConstants->theme[tName][3]));
+        palette.setColor(QPalette::ToolTipBase, QColor(app->appConstants->theme[tName][4]));
+        palette.setColor(QPalette::ToolTipText, QColor(app->appConstants->theme[tName][5]));
+        palette.setColor(QPalette::Text, QColor(app->appConstants->theme[tName][6]));
+        palette.setColor(QPalette::Button, QColor(app->appConstants->theme[tName][7]));
+        palette.setColor(QPalette::ButtonText, QColor(app->appConstants->theme[tName][8]));
+        palette.setColor(QPalette::BrightText, QColor(app->appConstants->theme[tName][9]));
+        palette.setColor(QPalette::Link, QColor(app->appConstants->theme[tName][10]));
+        palette.setColor(QPalette::Highlight, QColor(app->appConstants->theme[tName][11]));
+        palette.setColor(QPalette::HighlightedText, QColor(app->appConstants->theme[tName][12]));
+        a->setPalette(palette);
+    }
 }
 
 //******************************************************************************
 // showMessage()
 //******************************************************************************
-void MainWindow::showMessage(const QString& message, int timeout) {
-  if (timeout == -1) {
-    timeout = app->appSettings->get("APPLICATION_STATUSBAR_TIMEOUT").toInt();
-  }
+void MainWindow::showMessage(const QString &message, int timeout)
+{
+    if (timeout == -1) {
+        timeout = app->appSettings->get("APPLICATION_STATUSBAR_TIMEOUT").toInt();
+    }
 
-  QStringList msgList = message.split("\n");
-  for (const auto &i : msgList) {
-      if (i != "") {
-          ui->statusBar->showMessage(i, timeout);
-          QDateTime date = QDateTime::currentDateTime();
-          QString formattedTime = date.toString("yyyyMMdd-hhmmss");
-          if (i == this->previousMessage) {
-              this->nPreviousMessage++;
-              ui->txtConsole->setFocus();
-              QTextCursor storeCursorPos = ui->txtConsole->textCursor();
-              ui->txtConsole->moveCursor(QTextCursor::End, QTextCursor::MoveAnchor);
-              ui->txtConsole->moveCursor(QTextCursor::StartOfLine, QTextCursor::MoveAnchor);
-              ui->txtConsole->moveCursor(QTextCursor::End, QTextCursor::KeepAnchor);
-              ui->txtConsole->textCursor().removeSelectedText();
-              ui->txtConsole->textCursor().deletePreviousChar();
-              ui->txtConsole->setTextCursor(storeCursorPos);
-              ui->txtConsole->append(formattedTime + " : " + i
-                                     + QString(" (x%1)").arg(this->nPreviousMessage));
-          } else {
-              ui->txtConsole->append(formattedTime + " : " + i);
-              this->previousMessage = i;
-              this->nPreviousMessage = 1;
-          }
-      }
-  }
+    QStringList msgList = message.split("\n");
+    for (const auto &i : msgList) {
+        if (i != "") {
+            ui->statusBar->showMessage(i, timeout);
+            QDateTime date = QDateTime::currentDateTime();
+            QString formattedTime = date.toString("yyyyMMdd-hhmmss");
+            if (i == this->previousMessage) {
+                this->nPreviousMessage++;
+                ui->txtConsole->setFocus();
+                QTextCursor storeCursorPos = ui->txtConsole->textCursor();
+                ui->txtConsole->moveCursor(QTextCursor::End, QTextCursor::MoveAnchor);
+                ui->txtConsole->moveCursor(QTextCursor::StartOfLine, QTextCursor::MoveAnchor);
+                ui->txtConsole->moveCursor(QTextCursor::End, QTextCursor::KeepAnchor);
+                ui->txtConsole->textCursor().removeSelectedText();
+                ui->txtConsole->textCursor().deletePreviousChar();
+                ui->txtConsole->setTextCursor(storeCursorPos);
+                ui->txtConsole->append(formattedTime + " : " + i
+                                       + QString(" (x%1)").arg(this->nPreviousMessage));
+            } else {
+                ui->txtConsole->append(formattedTime + " : " + i);
+                this->previousMessage = i;
+                this->nPreviousMessage = 1;
+            }
+        }
+    }
 }
 
 //******************************************************************************
 // slotDoExit()
 //******************************************************************************
-void MainWindow::slotDoExit() {
-  this->close();
+void MainWindow::slotDoExit()
+{
+    this->close();
 }
 
 //******************************************************************************
 // closeEvent()
 //******************************************************************************
-void MainWindow::closeEvent(QCloseEvent* event) {
+void MainWindow::closeEvent(QCloseEvent *event)
+{
     if (this->vbdModified) {
         QMessageBox::StandardButton rc;
         rc = QMessageBox::question(
@@ -412,7 +392,8 @@ void MainWindow::closeEvent(QCloseEvent* event) {
 //******************************************************************************
 // saveSettings()
 //******************************************************************************
-void MainWindow::saveSettings() {
+void MainWindow::saveSettings()
+{
     showMessage("Saving settings");
     //**************************************************************************
     // Application state saving
@@ -447,13 +428,14 @@ void MainWindow::saveSettings() {
     // Settings saving
     //**************************************************************************
     Settings mySettings;
-    mySettings.write();    
+    mySettings.write();
 }
 
 //******************************************************************************
 // readSettings()
 //******************************************************************************
-void MainWindow::readSettings() {
+void MainWindow::readSettings()
+{
     showMessage("Reading settings");
     QSettings registry(app->appConstants->getQString("ORGANIZATION_NAME"),
                        app->appConstants->getQString("APPLICATION_NAME"));
@@ -539,14 +521,16 @@ void MainWindow::updateMRUMenu()
 //******************************************************************************
 // out()
 //******************************************************************************
-void MainWindow::out(QString txt) {
+void MainWindow::out(QString txt)
+{
     ui->txtConsole->append(txt);
 }
 
 //******************************************************************************
 // refresh()
 //******************************************************************************
-void MainWindow::refresh() {
+void MainWindow::refresh()
+{
     showMessage("Computing");
     this->meeus->refresh(ui->txtTime->dateTime());
     this->vb->Refresh();
@@ -601,14 +585,16 @@ void MainWindow::notify(QString message, QString title)
 //******************************************************************************
 // on_actionRefresh_triggered()
 //******************************************************************************
-void MainWindow::on_actionRefresh_triggered() {
-  this->refresh();
+void MainWindow::on_actionRefresh_triggered()
+{
+    this->refresh();
 }
 
 //******************************************************************************
 // on_btnClearConsole_clicked()
 //******************************************************************************
-void MainWindow::on_btnClearConsole_clicked() {
+void MainWindow::on_btnClearConsole_clicked()
+{
     ui->txtConsole->setText("");
 }
 
@@ -663,7 +649,8 @@ void MainWindow::on_cbxCountry_currentTextChanged(const QString &arg1)
 //******************************************************************************
 // on_txtLocation_editingFinished()
 //******************************************************************************
-void MainWindow::on_txtLocation_editingFinished() {
+void MainWindow::on_txtLocation_editingFinished()
+{
     // FIXME : Manage the case the cities database is not accessible
     if (db.isOpen()) {
         QSqlQuery query;
@@ -1287,6 +1274,7 @@ Varget::Varget(
 //******************************************************************************
 void Varget::enterEvent(QEvent *event)
 {
+    this->highlighted = true;
     if (this->locked) {
         this->lblOrder->setStyleSheet(this->cssOrderLockedHighlighted);
     } else {
@@ -1322,6 +1310,7 @@ void Varget::leaveEvent(QEvent *event)
     } else {
         this->txtValue->setStyleSheet(this->cssValue);
     }
+    this->highlighted = false;
 }
 
 //******************************************************************************
@@ -1373,8 +1362,8 @@ void Varget::ShowHelp()
 {
     QString mdHelp;
     if (this->Value.value("Text").toString() != "") {
-        mdHelp = "# " + this->Value.value("Name").toString()
-                 + " :: " + this->Value.value("Text").toString() + "\n";
+        mdHelp = "# " + this->Value.value("Name").toString() + " ⯈ "
+                 + this->Value.value("Text").toString() + "\n";
         mdHelp += "---\n";
         mdHelp += "- Raw Value : **" + this->Value.value("Value").toString() + "**\n";
         mdHelp += "- Formatted Value : **"
@@ -1524,38 +1513,57 @@ void Varboard::Refresh()
     // qDebug() << this->vargets.size();
     for (int i = 0; i < this->vargets.size(); ++i) {
         this->ui->boardLayout->addWidget(vargets[i]);
-        if (i % 2 == 0) {
-            this->vargets[i]->css = "background-color : "
-                                    + a->appSettings->get("VARBOARD_COLOR_LINE_1").toString()
-                                    + "; color : black;";
-            if (this->vargets[i]->locked) {
-                this->vargets[i]->cssOrder = "background-color : "
-                                             + a->appSettings->get("VARBOARD_COLOR_LINE_1").toString()
-                                             + "; color : black; font-weight: bold;";
+        if (!this->vargets[i]->highlighted) {
+            if (i % 2 == 0) {
+                this->vargets[i]->css = "background-color : "
+                                        + a->appSettings->get("VARBOARD_COLOR_LINE_1").toString()
+                                        + "; color : black;";
+                if (this->vargets[i]->locked) {
+                    this->vargets[i]->cssOrder = "background-color : "
+                                                 + a->appSettings->get("VARBOARD_COLOR_LINE_1")
+                                                       .toString()
+                                                 + "; color : black; font-weight: bold;";
+                } else {
+                    this->vargets[i]->cssOrder = "background-color : "
+                                                 + a->appSettings->get("VARBOARD_COLOR_LINE_1")
+                                                       .toString()
+                                                 + "; color : black; font-weight: normal;";
+                }
             } else {
-                this->vargets[i]->cssOrder = "background-color : "
-                                             + a->appSettings->get("VARBOARD_COLOR_LINE_1").toString()
-                                             + "; color : black; font-weight: normal;";
+                this->vargets[i]->css = "background-color : "
+                                        + a->appSettings->get("VARBOARD_COLOR_LINE_2").toString()
+                                        + "; color : black;";
+                if (this->vargets[i]->locked) {
+                    this->vargets[i]->cssOrder = "background-color : "
+                                                 + a->appSettings->get("VARBOARD_COLOR_LINE_2")
+                                                       .toString()
+                                                 + "; color : black; font-weight: bold;";
+                } else {
+                    this->vargets[i]->cssOrder = "background-color : "
+                                                 + a->appSettings->get("VARBOARD_COLOR_LINE_2")
+                                                       .toString()
+                                                 + "; color : black; font-weight: normal;";
+                }
             }
-        } else {
-            this->vargets[i]->css = "background-color : "
-                                    + a->appSettings->get("VARBOARD_COLOR_LINE_2").toString()
-                                    + "; color : black;";
-            if (this->vargets[i]->locked) {
-                this->vargets[i]->cssOrder = "background-color : "
-                                             + a->appSettings->get("VARBOARD_COLOR_LINE_2").toString()
-                                             + "; color : black; font-weight: bold;";
-            } else {
-                this->vargets[i]->cssOrder = "background-color : "
-                                             + a->appSettings->get("VARBOARD_COLOR_LINE_2").toString()
-                                             + "; color : black; font-weight: normal;";
-            }
+            this->vargets[i]->lblOrder->setStyleSheet(this->vargets[i]->cssOrder);
         }
         this->vargets[i]->btnUp->setEnabled(true);
         this->vargets[i]->btnDown->setEnabled(true);
         this->vargets[i]->setStyleSheet(this->vargets[i]->css);
-        this->vargets[i]->lblOrder->setStyleSheet(this->vargets[i]->cssOrder);
         this->vargets[i]->Refresh();
+        // Refreshing Help
+        bool gLocked(false);
+        bool pLocked = this->vargets[i]->locked;
+        this->vargets[i]->locked = false;
+        for (int i = 0; i < this->vargets.size(); ++i) {
+            gLocked = gLocked || this->vargets[i]->locked;
+        }
+        this->vargets[i]->locked = pLocked;
+        if (!gLocked) {
+            if (this->vargets[i]->highlighted || this->vargets[i]->locked) {
+                this->vargets[i]->ShowHelp();
+            }
+        }
     }
     this->pack();
     // Disable the first UP button and the last DOWN button
