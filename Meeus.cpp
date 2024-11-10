@@ -447,7 +447,7 @@ mVarget Meeus::VarSunRadiusVector()
     mVarget rc{{"Name", "VarSunRadiusVector"},
                {"Text", "Sun's Radius Vector"},
                {"Value", srv},
-               {"FormattedValue", printDMS(srv)},
+               {"FormattedValue", QString("%1").arg(srv, 7)},
                {"Page", 172},
                {"HelpFile", ":/dox/en/sun-radius-vector.md"}};
     return rc;
@@ -467,6 +467,161 @@ mVarget Meeus::VarSunNutationAberrationCorrection()
                {"Page", 172},
                {"HelpFile", ":/dox/en/sun-nutation-aberration-correction.md"}};
     return rc;
+}
+
+//******************************************************************************
+// Meeus::VarSunRightAscension()
+//******************************************************************************
+mVarget Meeus::VarSunRightAscension()
+{
+    double eto = Earth::TrueObliquity(Earth::MeanObliquity(this->JD),
+                                      Earth::NutationObliquity(this->JD,
+                                                               Sun::MeanLongitude(this->JD),
+                                                               Moon::MeanLongitude(this->JD),
+                                                               Sun::MeanAnomaly(this->JD),
+                                                               Moon::MeanAnomaly(this->JD),
+                                                               Moon::MeanLongitudeFromAscendantNode(
+                                                                   this->JD)));
+    double stl = Sun::TrueLongitude(Sun::MeanLongitude(this->JD),
+                                    Sun::Center(this->JD, Sun::MeanAnomaly(this->JD)));
+    double sra = Sun::RightAscension(eto, stl);
+    mVarget rc{{"Name", "VarSunRightAscension"},
+               {"Text", "Sun's Right Ascension"},
+               {"Value", sra},
+               {"FormattedValue", printHMS(sra)},
+               {"Page", 165},
+               {"HelpFile", ":/dox/en/sun-right-ascension.md"}};
+    return rc;
+}
+
+//******************************************************************************
+// Meeus::VarSunApparentRightAscension()
+//******************************************************************************
+mVarget Meeus::VarSunApparentRightAscension()
+{
+    double eto = Earth::TrueObliquity(Earth::MeanObliquity(this->JD),
+                                      Earth::NutationObliquity(this->JD,
+                                                               Sun::MeanLongitude(this->JD),
+                                                               Moon::MeanLongitude(this->JD),
+                                                               Sun::MeanAnomaly(this->JD),
+                                                               Moon::MeanAnomaly(this->JD),
+                                                               Moon::MeanLongitudeFromAscendantNode(
+                                                                   this->JD)));
+    double stl = Sun::TrueLongitude(Sun::MeanLongitude(this->JD),
+                                    Sun::Center(this->JD, Sun::MeanAnomaly(this->JD)));
+    double snac = Sun::NutationAberrationCorrection(this->JD);
+    double sal = Sun::ApparentLongitude(stl, snac);
+    double sara = Sun::ApparentRightAscension(eto, sal, snac);
+    mVarget rc{{"Name", "VarSunApparentRightAscension"},
+               {"Text", "Sun's Apparent Right Ascension"},
+               {"Value", sara},
+               {"FormattedValue", printHMS(sara)},
+               {"Page", 165},
+               {"HelpFile", ":/dox/en/sun-apparent-right-ascension.md"}};
+    return rc;
+}
+
+//******************************************************************************
+// Meeus::VarSunDeclination()
+//******************************************************************************
+mVarget Meeus::VarSunDeclination()
+{
+    double eto = Earth::TrueObliquity(Earth::MeanObliquity(this->JD),
+                                      Earth::NutationObliquity(this->JD,
+                                                               Sun::MeanLongitude(this->JD),
+                                                               Moon::MeanLongitude(this->JD),
+                                                               Sun::MeanAnomaly(this->JD),
+                                                               Moon::MeanAnomaly(this->JD),
+                                                               Moon::MeanLongitudeFromAscendantNode(
+                                                                   this->JD)));
+    double stl = Sun::TrueLongitude(Sun::MeanLongitude(this->JD),
+                                    Sun::Center(this->JD, Sun::MeanAnomaly(this->JD)));
+    double sd = Sun::Declination(eto, stl);
+    mVarget rc{{"Name", "VarSunDeclination"},
+               {"Text", "Sun's Declination"},
+               {"Value", sd},
+               {"FormattedValue", printDMS(sd)},
+               {"Page", 165},
+               {"HelpFile", ":/dox/en/sun-declination.md"}};
+    return rc;
+}
+
+//******************************************************************************
+// Meeus::VarSunApparentDeclination()
+//******************************************************************************
+mVarget Meeus::VarSunApparentDeclination()
+{
+    double eto = Earth::TrueObliquity(Earth::MeanObliquity(this->JD),
+                                      Earth::NutationObliquity(this->JD,
+                                                               Sun::MeanLongitude(this->JD),
+                                                               Moon::MeanLongitude(this->JD),
+                                                               Sun::MeanAnomaly(this->JD),
+                                                               Moon::MeanAnomaly(this->JD),
+                                                               Moon::MeanLongitudeFromAscendantNode(
+                                                                   this->JD)));
+    double stl = Sun::TrueLongitude(Sun::MeanLongitude(this->JD),
+                                    Sun::Center(this->JD, Sun::MeanAnomaly(this->JD)));
+    double snac = Sun::NutationAberrationCorrection(this->JD);
+    double sal = Sun::ApparentLongitude(stl, snac);
+    double sad = Sun::ApparentDeclination(eto, sal, snac);
+    mVarget rc{{"Name", "VarSunApparentDeclination"},
+               {"Text", "Sun's Apparent Declination"},
+               {"Value", sad},
+               {"FormattedValue", printDMS(sad)},
+               {"Page", 165},
+               {"HelpFile", ":/dox/en/sun-apparent-right-ascension.md"}};
+    return rc;
+}
+
+//******************************************************************************
+// Meeus::GetTransitRiseSet()
+// Warning : All angles must be in radians
+//******************************************************************************
+TransitRiseSet Meeus::GetTransitRiseSet(double h0,
+                                        double JD,
+                                        double Latitude,
+                                        double Longitude,
+                                        double RightAscension,
+                                        double Declination)
+{
+    /*
+    const h0=-0.8333            // For Sun
+    const h0=-0.5667            // For stars and planets
+    const h0=0.125              // For Moon
+    const h0 = -6.0             // For Civil Twilight
+    const h0 = -12.0            // For Nautical Twilight
+    const h0 = -18.0            // For Astronomical Twilight
+    const h0 = +5.0 to -5.0     // For Golden Hour
+    const h0 = -4.0 to -8.0     // For Blue Hour
+    */
+
+    double cosH = (sin(h0 * M_PI / 180.0)
+                   - sin(Latitude) * sin(Declination) / (cos(Latitude) * cos(Declination)));
+    double H0 = acos(cosH) * 180.0 / M_PI;
+    double gmst = GreenwichMeanSideralTime(floor(JD) + 0.5);
+
+    double transit = (RightAscension * toDeg + Longitude * toDeg - gmst) / 360.0;
+    double rise = transit - (H0 / 360.0);
+    double set = transit + (H0 / 360.0);
+
+    TransitRiseSet trs = {constrain(transit) * 24.0, constrain(rise) * 24.0, constrain(set) * 24.0};
+
+    return trs;
+}
+
+//******************************************************************************
+// Meeus::GreenwichMeanSideralTime()
+//******************************************************************************
+double Meeus::GreenwichMeanSideralTime(double JD)
+{
+    double T = (JD - 2451545.0) / 36525.0;
+    double gmst = 280.46061837 + 360.98564736629 * (JD - 2451545.0) + 0.000387933 * (T * T)
+                  - (T * T * T) / 38710000.0;
+    gmst = fmod(gmst, 360.0);
+    if (gmst < 0.0) {
+        gmst += 360.0;
+    }
+    return gmst;
 }
 
 //******************************************************************************
@@ -554,6 +709,66 @@ double Sun::ApparentLongitude(double TrueLongitude, double NutationAberrationCor
     // Sun's Apparent Longitude
     return reduceAngle(TrueLongitude - 0.00569
                        - 0.00478 * sin(deg2rad(NutationAberrationCorrection)));
+}
+
+//******************************************************************************
+// Sun::RightAscension()
+//******************************************************************************
+double Sun::RightAscension(double TrueObliquity, double TrueLongitude)
+{
+    TrueObliquity = toRad * TrueObliquity;
+    TrueLongitude = toRad * TrueLongitude;
+    double ra = atan2(cos(TrueObliquity) * sin(TrueLongitude), cos(TrueLongitude));
+    if (ra < 0.0) {
+        ra += M_PI * 2.0;
+    }
+
+    return ra * toDeg / 15.0;
+}
+
+//******************************************************************************
+// Sun::Declination()
+//******************************************************************************
+double Sun::Declination(double TrueObliquity, double TrueLongitude)
+{
+    TrueObliquity = toRad * TrueObliquity;
+    TrueLongitude = toRad * TrueLongitude;
+    double dec = asin(sin(TrueObliquity) * sin(TrueLongitude));
+
+    return dec * toDeg;
+}
+
+//******************************************************************************
+// Sun::ApparentRightAscension()
+//******************************************************************************
+double Sun::ApparentRightAscension(double TrueObliquity,
+                                   double ApparentLongitude,
+                                   double NutationAberrationCorrection)
+{
+    NutationAberrationCorrection = toRad * NutationAberrationCorrection;
+    TrueObliquity = toRad * (TrueObliquity + 0.00256 * cos(toRad * NutationAberrationCorrection));
+    ApparentLongitude = toRad * ApparentLongitude;
+    double ra = atan2(cos(TrueObliquity) * sin(ApparentLongitude), cos(ApparentLongitude));
+    if (ra < 0.0) {
+        ra += M_PI * 2.0;
+    }
+
+    return ra * toDeg / 15.0;
+}
+
+//******************************************************************************
+// Sun::ApparentDeclination()
+//******************************************************************************
+double Sun::ApparentDeclination(double TrueObliquity,
+                                double ApparentLongitude,
+                                double NutationAberrationCorrection)
+{
+    NutationAberrationCorrection = toRad * NutationAberrationCorrection;
+    TrueObliquity = toRad * (TrueObliquity + 0.00256 * cos(toRad * NutationAberrationCorrection));
+    ApparentLongitude = toRad * ApparentLongitude;
+    double dec = asin(sin(TrueObliquity) * sin(ApparentLongitude));
+
+    return dec * toDeg;
 }
 
 //******************************************************************************
@@ -859,7 +1074,7 @@ mVarget Meeus::VarEarthTrueObliquity()
                                                                Moon::MeanAnomaly(this->JD),
                                                                Moon::MeanLongitudeFromAscendantNode(
                                                                    this->JD)));
-    mVarget rc{{"Name", "TrueObliquity"},
+    mVarget rc{{"Name", "VarEarthTrueObliquity"},
                {"Text", "Earth's True Obliquity"},
                {"Value", var},
                {"FormattedValue", printDMS(var)},
@@ -867,6 +1082,15 @@ mVarget Meeus::VarEarthTrueObliquity()
                {"HelpFile", ":/dox/en/earth-true-obliquity.md"}};
     return rc;
 }
+
+//******************************************************************************
+// PlanetaryOrbits::MeanLongitude()
+//******************************************************************************
+double PlanetaryOrbits::MeanLongitude(double T, double a0, double a1, double a2, double a3)
+{
+    return Polynomial(T, vCoefs{a0, a1, a2, a3});
+}
+// PlanetaryOrbits *Mercury = new PlanetaryOrbits();
 
 //******************************************************************************
 //
@@ -913,6 +1137,21 @@ std::tuple<int, int, int, int> DD2DHMS(double dd)
     double ds = (dm - fm) * 60; // Double Second
     double fs = floor(ds);      // Full Second
     return std::make_tuple((int) (fd * sign), (int) fh, (int) fm, (int) fs);
+}
+
+//******************************************************************************
+// HD2HMS() => tuple{ h, m, s }
+// Warning : This is a conversion from DECIMAL HOURS to HOURS, MINUTES, SECONDS
+//******************************************************************************
+std::tuple<int, int, int, int> HD2HMS(double hd)
+{
+    double fh = floor(hd);        // Full Hour
+    double dm = (hd - fh) * 60;   // Double Minute
+    double fm = floor(dm);        // Full Minute
+    double ds = (dm - fm) * 60;   // Double Second
+    double fs = floor(ds);        // Full Second
+    double ss = (ds - fs) * 1000; // Decimal Second
+    return std::make_tuple((int) fh, (int) fm, (int) fs, (int) ss);
 }
 
 //******************************************************************************
@@ -992,6 +1231,21 @@ QString printDMS(double a)
 }
 
 //******************************************************************************
+// printHMS()
+//******************************************************************************
+QString printHMS(double a)
+{
+    auto hms = HD2HMS(a);
+    QString s;
+    s.sprintf("%2dʰ%02dᵐ%02dˢ.%03d",
+              std::get<0>(hms),
+              std::get<1>(hms),
+              std::get<2>(hms),
+              std::get<3>(hms));
+    return s;
+}
+
+//******************************************************************************
 // Polynomial()
 //******************************************************************************
 double Polynomial(double ind, vCoefs coefs)
@@ -1003,6 +1257,20 @@ double Polynomial(double ind, vCoefs coefs)
         value = value + (coefs[n] * pow(ind, n));
     }
     return value;
+}
+
+//******************************************************************************
+// constrain()
+//******************************************************************************
+double constrain(double v)
+{
+    if (v < 0) {
+        return v + 1;
+    }
+    if (v > 1) {
+        return v - 1;
+    }
+    return v;
 }
 /*
 --------------------------------------------------------------------------------

@@ -25,6 +25,24 @@
 //******************************************************************************
 typedef QVector<double> vCoefs;
 typedef QMap<QString, QVariant> mVarget;
+typedef struct
+{
+    double Transit;
+    double Rise;
+    double Set;
+} TransitRiseSet;
+
+//******************************************************************************
+// Constants
+//******************************************************************************
+const double toRad = M_PI / 180.0;
+const double toDeg = 180.0 / M_PI;
+const double H0_SUN = -0.8333;
+const double H0_STARS_PLANETS = -0.5667;
+const double H0_MOON = 0.125;
+const double H0_CIVIL_TWILIGHT = -6.0;
+const double H0_NAUICAL_TWILIGHT = -12.0;
+const double H0_ASTRONOMICALTWILIGHT = -18.0;
 
 //******************************************************************************
 // Class Meeus
@@ -68,6 +86,13 @@ public:
     int DayOfWeek(double JD);
     int DaysBetweenDates(QDateTime dt1, QDateTime dt2);
     QDateTime AddDays2Date(QDateTime dt, int d);
+    double GreenwichMeanSideralTime(double JD);
+    TransitRiseSet GetTransitRiseSet(double h0,
+                                     double JD,
+                                     double Latitude,
+                                     double Longitude,
+                                     double RightAscension,
+                                     double Declination);
     // Misc General Purpose
     mVarget VarJulianDay();
     mVarget VarT();
@@ -93,6 +118,10 @@ public:
     mVarget VarSunApparentLongitude();
     mVarget VarSunRadiusVector();
     mVarget VarSunNutationAberrationCorrection();
+    mVarget VarSunRightAscension();
+    mVarget VarSunApparentRightAscension();
+    mVarget VarSunDeclination();
+    mVarget VarSunApparentDeclination();
     // MOON
     mVarget VarMoonMeanLongitude();
     mVarget VarMoonMeanAnomaly();
@@ -120,6 +149,14 @@ public:
     static double ApparentLongitude(double TrueLongitude, double NutationAberrationCorrection); // λ
     static double RadiusVector(double MeanEccentricity, double TrueAnomaly);                    // R
     static double NutationAberrationCorrection(double JD); // Ω
+    static double RightAscension(double TrueObliquity, double TrueLongitude); // α
+    static double Declination(double TrueObliquity, double TrueLongitude);    // δ
+    static double ApparentRightAscension(double TrueObliquity,
+                                         double ApparentLongitude,
+                                         double NutationAberrationCorrection); // αapp
+    static double ApparentDeclination(double TrueObliquity,
+                                      double ApparentLongitude,
+                                      double NutationAberrationCorrection); // δapp
 };
 
 //******************************************************************************
@@ -159,17 +196,35 @@ public:
 };
 
 //******************************************************************************
+// Class PlanetaryOrbits
+//******************************************************************************
+class PlanetaryOrbits
+{
+public:
+    QString Planet;
+    double MeanLongitude(double T, double a0, double a1, double a2, double a3);
+    double SemiMajorAxisOrbit(double T, double a0, double a1, double a2, double a3);
+    double EccentricityOrbit(double T, double a0, double a1, double a2, double a3);
+    double InclinationPlaneEcliptic(double T, double a0, double a1, double a2, double a3);
+    double LongitudeAscendingNode(double T, double a0, double a1, double a2, double a3);
+    double LongitudePerihelion(double T, double a0, double a1, double a2, double a3);
+};
+
+//******************************************************************************
 // Misc General Purpose Functions defined outside the Class
 //******************************************************************************
 double frac(double d);
 double DHMS2DD(int d, int h, int m, int s);
 std::tuple<int, int, int, int> DD2DHMS(double dd);
+std::tuple<int, int, int, int> HD2HMS(double hd);
 double DMS2DD(int d, int m, int s);
 std::tuple<int, int, int, int> DD2DMS(double dd);
 double deg2rad(double d);
 double rad2deg(double r);
 double reduceAngle(double a);
 QString printDMS(double a);
+QString printHMS(double a);
 double Polynomial(double ind, vCoefs coefs);
+double constrain(double v);
 
 #endif  // MEEUS_H
