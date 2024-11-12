@@ -92,6 +92,21 @@ mVarget Meeus::VarDateTime()
 }
 
 //******************************************************************************
+// Meeus::VarGreenwichMeanSideralTime()
+//******************************************************************************
+mVarget Meeus::VarGreenwichMeanSideralTime()
+{
+    double gmst = GreenwichMeanSideralTime(this->JD);
+    mVarget rc{{"Name", "VarGreenwichMeanSideralTime"},
+               {"Text", "Greenwich Mean Sideral Time"},
+               {"Value", gmst},
+               {"FormattedValue", printDMS(gmst)},
+               {"AlternateFormat", printHMS(gmst / 15.0)},
+               {"HelpFile", ":/dox/en/greenwich-mean-sideral-time.md"}};
+    return rc;
+}
+
+//******************************************************************************
 // Meeus::VarCountry()
 //******************************************************************************
 mVarget Meeus::VarCountry()
@@ -122,11 +137,55 @@ mVarget Meeus::VarLocation()
 //******************************************************************************
 mVarget Meeus::VarTimeZone()
 {
+    qDebug() << this->location.tz.id();
+    qDebug() << this->location.tz.standardTimeOffset(QDateTime::currentDateTime());
     mVarget rc{{"Name", "VarTimeZone"},
                {"Text", "Time Zone"},
                {"Value", this->location.TimeZone},
                {"FormattedValue", this->location.TimeZone},
                {"HelpFile", ":/dox/en/time-zone.md"}};
+    return rc;
+}
+
+//******************************************************************************
+// Meeus::VarUTCTimeOffset()
+//******************************************************************************
+mVarget Meeus::VarUTCTimeOffset()
+{
+    double sto = this->GetUTCTimeOffset(this->JD);
+    mVarget rc{{"Name", "VarUTCTimeOffset"},
+               {"Text", "UTC Time Offset for this TimeZone"},
+               {"Value", sto},
+               {"FormattedValue", printHMS(sto)},
+               {"HelpFile", ":/dox/en/utc-time-offset.md"}};
+    return rc;
+}
+
+//******************************************************************************
+// Meeus::VarDaylightTimeOffset()
+//******************************************************************************
+mVarget Meeus::VarDaylightTimeOffset()
+{
+    double sto = this->GetDaylightTimeOffset(this->JD);
+    mVarget rc{{"Name", "VarDaylightTimeOffset"},
+               {"Text", "Daylight Time Offset for this TimeZone"},
+               {"Value", sto},
+               {"FormattedValue", printHMS(sto)},
+               {"HelpFile", ":/dox/en/daylight-time-offset.md"}};
+    return rc;
+}
+
+//******************************************************************************
+// Meeus::VarStandardTimeOffset()
+//******************************************************************************
+mVarget Meeus::VarStandardTimeOffset()
+{
+    double sto = this->GetStandardTimeOffset(this->JD);
+    mVarget rc{{"Name", "VarStandardTimeOffset"},
+               {"Text", "Standard Time Offset for this TimeZone"},
+               {"Value", sto},
+               {"FormattedValue", printHMS(sto)},
+               {"HelpFile", ":/dox/en/standard-time-offset.md"}};
     return rc;
 }
 
@@ -255,6 +314,7 @@ void Meeus::SetDefaultLocation() {
   loc.Latitude = 48.778056;
   loc.Longitude = 2.68;
   loc.TimeZone = "Europe/Paris";
+  loc.tz = QTimeZone(loc.TimeZone.toUtf8());
   this->location = loc;
 }
 
@@ -264,6 +324,16 @@ void Meeus::SetDefaultLocation() {
 void Meeus::SetLocation(Location loc)
 {
     this->location = loc;
+}
+
+//******************************************************************************
+// Meeus::SetTimeZone()
+//******************************************************************************
+void Meeus::SetTimeZone(QTimeZone tz)
+{
+    this->tz = tz;
+    this->location.tz = tz;
+    this->location.TimeZone = tz.id();
 }
 
 //******************************************************************************
@@ -574,6 +644,145 @@ mVarget Meeus::VarSunApparentDeclination()
 }
 
 //******************************************************************************
+// Meeus::VarSunRise()
+//******************************************************************************
+mVarget Meeus::VarSunRise()
+{
+    // Warning : The JD used for Sun's Right Ascension and Declination is the JD at noon
+    double mjd = floor(this->JD) + 0.5;
+    double eto = Earth::TrueObliquity(Earth::MeanObliquity(mjd),
+                                      Earth::NutationObliquity(mjd,
+                                                               Sun::MeanLongitude(mjd),
+                                                               Moon::MeanLongitude(mjd),
+                                                               Sun::MeanAnomaly(mjd),
+                                                               Moon::MeanAnomaly(mjd),
+                                                               Moon::MeanLongitudeFromAscendantNode(
+                                                                   mjd)));
+    double stl = Sun::TrueLongitude(Sun::MeanLongitude(mjd),
+                                    Sun::Center(mjd, Sun::MeanAnomaly(mjd)));
+    double snac = Sun::NutationAberrationCorrection(mjd);
+    double sal = Sun::ApparentLongitude(stl, snac);
+    double sad = Sun::ApparentDeclination(eto, sal, snac);
+    double sara = Sun::ApparentRightAscension(eto, sal, snac);
+    TransitRiseSet trs = GetTransitRiseSet(H0_SUN * toRad,
+                                           this->JD,
+                                           this->location.Latitude * toRad,
+                                           this->location.Longitude * toRad,
+                                           sara * 15.0 * toRad,
+                                           sad * toRad);
+    double rise = trs.Rise + GetUTCTimeOffset(mjd);
+    mVarget rc{{"Name", "VarSunRise"},
+               {"Text", "Sun's Rise"},
+               {"Value", rise},
+               {"FormattedValue", printHMS(rise)},
+               {"Page", 165},
+               {"HelpFile", ":/dox/en/sun-rise.md"}};
+    return rc;
+}
+
+//******************************************************************************
+// Meeus::VarSunTransit()
+//******************************************************************************
+mVarget Meeus::VarSunTransit()
+{
+    // Warning : The JD used for Sun's Right Ascension and Declination is the JD at noon
+    double mjd = floor(this->JD) + 0.5;
+    double eto = Earth::TrueObliquity(Earth::MeanObliquity(mjd),
+                                      Earth::NutationObliquity(mjd,
+                                                               Sun::MeanLongitude(mjd),
+                                                               Moon::MeanLongitude(mjd),
+                                                               Sun::MeanAnomaly(mjd),
+                                                               Moon::MeanAnomaly(mjd),
+                                                               Moon::MeanLongitudeFromAscendantNode(
+                                                                   mjd)));
+    double stl = Sun::TrueLongitude(Sun::MeanLongitude(mjd),
+                                    Sun::Center(mjd, Sun::MeanAnomaly(mjd)));
+    double snac = Sun::NutationAberrationCorrection(mjd);
+    double sal = Sun::ApparentLongitude(stl, snac);
+    double sad = Sun::ApparentDeclination(eto, sal, snac);
+    double sara = Sun::ApparentRightAscension(eto, sal, snac);
+    TransitRiseSet trs = GetTransitRiseSet(H0_SUN * toRad,
+                                           this->JD,
+                                           this->location.Latitude * toRad,
+                                           this->location.Longitude * toRad,
+                                           sara * 15.0 * toRad,
+                                           sad * toRad);
+    double transit = trs.Transit + GetUTCTimeOffset(mjd);
+    mVarget rc{{"Name", "VarSunTransit"},
+               {"Text", "Sun's Transit"},
+               {"Value", transit},
+               {"FormattedValue", printHMS(transit)},
+               {"Page", 165},
+               {"HelpFile", ":/dox/en/sun-transit.md"}};
+    return rc;
+}
+
+//******************************************************************************
+// Meeus::VarSunSet()
+//******************************************************************************
+mVarget Meeus::VarSunSet()
+{
+    // Warning : The JD used for Sun's Right Ascension and Declination is the JD at noon
+    double mjd = floor(this->JD) + 0.5;
+    double eto = Earth::TrueObliquity(Earth::MeanObliquity(mjd),
+                                      Earth::NutationObliquity(mjd,
+                                                               Sun::MeanLongitude(mjd),
+                                                               Moon::MeanLongitude(mjd),
+                                                               Sun::MeanAnomaly(mjd),
+                                                               Moon::MeanAnomaly(mjd),
+                                                               Moon::MeanLongitudeFromAscendantNode(
+                                                                   mjd)));
+    double stl = Sun::TrueLongitude(Sun::MeanLongitude(mjd),
+                                    Sun::Center(mjd, Sun::MeanAnomaly(mjd)));
+    double snac = Sun::NutationAberrationCorrection(mjd);
+    double sal = Sun::ApparentLongitude(stl, snac);
+    double sad = Sun::ApparentDeclination(eto, sal, snac);
+    double sara = Sun::ApparentRightAscension(eto, sal, snac);
+    /*
+    double sad = Sun::Declination(eto, stl);
+    double sara = Sun::RightAscension(eto, stl);
+    */
+    TransitRiseSet trs = GetTransitRiseSet(H0_SUN * toRad,
+                                           this->JD,
+                                           this->location.Latitude * toRad,
+                                           this->location.Longitude * toRad,
+                                           sara * 15.0 * toRad,
+                                           sad * toRad);
+    double set = trs.Set + GetUTCTimeOffset(mjd);
+    mVarget rc{{"Name", "VarSunSet"},
+               {"Text", "Sun's Set"},
+               {"Value", set},
+               {"FormattedValue", printHMS(set)},
+               {"Page", 165},
+               {"HelpFile", ":/dox/en/sun-set.md"}};
+    return rc;
+}
+
+//******************************************************************************
+// Meeus::GetUTCTimeOffset()
+//******************************************************************************
+double Meeus::GetUTCTimeOffset(double JD)
+{
+    return ((double) this->location.tz.offsetFromUtc(JD2Date(JD)) / 3600.0);
+}
+
+//******************************************************************************
+// Meeus::GetDaylightTimeOffset()
+//******************************************************************************
+double Meeus::GetDaylightTimeOffset(double JD)
+{
+    return ((double) this->location.tz.daylightTimeOffset(JD2Date(JD)) / 3600.0);
+}
+
+//******************************************************************************
+// Meeus::GetStandardTimeOffset()
+//******************************************************************************
+double Meeus::GetStandardTimeOffset(double JD)
+{
+    return ((double) this->location.tz.standardTimeOffset(JD2Date(JD)) / 3600.0);
+}
+
+//******************************************************************************
 // Meeus::GetTransitRiseSet()
 // Warning : All angles must be in radians
 //******************************************************************************
@@ -584,22 +793,13 @@ TransitRiseSet Meeus::GetTransitRiseSet(double h0,
                                         double RightAscension,
                                         double Declination)
 {
-    /*
-    const h0=-0.8333            // For Sun
-    const h0=-0.5667            // For stars and planets
-    const h0=0.125              // For Moon
-    const h0 = -6.0             // For Civil Twilight
-    const h0 = -12.0            // For Nautical Twilight
-    const h0 = -18.0            // For Astronomical Twilight
-    const h0 = +5.0 to -5.0     // For Golden Hour
-    const h0 = -4.0 to -8.0     // For Blue Hour
-    */
-
-    double cosH = (sin(h0 * M_PI / 180.0)
-                   - sin(Latitude) * sin(Declination) / (cos(Latitude) * cos(Declination)));
-    double H0 = acos(cosH) * 180.0 / M_PI;
+    // Warning : Jean Meeus considers eastward longitudes are negatives, the opposite of what we use !!!
+    Longitude = Longitude * -1;
+    double cosH = (sin(h0) - sin(Latitude) * sin(Declination)) / (cos(Latitude) * cos(Declination));
+    double H0 = acos(cosH) * toDeg;
     double gmst = GreenwichMeanSideralTime(floor(JD) + 0.5);
 
+    // Warning : These hours are in UT
     double transit = (RightAscension * toDeg + Longitude * toDeg - gmst) / 360.0;
     double rise = transit - (H0 / 360.0);
     double set = transit + (H0 / 360.0);
@@ -621,6 +821,7 @@ double Meeus::GreenwichMeanSideralTime(double JD)
     if (gmst < 0.0) {
         gmst += 360.0;
     }
+    qDebug() << "GMST:" + QString::number(gmst);
     return gmst;
 }
 

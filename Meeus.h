@@ -60,6 +60,7 @@ public:
         double Latitude;
         double Longitude;
         QString TimeZone;
+        QTimeZone tz;
     };
     double JD;
     int time_mode;
@@ -71,6 +72,7 @@ public:
     void ComputeJD();
     void SetDefaultLocation();
     void SetLocation(Location loc);
+    void SetTimeZone(QTimeZone tz);
     int getDay();
     int getMonth();
     int getYear();
@@ -93,6 +95,9 @@ public:
                                      double Longitude,
                                      double RightAscension,
                                      double Declination);
+    double GetUTCTimeOffset(double JD);
+    double GetDaylightTimeOffset(double JD);
+    double GetStandardTimeOffset(double JD);
     // Misc General Purpose
     mVarget VarJulianDay();
     mVarget VarT();
@@ -103,6 +108,10 @@ public:
     mVarget VarLatitude();
     mVarget VarLongitude();
     mVarget VarTimeZone();
+    mVarget VarUTCTimeOffset();
+    mVarget VarDaylightTimeOffset();
+    mVarget VarStandardTimeOffset();
+    mVarget VarGreenwichMeanSideralTime();
     // EARTH
     mVarget VarEarthMeanEccentricity();
     mVarget VarEarthNutationLongitude();
@@ -122,6 +131,9 @@ public:
     mVarget VarSunApparentRightAscension();
     mVarget VarSunDeclination();
     mVarget VarSunApparentDeclination();
+    mVarget VarSunRise();
+    mVarget VarSunTransit();
+    mVarget VarSunSet();
     // MOON
     mVarget VarMoonMeanLongitude();
     mVarget VarMoonMeanAnomaly();

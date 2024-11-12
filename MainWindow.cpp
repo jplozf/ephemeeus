@@ -694,6 +694,7 @@ void MainWindow::SetLocation()
     loc.Latitude = ui->txtLatitude->text().toDouble();
     loc.Longitude = ui->txtLongitude->text().toDouble();
     loc.TimeZone = ui->cbxTimeZone->currentText();
+    loc.tz = QTimeZone(loc.TimeZone.toUtf8());
     meeus->SetLocation(loc);
 }
 
@@ -1110,6 +1111,17 @@ void MainWindow::on_chkAutoRefresh_stateChanged(int arg1)
 }
 
 //******************************************************************************
+// on_cbxTimeZone_currentTextChanged()
+//******************************************************************************
+void MainWindow::on_cbxTimeZone_currentTextChanged(const QString &arg1)
+{
+    qDebug() << arg1;
+    if (this->meeus != NULL) {
+        this->meeus->SetTimeZone(QTimeZone(arg1.toUtf8()));
+    }
+}
+
+//******************************************************************************
 // on_chkShowHelp_stateChanged()
 //******************************************************************************
 void MainWindow::on_chkShowHelp_stateChanged(int arg1)
@@ -1135,6 +1147,10 @@ QMap<QString, callback_function> Varboard::aFunc
        {"VarLocation", &Meeus::VarLocation},
        {"VarCountry", &Meeus::VarCountry},
        {"VarTimeZone", &Meeus::VarTimeZone},
+       {"VarUTCTimeOffset", &Meeus::VarUTCTimeOffset},
+       {"VarDaylightTimeOffset", &Meeus::VarDaylightTimeOffset},
+       {"VarStandardTimeOffset", &Meeus::VarStandardTimeOffset},
+       {"VarGreenwichMeanSideralTime", &Meeus::VarGreenwichMeanSideralTime},
        {"VarSunMeanLongitude", &Meeus::VarSunMeanLongitude},
        {"VarSunMeanAnomaly", &Meeus::VarSunMeanAnomaly},
        {"VarSunCenter", &Meeus::VarSunCenter},
@@ -1147,6 +1163,9 @@ QMap<QString, callback_function> Varboard::aFunc
        {"VarSunApparentRightAscension", &Meeus::VarSunApparentRightAscension},
        {"VarSunDeclination", &Meeus::VarSunDeclination},
        {"VarSunApparentDeclination", &Meeus::VarSunApparentDeclination},
+       {"VarSunRise", &Meeus::VarSunRise},
+       {"VarSunTransit", &Meeus::VarSunTransit},
+       {"VarSunSet", &Meeus::VarSunSet},
        {"VarMoonMeanLongitude", &Meeus::VarMoonMeanLongitude},
        {"VarMoonMeanAnomaly", &Meeus::VarMoonMeanAnomaly},
        {"VarMoonMeanElongation", &Meeus::VarMoonMeanElongation},
@@ -1159,8 +1178,17 @@ QMap<QString, callback_function> Varboard::aFunc
        {"VarEarthTrueObliquity", &Meeus::VarEarthTrueObliquity}};
 
 QMap<QString, QStringList> Varboard::aKeywords
-    = {{"Time", {"VarDateTime", "VarJulianDay", "VarT", "VarDayOfWeek"}},
-       {"Location", {"VarLatitude", "VarLongitude", "VarLocation", "VarCountry", "VarTimeZone"}},
+    = {{"Time",
+        {"VarDateTime", "VarJulianDay", "VarT", "VarDayOfWeek", "VarGreenwichMeanSideralTime"}},
+       {"Location",
+        {"VarLatitude",
+         "VarLongitude",
+         "VarLocation",
+         "VarCountry",
+         "VarTimeZone",
+         "VarUTCTimeOffset",
+         "VarDaylightTimeOffset",
+         "VarStandardTimeOffset"}},
        {"Sun",
         {"VarSunMeanLongitude",
          "VarSunMeanAnomaly",
@@ -1173,7 +1201,10 @@ QMap<QString, QStringList> Varboard::aKeywords
          "VarSunRightAscension",
          "VarSunApparentRightAscension",
          "VarSunDeclination",
-         "VarSunApparentDeclination"}},
+         "VarSunApparentDeclination",
+         "VarSunRise",
+         "VarSunTransit",
+         "VarSunSet"}},
        {"Moon",
         {"VarMoonMeanLongitude",
          "VarMoonMeanAnomaly",
@@ -1376,6 +1407,10 @@ void Varget::ShowHelp()
         mdHelp += "- Raw Value : **" + this->Value.value("Value").toString() + "**\n";
         mdHelp += "- Formatted Value : **"
                   + this->Value.value("FormattedValue").toString().trimmed() + "**\n";
+        if (this->Value.contains("AlternateFormat")) {
+            mdHelp += "- Alternate Format : **"
+                      + this->Value.value("AlternateFormat").toString().trimmed() + "**\n";
+        }
         mdHelp += "---\n\n";
 
         // Try to open the Help file embedded into the resource file
@@ -1416,6 +1451,7 @@ void Varget::on_clicked_button_down()
     vb->vargets[current + 1]->Order = vb->vargets[current + 1]->Order - 1;
     std::swap(vb->vargets[current], vb->vargets[current + 1]);
 
+    this->highlighted = false;
     vb->Refresh();
     vb->mw->vbdModified = true;
     vb->mw->displayFileName();
@@ -1435,6 +1471,7 @@ void Varget::on_clicked_button_up()
     vb->vargets[current - 1]->Order = vb->vargets[current - 1]->Order + 1;
     std::swap(vb->vargets[current], vb->vargets[current - 1]);
 
+    this->highlighted = false;
     vb->Refresh();
     vb->mw->vbdModified = true;
     vb->mw->displayFileName();
@@ -1554,10 +1591,11 @@ void Varboard::Refresh()
                 }
             }
             this->vargets[i]->lblOrder->setStyleSheet(this->vargets[i]->cssOrder);
+            this->vargets[i]->setStyleSheet(this->vargets[i]->css);
         }
         this->vargets[i]->btnUp->setEnabled(true);
         this->vargets[i]->btnDown->setEnabled(true);
-        this->vargets[i]->setStyleSheet(this->vargets[i]->css);
+        // this->vargets[i]->setStyleSheet(this->vargets[i]->css);
         this->vargets[i]->Refresh();
         // Refreshing Help
         bool gLocked(false);

@@ -70,7 +70,7 @@ public:
     bool TimeLocked;
     QTimer *tTime;
     void SetLocation();
-    Meeus *meeus;
+    Meeus *meeus = NULL;
     QStringList mruFiles;
     void updateMRUMenu();
     QVector<QAction *> actMRUFiles;
@@ -117,6 +117,7 @@ private slots:
     void on_trwVargets_itemDoubleClicked(QTreeWidgetItem *item, int column);
     void on_btnClearVarboard_clicked();
     void on_chkShowHelp_stateChanged(int arg1);
+    void on_cbxTimeZone_currentTextChanged(const QString &arg1);
 };
 
 class MainWindow;
