@@ -96,8 +96,9 @@ public:
                                      double RightAscension,
                                      double Declination);
     double GetUTCTimeOffset(double JD);
-    double GetDaylightTimeOffset(double JD);
+    double GetDaylightSavingTimeOffset(double JD);
     double GetStandardTimeOffset(double JD);
+    double GetDaylightDuration(double JD);
     // Misc General Purpose
     mVarget VarJulianDay();
     mVarget VarT();
@@ -109,7 +110,7 @@ public:
     mVarget VarLongitude();
     mVarget VarTimeZone();
     mVarget VarUTCTimeOffset();
-    mVarget VarDaylightTimeOffset();
+    mVarget VarDaylightSavingTimeOffset();
     mVarget VarStandardTimeOffset();
     mVarget VarGreenwichMeanSideralTime();
     // EARTH
@@ -134,6 +135,8 @@ public:
     mVarget VarSunRise();
     mVarget VarSunTransit();
     mVarget VarSunSet();
+    mVarget VarDaylightDuration();
+    mVarget VarSunDaylightDurationVersusYesterday();
     // MOON
     mVarget VarMoonMeanLongitude();
     mVarget VarMoonMeanAnomaly();
@@ -236,6 +239,7 @@ double rad2deg(double r);
 double reduceAngle(double a);
 QString printDMS(double a);
 QString printHMS(double a);
+QString printSHMS(double a);
 double Polynomial(double ind, vCoefs coefs);
 double constrain(double v);
 

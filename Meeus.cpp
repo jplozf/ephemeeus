@@ -162,11 +162,11 @@ mVarget Meeus::VarUTCTimeOffset()
 }
 
 //******************************************************************************
-// Meeus::VarDaylightTimeOffset()
+// Meeus::VarDaylightSavingTimeOffset()
 //******************************************************************************
-mVarget Meeus::VarDaylightTimeOffset()
+mVarget Meeus::VarDaylightSavingTimeOffset()
 {
-    double sto = this->GetDaylightTimeOffset(this->JD);
+    double sto = this->GetDaylightSavingTimeOffset(this->JD);
     mVarget rc{{"Name", "VarDaylightTimeOffset"},
                {"Text", "Daylight Time Offset for this TimeZone"},
                {"Value", sto},
@@ -738,10 +738,6 @@ mVarget Meeus::VarSunSet()
     double sal = Sun::ApparentLongitude(stl, snac);
     double sad = Sun::ApparentDeclination(eto, sal, snac);
     double sara = Sun::ApparentRightAscension(eto, sal, snac);
-    /*
-    double sad = Sun::Declination(eto, stl);
-    double sara = Sun::RightAscension(eto, stl);
-    */
     TransitRiseSet trs = GetTransitRiseSet(H0_SUN * toRad,
                                            this->JD,
                                            this->location.Latitude * toRad,
@@ -767,9 +763,9 @@ double Meeus::GetUTCTimeOffset(double JD)
 }
 
 //******************************************************************************
-// Meeus::GetDaylightTimeOffset()
+// Meeus::GetDaylightSavingTimeOffset()
 //******************************************************************************
-double Meeus::GetDaylightTimeOffset(double JD)
+double Meeus::GetDaylightSavingTimeOffset(double JD)
 {
     return ((double) this->location.tz.daylightTimeOffset(JD2Date(JD)) / 3600.0);
 }
@@ -780,6 +776,72 @@ double Meeus::GetDaylightTimeOffset(double JD)
 double Meeus::GetStandardTimeOffset(double JD)
 {
     return ((double) this->location.tz.standardTimeOffset(JD2Date(JD)) / 3600.0);
+}
+
+//******************************************************************************
+// Meeus::GetDaylightDuration()
+//******************************************************************************
+double Meeus::GetDaylightDuration(double JD)
+{
+    // Warning : The JD used for Sun's Right Ascension and Declination is the JD at noon
+    double mjd = floor(JD) + 0.5;
+    double eto = Earth::TrueObliquity(Earth::MeanObliquity(mjd),
+                                      Earth::NutationObliquity(mjd,
+                                                               Sun::MeanLongitude(mjd),
+                                                               Moon::MeanLongitude(mjd),
+                                                               Sun::MeanAnomaly(mjd),
+                                                               Moon::MeanAnomaly(mjd),
+                                                               Moon::MeanLongitudeFromAscendantNode(
+                                                                   mjd)));
+    double stl = Sun::TrueLongitude(Sun::MeanLongitude(mjd),
+                                    Sun::Center(mjd, Sun::MeanAnomaly(mjd)));
+    double snac = Sun::NutationAberrationCorrection(mjd);
+    double sal = Sun::ApparentLongitude(stl, snac);
+    double sad = Sun::ApparentDeclination(eto, sal, snac);
+    double sara = Sun::ApparentRightAscension(eto, sal, snac);
+    TransitRiseSet trs = GetTransitRiseSet(H0_SUN * toRad,
+                                           this->JD,
+                                           this->location.Latitude * toRad,
+                                           this->location.Longitude * toRad,
+                                           sara * 15.0 * toRad,
+                                           sad * toRad);
+    double set = trs.Set + GetUTCTimeOffset(mjd);
+    double rise = trs.Rise + GetUTCTimeOffset(mjd);
+
+    return (set - rise);
+}
+
+//******************************************************************************
+// Meeus::VarDaylightDuration()
+//******************************************************************************
+mVarget Meeus::VarDaylightDuration()
+{
+    double dld = this->GetDaylightDuration(this->JD);
+    mVarget rc{{"Name", "VarDaylightDuration"},
+               {"Text", "Daylight Duration"},
+               {"Value", dld},
+               {"FormattedValue", printHMS(dld)},
+               {"Page", 165},
+               {"HelpFile", ":/dox/en/daylight-duration.md"}};
+    return rc;
+}
+
+//******************************************************************************
+// Meeus::VarSunDaylightDurationVersusYesterday()
+//******************************************************************************
+mVarget Meeus::VarSunDaylightDurationVersusYesterday()
+{
+    double dld0 = this->GetDaylightDuration(this->JD);
+    double dld1 = this->GetDaylightDuration(this->JD - 1);
+    qDebug() << dld0;
+    qDebug() << dld1;
+    mVarget rc{{"Name", "VarDaylightDuration"},
+               {"Text", "Daylight Duration"},
+               {"Value", (dld0 - dld1)},
+               {"FormattedValue", printSHMS(dld0 - dld1)},
+               {"Page", 165},
+               {"HelpFile", ":/dox/en/daylight-duration-versus-yesterday.md"}};
+    return rc;
 }
 
 //******************************************************************************
@@ -804,6 +866,8 @@ TransitRiseSet Meeus::GetTransitRiseSet(double h0,
     double rise = transit - (H0 / 360.0);
     double set = transit + (H0 / 360.0);
 
+    // These values are fractions of a day, so we have to multiply them by 24
+    // and be sure they are between 0 and 1 before
     TransitRiseSet trs = {constrain(transit) * 24.0, constrain(rise) * 24.0, constrain(set) * 24.0};
 
     return trs;
@@ -1439,6 +1503,26 @@ QString printHMS(double a)
     auto hms = HD2HMS(a);
     QString s;
     s.sprintf("%2dʰ%02dᵐ%02dˢ.%03d",
+              std::get<0>(hms),
+              std::get<1>(hms),
+              std::get<2>(hms),
+              std::get<3>(hms));
+    return s;
+}
+
+//******************************************************************************
+// printSHMS()
+//******************************************************************************
+QString printSHMS(double a)
+{
+    QString sign = "+";
+    QString s;
+    if (a < 0) {
+        sign = "-";
+    }
+    auto hms = HD2HMS(abs(a));
+    s.sprintf("%s%02dʰ%02dᵐ%02dˢ.%03d",
+              sign.toStdString().c_str(),
               std::get<0>(hms),
               std::get<1>(hms),
               std::get<2>(hms),
