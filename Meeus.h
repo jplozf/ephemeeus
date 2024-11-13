@@ -136,7 +136,7 @@ public:
     mVarget VarSunTransit();
     mVarget VarSunSet();
     mVarget VarDaylightDuration();
-    mVarget VarSunDaylightDurationVersusYesterday();
+    mVarget VarDaylightDurationVersusYesterday();
     // MOON
     mVarget VarMoonMeanLongitude();
     mVarget VarMoonMeanAnomaly();

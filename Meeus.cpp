@@ -827,16 +827,16 @@ mVarget Meeus::VarDaylightDuration()
 }
 
 //******************************************************************************
-// Meeus::VarSunDaylightDurationVersusYesterday()
+// Meeus::VarDaylightDurationVersusYesterday()
 //******************************************************************************
-mVarget Meeus::VarSunDaylightDurationVersusYesterday()
+mVarget Meeus::VarDaylightDurationVersusYesterday()
 {
     double dld0 = this->GetDaylightDuration(this->JD);
     double dld1 = this->GetDaylightDuration(this->JD - 1);
     qDebug() << dld0;
     qDebug() << dld1;
-    mVarget rc{{"Name", "VarDaylightDuration"},
-               {"Text", "Daylight Duration"},
+    mVarget rc{{"Name", "VarDaylightDurationVersusYesterday"},
+               {"Text", "Daylight Duration versus yesterday"},
                {"Value", (dld0 - dld1)},
                {"FormattedValue", printSHMS(dld0 - dld1)},
                {"Page", 165},
