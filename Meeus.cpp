@@ -833,8 +833,6 @@ mVarget Meeus::VarDaylightDurationVersusYesterday()
 {
     double dld0 = this->GetDaylightDuration(this->JD);
     double dld1 = this->GetDaylightDuration(this->JD - 1);
-    qDebug() << dld0;
-    qDebug() << dld1;
     mVarget rc{{"Name", "VarDaylightDurationVersusYesterday"},
                {"Text", "Daylight Duration versus yesterday"},
                {"Value", (dld0 - dld1)},
@@ -1092,6 +1090,300 @@ double Moon::MeanLongitudeFromAscendantNode(double JD)
     double T = (JD - 2451545.0) / 36525.0;
     // Mean Longitude from Ascendant Node of Moon's Orbit on ecliptic
     return reduceAngle(Polynomial(T, vCoefs{125.0443, -1934.1363, 0.002075}));
+}
+
+//******************************************************************************
+// Moon::LongitudeGeocentric()
+//******************************************************************************
+double Moon::LongitudeGeocentric(double JD)
+{
+    // Time in Julian Centuries
+    double T = (JD - 2451545.0) / 36525.0;
+    // Arguments A1, A2 & A3 (in degrees)
+    double A1 = 119.75 + 131.849 * T;
+    double A2 = 53.09 + 479264.290 * T;
+    double A3 = 313.45 + 481266.484 * T;
+    // Eccentricity of Earth's Orbit
+    double E = Polynomial(T, vCoefs{1, -0.002516, -0.0000074});
+    // Mean values for Sun & Moon
+    double M = Sun::MeanAnomaly(JD);
+    double M_ = Moon::MeanAnomaly(JD);
+    double L_ = Moon::MeanLongitude(JD);
+    double D = Moon::MeanElongation(JD);
+    double F = Moon::MeanDistanceFromAscendantNode(JD);
+    // Σl
+    double SigmaL = SigmaSin(6288774.0, M_);
+    SigmaL += SigmaSin(1274027.0, 2.0 * D - M_);
+    SigmaL += SigmaSin(658314.0, 2.0 * D);
+    SigmaL += SigmaSin(213618.0, 2.0 * M_);
+    SigmaL += SigmaSin(-185116.0, M, E, 1);
+    SigmaL += SigmaSin(-114332.0, 2.0 * F);
+    SigmaL += SigmaSin(58793.0, 2.0 * D - 2.0 * M_);
+    SigmaL += SigmaSin(57066.0, 2.0 * D - M - M_, E, 1);
+    SigmaL += SigmaSin(53322.0, 2.0 * D + M_);
+    SigmaL += SigmaSin(45758.0, 2.0 * D - M, E, 1);
+    SigmaL += SigmaSin(-40923.0, M - M_, E, 1);
+    SigmaL += SigmaSin(-34720.0, D);
+    SigmaL += SigmaSin(-30383.0, M + M_, E, 1);
+    SigmaL += SigmaSin(15327.0, 2.0 * D - 2.0 * F);
+    SigmaL += SigmaSin(-12528.0, M_ + 2.0 * F);
+    SigmaL += SigmaSin(10980.0, M_ - 2.0 * F);
+    SigmaL += SigmaSin(10675.0, 4.0 * D - M_);
+    SigmaL += SigmaSin(10034.0, 3.0 * M_);
+    SigmaL += SigmaSin(8548.0, 4.0 * D - 2.0 * M_);
+    SigmaL += SigmaSin(-7888.0, 2.0 * D + M - M_, E, 1);
+    SigmaL += SigmaSin(-6766.0, 2.0 * D + M, E, 1);
+    SigmaL += SigmaSin(-5163.0, D - M_);
+    SigmaL += SigmaSin(4987.0, D + M, E, 1);
+    SigmaL += SigmaSin(4036.0, 2.0 * D - M + M_, E, 1);
+    SigmaL += SigmaSin(3994.0, 2.0 * D + 2.0 * M_);
+    SigmaL += SigmaSin(3861.0, 4.0 * D);
+    SigmaL += SigmaSin(3665.0, 2.0 * D - 3.0 * M_);
+    SigmaL += SigmaSin(-2689.0, M - 2.0 * M_, E, 1);
+    SigmaL += SigmaSin(-2602.0, 2.0 * D - M_ + 2.0 * F);
+    SigmaL += SigmaSin(2390.0, 2.0 * D - M - 2.0 * M_, E, 1);
+    SigmaL += SigmaSin(-2348.0, D + M_);
+    SigmaL += SigmaSin(2236.0, 2.0 * D - 2.0 * M, E, 2);
+    SigmaL += SigmaSin(-2120.0, M + 2.0 * M_, E, 1);
+    SigmaL += SigmaSin(-2069.0, 2.0 * M, E, 2);
+    SigmaL += SigmaSin(2048.0, 2.0 * D - 2.0 * M - M_, E, 2);
+    SigmaL += SigmaSin(-1773.0, 2.0 * D + M_ - 2.0 * F);
+    SigmaL += SigmaSin(-1595.0, 2.0 * D + 2.0 * F);
+    SigmaL += SigmaSin(1215.0, 4.0 * D - M - M_, E, 1);
+    SigmaL += SigmaSin(-1110.0, 2.0 * M_ + 2.0 * F);
+    SigmaL += SigmaSin(-892.0, 3.0 * D - M_);
+    SigmaL += SigmaSin(-810.0, 2.0 * D + M + M_, E, 1);
+    SigmaL += SigmaSin(759.0, 4.0 * D - M - 2.0 * M_, E, 1);
+    SigmaL += SigmaSin(-713.0, 2.0 * M - M_, E, 2);
+    SigmaL += SigmaSin(-700.0, 2.0 * D + 2.0 * M - M_, E, 2);
+    SigmaL += SigmaSin(691.0, 2.0 * D + M - 2.0 * M_, E, 1);
+    SigmaL += SigmaSin(596.0, 2.0 * D - M - 2.0 * F, E, 1);
+    SigmaL += SigmaSin(549.0, 4.0 * D + M_);
+    SigmaL += SigmaSin(537.0, 4.0 * M_);
+    SigmaL += SigmaSin(520.0, 4.0 * D - M, E, 1);
+    SigmaL += SigmaSin(-487.0, D - 2.0 * M_);
+    SigmaL += SigmaSin(-399.0, 2.0 * D + M - 2.0 * F, E, 1);
+    SigmaL += SigmaSin(-381.0, 2.0 * M_ - 2.0 * F);
+    SigmaL += SigmaSin(351.0, D + M + M_, E, 1);
+    SigmaL += SigmaSin(-340.0, 3.0 * D - 2.0 * M_);
+    SigmaL += SigmaSin(330.0, 4.0 * D - 3.0 * M_);
+    SigmaL += SigmaSin(327.0, 2.0 * D - M + 2.0 * M_, E, 1);
+    SigmaL += SigmaSin(-323.0, 2.0 * M + M_, E, 2);
+    SigmaL += SigmaSin(299.0, D + M - M_, E, 1);
+    SigmaL += SigmaSin(294.0, 2.0 * D + 3.0 * M_);
+    SigmaL += SigmaSin(-275.0, 2.0 * D + M_ + 2.0 * F);
+
+    SigmaL += SigmaSin(3958.0, A1);
+    SigmaL += SigmaSin(1962.0, L_ - F);
+    SigmaL += SigmaSin(318.0, A2);
+
+    return (L_ + SigmaL / 1000000.0);
+}
+
+//******************************************************************************
+// Meeus::VarMoonLongitudeGeocentric()
+//******************************************************************************
+mVarget Meeus::VarMoonLongitudeGeocentric()
+{
+    double mlg = Moon::LongitudeGeocentric(this->JD);
+    mVarget rc{{"Name", "VarMoonLongitudeGeocentric"},
+               {"Text", "Moon's Longitude Geocentric"},
+               {"Value", mlg},
+               {"FormattedValue", printDMS(mlg)},
+               {"Page", 346},
+               {"HelpFile", ":/dox/en/moon-longitude-geocentric.md"}};
+    return rc;
+}
+
+//******************************************************************************
+// Moon::LatitudeGeocentric()
+//******************************************************************************
+double Moon::LatitudeGeocentric(double JD)
+{
+    // Time in Julian Centuries
+    double T = (JD - 2451545.0) / 36525.0;
+    // Arguments A1, A2 & A3 (in degrees)
+    double A1 = 119.75 + 131.849 * T;
+    double A2 = 53.09 + 479264.290 * T;
+    double A3 = 313.45 + 481266.484 * T;
+    // Eccentricity of Earth's Orbit
+    double E = Polynomial(T, vCoefs{1, -0.002516, -0.0000074});
+    // Mean values for Sun & Moon
+    double M = Sun::MeanAnomaly(JD);
+    double M_ = Moon::MeanAnomaly(JD);
+    double L_ = Moon::MeanLongitude(JD);
+    double D = Moon::MeanElongation(JD);
+    double F = Moon::MeanDistanceFromAscendantNode(JD);
+    // Σb
+    double SigmaB = SigmaSin(5128122.0, F);
+    SigmaB += SigmaSin(280602.0, M_ + F);
+    SigmaB += SigmaSin(277693.0, M_ - F);
+    SigmaB += SigmaSin(173237.0, 2.0 * D - F);
+    SigmaB += SigmaSin(55413.0, 2.0 * D - M_ + F);
+    SigmaB += SigmaSin(46271.0, 2.0 * D - M_ - F);
+    SigmaB += SigmaSin(32573.0, 2.0 * D + F);
+    SigmaB += SigmaSin(17198.0, 2.0 * M_ + F);
+    SigmaB += SigmaSin(9266.0, 2.0 * D + M_ - F);
+    SigmaB += SigmaSin(8822.0, 2.0 * M_ - F);
+    SigmaB += SigmaSin(8216.0, 2.0 * D - M - F, E, 1);
+    SigmaB += SigmaSin(4324.0, 2.0 * D - 2.0 * M_ - F);
+    SigmaB += SigmaSin(4200.0, 2.0 * D + M_ + F);
+    SigmaB += SigmaSin(-3359.0, 2.0 * D + M - F, E, 1);
+    SigmaB += SigmaSin(2463.0, 2.0 * D - M - M_ + F, E, 1);
+    SigmaB += SigmaSin(2211.0, 2.0 * D - M + F, E, 1);
+    SigmaB += SigmaSin(2065.0, 2.0 * D - M - M_ - F, E, 1);
+    SigmaB += SigmaSin(-1870.0, M - M_ - F, E, 1);
+    SigmaB += SigmaSin(1828.0, 4.0 * D - M_ - F);
+    SigmaB += SigmaSin(-1794.0, M + F, E, 1);
+    SigmaB += SigmaSin(-1749, 3.0 * F);
+    SigmaB += SigmaSin(-1565.0, M - M_ + F, E, 1);
+    SigmaB += SigmaSin(-1491.0, D + F);
+    SigmaB += SigmaSin(-1475.0, M + M_ + F, E, 1);
+    SigmaB += SigmaSin(-1410.0, M + M_ - F, E, 1);
+    SigmaB += SigmaSin(-1344.0, M - F, E, 1);
+    SigmaB += SigmaSin(-1335.0, D - F);
+    SigmaB += SigmaSin(1107.0, 3.0 * M_ + F);
+    SigmaB += SigmaSin(1021.0, 4.0 * D - F);
+    SigmaB += SigmaSin(833.0, 4.0 * D - M_ + F);
+    SigmaB += SigmaSin(777.0, M_ - 3.0 * F);
+    SigmaB += SigmaSin(671.0, 4.0 * D - 2.0 * M_ + F);
+    SigmaB += SigmaSin(607.0, 2.0 * D - 3.0 * F);
+    SigmaB += SigmaSin(596.0, 2.0 * D + 2.0 * M_ - F);
+    SigmaB += SigmaSin(491.0, 2.0 * D - M + M_ - F, E, 1);
+    SigmaB += SigmaSin(-451.0, 2.0 * D - 2.0 * M_ + F);
+    SigmaB += SigmaSin(439.0, 3.0 * M_ - F);
+    SigmaB += SigmaSin(422.0, 2.0 * D + 2.0 * M_ + F);
+    SigmaB += SigmaSin(421.0, 2.0 * D - 3.0 * M_ - F);
+    SigmaB += SigmaSin(-366.0, 2.0 * D + M - M_ + F, E, 1);
+    SigmaB += SigmaSin(-351.0, 2.0 * D + M + F, E, 1);
+    SigmaB += SigmaSin(331.0, 4.0 * D + F);
+    SigmaB += SigmaSin(315.0, 2.0 * D - M + M_ + F, E, 1);
+    SigmaB += SigmaSin(302.0, 2.0 * D - 2.0 * M - F, E, 2);
+    SigmaB += SigmaSin(-283.0, M_ + 3.0 * F);
+    SigmaB += SigmaSin(-229.0, 2.0 * D + M + M_ - F, E, 1);
+    SigmaB += SigmaSin(223.0, D + M - F, E, 1);
+    SigmaB += SigmaSin(223.0 + D + M + F, E, 1);
+    SigmaB += SigmaSin(-220.0, M - 2.0 * M_ - F, E, 1);
+    SigmaB += SigmaSin(-220.0, 2.0 * D + M - M_ - F, E, 1);
+    SigmaB += SigmaSin(-185.0, D + M_ + F);
+    SigmaB += SigmaSin(181.0, 2.0 * D - M - 2.0 * M_ - F, E, 1);
+    SigmaB += SigmaSin(-177.0, M + 2.0 * M_ + F, E, 1);
+    SigmaB += SigmaSin(176.0, 4.0 * D - 2.0 * M_ - F);
+    SigmaB += SigmaSin(166.0, 4.0 * D - M - M_ - F, E, 1);
+    SigmaB += SigmaSin(-164.0, D + M_ - F);
+    SigmaB += SigmaSin(132.0, 4.0 * D + M_ - F);
+    SigmaB += SigmaSin(-119.0, D - M_ - F);
+    SigmaB += SigmaSin(115.0, 4.0 * D - M - F, E, 1);
+    SigmaB += SigmaSin(107.0, 2.0 * D - 2.0 * M + F, E, 2);
+
+    SigmaB += SigmaSin(-2235.0, L_);
+    SigmaB += SigmaSin(382.0, A3);
+    SigmaB += SigmaSin(175.0, A1 - F);
+    SigmaB += SigmaSin(175.0, A1 + F);
+    SigmaB += SigmaSin(127.0, L_ - M_);
+    SigmaB += SigmaSin(-115.0, L_ + M_);
+
+    return (SigmaB / 1000000.0);
+}
+
+//******************************************************************************
+// Meeus::VarMoonLatitudeGeocentric()
+//******************************************************************************
+mVarget Meeus::VarMoonLatitudeGeocentric()
+{
+    double mlg = Moon::LatitudeGeocentric(this->JD);
+    mVarget rc{{"Name", "VarMoonLatitudeGeocentric"},
+               {"Text", "Moon's Latitude Geocentric"},
+               {"Value", mlg},
+               {"FormattedValue", printDMS(mlg)},
+               {"Page", 346},
+               {"HelpFile", ":/dox/en/moon-latitude-geocentric.md"}};
+    return rc;
+}
+
+//******************************************************************************
+// Moon::DistanceFromEarth()
+//******************************************************************************
+double Moon::DistanceFromEarth(double JD)
+{
+    // Time in Julian Centuries
+    double T = (JD - 2451545.0) / 36525.0;
+    // Arguments A1, A2 & A3 (in degrees)
+    double A1 = 119.75 + 131.849 * T;
+    double A2 = 53.09 + 479264.290 * T;
+    double A3 = 313.45 + 481266.484 * T;
+    // Eccentricity of Earth's Orbit
+    double E = Polynomial(T, vCoefs{1, -0.002516, -0.0000074});
+    // Mean values for Sun & Moon
+    double M = Sun::MeanAnomaly(JD);
+    double M_ = Moon::MeanAnomaly(JD);
+    double L_ = Moon::MeanLongitude(JD);
+    double D = Moon::MeanElongation(JD);
+    double F = Moon::MeanDistanceFromAscendantNode(JD);
+    // Σr
+    double SigmaR = SigmaCos(-20905355.0, M_);
+    SigmaR += SigmaCos(-3699111.0, 2.0 * D - M_);
+    SigmaR += SigmaCos(-2955968.0, 2.0 * D);
+    SigmaR += SigmaCos(-569925.0, 2.0 * M_);
+    SigmaR += SigmaCos(246158.0, 2.0 * D - 2.0 * M_);
+    SigmaR += SigmaCos(-204586.0, 2.0 * D - M, E, 1);
+    SigmaR += SigmaCos(-170733.0, 2.0 * D + M_);
+    SigmaR += SigmaCos(-152138, 2.0 * D - M - M_, E, 1);
+    SigmaR += SigmaCos(-129620.0, M - M_, E, 1);
+    SigmaR += SigmaCos(108743.0, D);
+    SigmaR += SigmaCos(104755.0, M + M_, E, 1);
+    SigmaR += SigmaCos(79661.0, M_ - 2.0 * F);
+    SigmaR += SigmaCos(48888.0, M, E, 1);
+    SigmaR += SigmaCos(-34782.0, 4.0 * D - M_);
+    SigmaR += SigmaCos(30824.0, 2.0 * D + M, E, 1);
+    SigmaR += SigmaCos(24208.0, 2.0 * D + M - M_, E, 1);
+    SigmaR += SigmaCos(-23210.0, 3.0 * M_);
+    SigmaR += SigmaCos(-21636.0, 4.0 * D - 2.0 * M_);
+    SigmaR += SigmaCos(-16675.0, D + M, E, 1);
+    SigmaR += SigmaCos(14403.0, 2.0 * D - 3.0 * M_);
+    SigmaR += SigmaCos(-12831.0, 2.0 * D - M + M_, E, 1);
+    SigmaR += SigmaCos(-11650.0, 4.0 * D);
+    SigmaR += SigmaCos(-10445.0, 2.0 * D + 2.0 * M_);
+    SigmaR += SigmaCos(10321.0, 2.0 * D - 2.0 * F);
+    SigmaR += SigmaCos(10056.0, 2.0 * D - M - 2.0 * M_, E, 1);
+    SigmaR += SigmaCos(-9884.0, 2.0 * D - 2.0 * M, E, 2);
+    SigmaR += SigmaCos(8752.0, 2.0 * D - M_ - 2.0 * F);
+    SigmaR += SigmaCos(-8379.0, D - M_);
+    SigmaR += SigmaCos(-7003.0, M - 2.0 * M_, E, 1);
+    SigmaR += SigmaCos(6322.0, D + M_);
+    SigmaR += SigmaCos(5751.0, M + 2.0 * M_, E, 1);
+    SigmaR += SigmaCos(-4950.0, 2.0 * D - 2.0 * M - M_, E, 2);
+    SigmaR += SigmaCos(-4421.0, 2.0 * M_ - 2.0 * F);
+    SigmaR += SigmaCos(4130.0, 2.0 * D + M_ - 2.0 * F);
+    SigmaR += SigmaCos(-3958.0, 4.0 * D - M - M_, E, 1);
+    SigmaR += SigmaCos(3258.0, 3.0 * D - M_);
+    SigmaR += SigmaCos(-3149.0, 2.0 * F);
+    SigmaR += SigmaCos(2616.0, 2.0 * D + M + M_, E, 1);
+    SigmaR += SigmaCos(2354.0, 2.0 * D + 2.0 * M - M_, E, 2);
+    SigmaR += SigmaCos(-2117.0, 2.0 * M - M_, E, 2);
+    SigmaR += SigmaCos(-1897.0, 4.0 * D - M - 2.0 * M_, E, 1);
+    SigmaR += SigmaCos(-1739.0, D - 2.0 * M_);
+    SigmaR += SigmaCos(-1571.0, 4.0 * D - M, E, 1);
+    SigmaR += SigmaCos(-1423.0, 4.0 * D + M_);
+    SigmaR += SigmaCos(1165.0, 2.0 * M + M_, E, 2);
+    SigmaR += SigmaCos(-1117.0, 4.0 * M_);
+
+    return (385000.56 + SigmaR / 1000.0);
+}
+
+//******************************************************************************
+// Meeus::VarMoonDistanceFromEarth()
+//******************************************************************************
+mVarget Meeus::VarMoonDistanceFromEarth()
+{
+    double mdfe = Moon::DistanceFromEarth(this->JD);
+    mVarget rc{{"Name", "VarMoonDistanceFromEarth"},
+               {"Text", "Moon's Distance from Earh (Km)"},
+               {"Value", mdfe},
+               {"FormattedValue", printKM(mdfe)},
+               {"Page", 346},
+               {"HelpFile", ":/dox/en/moon-distance-from-earth.md"}};
+    return rc;
 }
 
 //******************************************************************************
@@ -1531,6 +1823,16 @@ QString printSHMS(double a)
 }
 
 //******************************************************************************
+// printKM()
+//******************************************************************************
+QString printKM(double a)
+{
+    QString s;
+    s.sprintf("%.1f Km", a);
+    return s;
+}
+
+//******************************************************************************
 // Polynomial()
 //******************************************************************************
 double Polynomial(double ind, vCoefs coefs)
@@ -1557,6 +1859,37 @@ double constrain(double v)
     }
     return v;
 }
+
+//******************************************************************************
+// SigmaSin()
+//******************************************************************************
+double SigmaSin(double coef, double angle, double E, int nE)
+{
+    double ss = coef * sin(angle * toRad);
+    if (nE == 1) {
+        ss = ss * E;
+    }
+    if (nE == 2) {
+        ss = ss * E * E;
+    }
+    return ss;
+}
+
+//******************************************************************************
+// SigmaCos()
+//******************************************************************************
+double SigmaCos(double coef, double angle, double E, int nE)
+{
+    double ss = coef * cos(angle * toRad);
+    if (nE == 1) {
+        ss = ss * E;
+    }
+    if (nE == 2) {
+        ss = ss * E * E;
+    }
+    return ss;
+}
+
 /*
 --------------------------------------------------------------------------------
 The Greek Alphabet

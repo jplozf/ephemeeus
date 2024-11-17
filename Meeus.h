@@ -143,6 +143,9 @@ public:
     mVarget VarMoonMeanElongation();
     mVarget VarMoonMeanDistanceFromAscendantNode();
     mVarget VarMoonMeanLongitudeFromAscendantNode();
+    mVarget VarMoonLongitudeGeocentric();
+    mVarget VarMoonLatitudeGeocentric();
+    mVarget VarMoonDistanceFromEarth();
 
 private:
     QDateTime dt;
@@ -185,6 +188,9 @@ public:
     static double MeanElongation(double JD);                 // D
     static double MeanDistanceFromAscendantNode(double JD);  // F
     static double MeanLongitudeFromAscendantNode(double JD); // Ω
+    static double LongitudeGeocentric(double JD);            // λ
+    static double LatitudeGeocentric(double JD);             // β
+    static double DistanceFromEarth(double JD);              // Δ
 };
 
 //******************************************************************************
@@ -240,7 +246,10 @@ double reduceAngle(double a);
 QString printDMS(double a);
 QString printHMS(double a);
 QString printSHMS(double a);
+QString printKM(double a);
 double Polynomial(double ind, vCoefs coefs);
 double constrain(double v);
+double SigmaSin(double coef, double angle, double E = 0.0, int nE = 0);
+double SigmaCos(double coef, double angle, double E = 0.0, int nE = 0);
 
 #endif  // MEEUS_H
